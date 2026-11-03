@@ -311,7 +311,8 @@ function renderSel(){
   document.getElementById('msg').textContent=msg;
   for(const p of[0,1]){
     const box=document.getElementById('o'+p);
-    box.innerHTML=ROSTER.map(c=>`<div class="opt${pick[p]===c?' on':''}" data-c="${c}"><div class="th" style="background:${COLORS[c]}">${IMGS[c]?'<img src="'+IMGS[c].src+'">':''}</div><b>${NAMES[c]}</b></div>`).join('');
+    box.innerHTML=ROSTER.map(c=>`<div class="opt${pick[p]===c?' on':''}" data-c="${c}"><div class="th" style="background:${COLORS[c]}">${IMGS[c]?'<img src="'+IMGS[c].src+'">':''}</div><b>${NAMES[c]}</b></div>`).join('')
+      +HIDDEN.map(c=>{const u=!!hiddenUnlocked[c];return `<div class="opt hidbox${u?'':' locked'}${u&&pick[p]===c?' on':''}" data-c="${c}"><div class="th" style="background:${u?COLORS[c]:'#111'}">${u&&IMGS[c]?'<img src="'+IMGS[c].src+'">':''}</div><b>${u?NAMES[c]:'???'}</b></div>`;}).join('');
   }
   renderHidden();
 }
@@ -373,6 +374,7 @@ function showSelect(){
 }
 selEl.addEventListener('click',e=>{
   const o=e.target.closest('.opt');if(!o)return;
+  if(o.classList.contains('locked')){sfx('click');msg='??? (미해금 캐릭터입니다)';document.getElementById('msg').textContent=msg;return;}
   sfx('click');
   pick[+o.parentNode.id.slice(1)]=+o.dataset.c;renderSel();
 });
