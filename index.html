@@ -64,7 +64,16 @@ button:active{transform:scale(.96)}
 </style>
 </head>
 <body>
-<div id="sel"><h2>캐릭터 선택</h2><div id="msg"></div><div class="row"><span class="pl p1">1P</span><div class="opts" id="o0"></div></div><div class="row"><span class="pl p2">2P</span><div class="opts" id="o1"></div></div><button id="go">대결 시작</button> <button id="prac" class="ghost">연습장</button> <button id="hidBtn" class="ghost">히든</button><div id="hidPanel" class="opts" style="display:none;width:100%;margin-top:8px"></div></div>
+<div id="sel"><h2>캐릭터 선택</h2><div id="msg"></div><div class="row"><span class="pl p1">1P</span><div class="opts" id="o0"></div></div><div class="row"><span class="pl p2">2P</span><div class="opts" id="o1"></div></div><button id="go">대결 시작</button> <button id="prac" class="ghost">연습장</button> <button id="hidBtn" class="ghost">히든</button></div>
+<div id="hidModal" style="display:none;position:fixed;inset:0;background:rgba(10,8,16,.55);z-index:200;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:18px;padding:18px 20px 20px;width:min(92vw,560px);max-height:80vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.35)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <h3 style="margin:0">히든 캐릭터</h3>
+      <button id="hidClose" class="ghost" style="padding:4px 12px">닫기</button>
+    </div>
+    <div id="hidPanel" class="opts" style="width:100%"></div>
+  </div>
+</div>
 <div id="ui"></div>
 <canvas id="c" width="600" height="600"></canvas>
 <div id="screenCut"></div>
@@ -345,16 +354,16 @@ function go(){
 }
 document.getElementById('go').onclick=()=>{sfx('click');practice=false;go();};
 document.getElementById('prac').onclick=()=>{sfx('click');practice=true;go();};
-let hidOpen=false;
-document.getElementById('hidBtn').onclick=()=>{
-  sfx('click');hidOpen=!hidOpen;
-  document.getElementById('hidPanel').style.display=hidOpen?'flex':'none';
-};
+function openHidModal(){document.getElementById('hidModal').style.display='flex';}
+function closeHidModal(){document.getElementById('hidModal').style.display='none';}
+document.getElementById('hidBtn').onclick=()=>{sfx('click');openHidModal();};
+document.getElementById('hidClose').onclick=()=>{sfx('click');closeHidModal();};
+document.getElementById('hidModal').addEventListener('click',e=>{if(e.target.id==='hidModal')closeHidModal();});
 document.getElementById('hidPanel').addEventListener('click',e=>{
   const o=e.target.closest('.opt');if(!o)return;
   const c=+o.dataset.c;
   if(!hiddenUnlocked[c]){sfx('click');msg='??? (미해금 캐릭터입니다)';document.getElementById('msg').textContent=msg;return;}
-  sfx('click');pick[0]=c;practice=true;go();
+  sfx('click');closeHidModal();pick[0]=c;practice=true;go();
 });
 document.getElementById('home').onclick=()=>{sfx('click');showSelect();};
 document.getElementById('retry').onclick=()=>{sfx('click');stopSlice();reset();started=true;};
