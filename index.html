@@ -3632,7 +3632,7 @@ function flowerStep(b,dt){
     b.ft=(b.ft||0)-dt;
     if(b.ft<=0&&!(b.stun>0)){
       const T=nearest(b);
-      if(T)b.fcs={phase:'wind',t0:now,T,windPose:flowerWindPoseRandom()};
+      if(T)b.fcs={phase:'wind',t0:now,T};
       else b.ft=.3;
     }
   }
@@ -3878,8 +3878,7 @@ function draw(){
         }
       }
       let fr;
-      if(b.fcs&&b.fcs.phase==='wind'&&b.fcs.windPose)fr=b.fcs.windPose;
-      else if(b.fcs&&b.fcs.phase==='dash'&&b.fcs.poseImg)fr=b.fcs.poseImg;
+      if(b.fcs&&b.fcs.phase==='dash'&&b.fcs.poseImg)fr=b.fcs.poseImg;
       else{
         const frs=(b.animFrames&&b.animFrames.length)?b.animFrames:[b.img];
         const fi=Math.floor(performance.now()/160)%frs.length;
