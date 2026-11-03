@@ -71,6 +71,10 @@ button:active{transform:scale(.96)}
       <h3 style="margin:0">히든 캐릭터</h3>
       <button id="hidClose" class="ghost" style="padding:4px 12px">닫기</button>
     </div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button id="hidP1" class="ghost" data-p="0">1P로 선택</button>
+      <button id="hidP2" class="ghost" data-p="1">2P로 선택</button>
+    </div>
     <div id="hidPanel" class="opts" style="width:100%"></div>
   </div>
 </div>
@@ -311,8 +315,10 @@ function renderSel(){
   document.getElementById('msg').textContent=msg;
   for(const p of[0,1]){
     const box=document.getElementById('o'+p);
-    box.innerHTML=ROSTER.map(c=>`<div class="opt${pick[p]===c?' on':''}" data-c="${c}"><div class="th" style="background:${COLORS[c]}">${IMGS[c]?'<img src="'+IMGS[c].src+'">':''}</div><b>${NAMES[c]}</b></div>`).join('')
-      +HIDDEN.map(c=>{const u=!!hiddenUnlocked[c];return `<div class="opt hidbox${u?'':' locked'}${u&&pick[p]===c?' on':''}" data-c="${c}"><div class="th" style="background:${u?COLORS[c]:'#111'}">${u&&IMGS[c]?'<img src="'+IMGS[c].src+'">':''}</div><b>${u?NAMES[c]:'???'}</b></div>`;}).join('');
+    box.innerHTML=ROSTER.map(c=>`<div class="opt${pick[p]===c?' on':''}" data-c="${c}"><div class="th" style="background:${COLORS[c]}">${IMGS[c]?'<img src="'+IMGS[c].src+'">':''}</div><b>${NAMES[c]}</b></div>`).join('');
+    if(HIDDEN.includes(pick[p])){
+      const c=pick[p];box.innerHTML+=`<div class="opt hidbox on" data-c="${c}"><div class="th" style="background:${COLORS[c]}">${IMGS[c]?'<img src="'+IMGS[c].src+'">':''}</div><b>${NAMES[c]}</b></div>`;
+    }
   }
   renderHidden();
 }
@@ -374,7 +380,6 @@ function showSelect(){
 }
 selEl.addEventListener('click',e=>{
   const o=e.target.closest('.opt');if(!o)return;
-  if(o.classList.contains('locked')){sfx('click');msg='??? (미해금 캐릭터입니다)';document.getElementById('msg').textContent=msg;return;}
   sfx('click');
   pick[+o.parentNode.id.slice(1)]=+o.dataset.c;renderSel();
 });
@@ -384,16 +389,23 @@ function go(){
 }
 document.getElementById('go').onclick=()=>{sfx('click');practice=false;go();};
 document.getElementById('prac').onclick=()=>{sfx('click');practice=true;go();};
-function openHidModal(){document.getElementById('hidModal').style.display='flex';}
+let hidPlayer=0;
+function renderHidPlayerBtns(){
+  document.getElementById('hidP1').style.cssText=hidPlayer===0?'border-color:#ffd84a;box-shadow:0 0 0 2px #ffd84a inset':'';
+  document.getElementById('hidP2').style.cssText=hidPlayer===1?'border-color:#ffd84a;box-shadow:0 0 0 2px #ffd84a inset':'';
+}
+function openHidModal(){document.getElementById('hidModal').style.display='flex';renderHidPlayerBtns();}
 function closeHidModal(){document.getElementById('hidModal').style.display='none';}
 document.getElementById('hidBtn').onclick=()=>{sfx('click');openHidModal();};
 document.getElementById('hidClose').onclick=()=>{sfx('click');closeHidModal();};
 document.getElementById('hidModal').addEventListener('click',e=>{if(e.target.id==='hidModal')closeHidModal();});
+document.getElementById('hidP1').onclick=()=>{sfx('click');hidPlayer=0;renderHidPlayerBtns();};
+document.getElementById('hidP2').onclick=()=>{sfx('click');hidPlayer=1;renderHidPlayerBtns();};
 document.getElementById('hidPanel').addEventListener('click',e=>{
   const o=e.target.closest('.opt');if(!o)return;
   const c=+o.dataset.c;
   if(!hiddenUnlocked[c]){sfx('click');msg='??? (미해금 캐릭터입니다)';document.getElementById('msg').textContent=msg;return;}
-  sfx('click');closeHidModal();pick[0]=c;practice=true;go();
+  sfx('click');pick[hidPlayer]=c;closeHidModal();renderSel();
 });
 document.getElementById('home').onclick=()=>{sfx('click');showSelect();};
 document.getElementById('retry').onclick=()=>{sfx('click');stopSlice();reset();started=true;};
