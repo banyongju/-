@@ -2777,13 +2777,13 @@ function camStep(b,dt){
       U.L.push({t:ct,px:px,py:py,th:Math.random()*3.1416,f:false,ft:0});U.nl++;}
     for(const l of U.L){if(!l.f&&ct>=l.t+.9){l.f=true;l.ft=ct;shk=Math.max(shk,.18);
       for(const o of balls){if(o.alive&&o.team!==b.team&&!air(o)){const d=Math.abs(-(o.x-l.px)*Math.sin(l.th)+(o.y-l.py)*Math.cos(l.th));
-        if(d<o.r+8){hurt(o,5);burst(o.x,o.y,'#5cff9a',12,320);}}}}}
+        if(d<o.r+8){hurt(o,6);burst(o.x,o.y,'#5cff9a',12,320);}}}}}
     if(U.nl>=18&&!U.encore&&U.L.every(l=>l.f)&&ct>=Math.max(...U.L.map(l=>l.ft))+.5){
       U.encore=true;U.encoreT=ct;shk=Math.max(shk,.45);
       fl.push({x:b.x,y:b.y-b.r-30,o:b,life:1.1,t:'한 번 더, 쾅!',col:'#5cff9a'});
       for(const l of U.L){
         for(const o of balls){if(o.alive&&o.team!==b.team&&!air(o)){const d=Math.abs(-(o.x-l.px)*Math.sin(l.th)+(o.y-l.py)*Math.cos(l.th));
-          if(d<o.r+8){hurt(o,5);burst(o.x,o.y,'#5cff9a',12,320);}}}}
+          if(d<o.r+8){hurt(o,6);burst(o.x,o.y,'#5cff9a',12,320);}}}}
     }
     if(U.encore&&ct>=U.encoreT+.5){b.cu=null;const a0=Math.random()*6.283;b.vx=Math.cos(a0)*235;b.vy=Math.sin(a0)*235;}
   }
@@ -2796,16 +2796,16 @@ function camStep(b,dt){
       if(b.cs.ok){fl.push({x:b.x,y:b.y-b.r-24,o:b,life:1.4,t:'문제해결!',col:'#ff4f5a'});shk=.7;
         const sp=[];for(let k=0;k<70;k++)sp.push([Math.random()*W,Math.random()*H,20+Math.random()*50,Math.random()]);
         cfx.push({t0:now,life:1300,sp:sp});
-        for(const o of balls){if(o.alive&&o.team!==b.team){hurt(o,45);burst(o.x,o.y,'#ff7a2f',24,380);}}}
+        for(const o of balls){if(o.alive&&o.team!==b.team){hurt(o,52);burst(o.x,o.y,'#ff7a2f',24,380);}}}
       else{hurt(b,5);fl.push({x:b.x,y:b.y-b.r-24,o:b,life:1.2,t:'실패… -5',col:'#9a9a9a'});}}
     if(ct>=3.1){b.cs.el&&b.cs.el.remove();b.cs=null;}}
 }
 function camFxStep(dt){
   const now=performance.now();
-  for(const q of cfb){if(q.T&&q.T.alive){const sp=Math.hypot(q.vx,q.vy),a=Math.atan2(q.vy,q.vx),da=wad(Math.atan2(q.T.y-q.y,q.T.x-q.x),a),na=a+Math.max(-1.3*dt,Math.min(1.3*dt,da));q.vx=Math.cos(na)*sp;q.vy=Math.sin(na)*sp;}
+  for(const q of cfb){if(q.T&&q.T.alive){const sp=Math.hypot(q.vx,q.vy),a=Math.atan2(q.vy,q.vx),da=wad(Math.atan2(q.T.y-q.y,q.T.x-q.x),a),na=a+Math.max(-1.45*dt,Math.min(1.45*dt,da));q.vx=Math.cos(na)*sp;q.vy=Math.sin(na)*sp;}
     q.x+=q.vx*dt;q.y+=q.vy*dt;q.rot+=dt*10;q.life-=dt;
     for(const o of balls){if(!o.alive||o.team===q.team||air(o))continue;
-      if(Math.hypot(o.x-q.x,o.y-q.y)<o.r+11){for(const f of balls){if(f.alive&&f.team!==q.team&&!air(f)&&Math.hypot(f.x-q.x,f.y-q.y)<64+f.r){hurt(f,6);const dx=f.x-q.x,dy=f.y-q.y,m=Math.hypot(dx,dy)||1;f.vx+=dx/m*180;f.vy+=dy/m*180;}}
+      if(Math.hypot(o.x-q.x,o.y-q.y)<o.r+11){for(const f of balls){if(f.alive&&f.team!==q.team&&!air(f)&&Math.hypot(f.x-q.x,f.y-q.y)<64+f.r){hurt(f,7);const dx=f.x-q.x,dy=f.y-q.y,m=Math.hypot(dx,dy)||1;f.vx+=dx/m*180;f.vy+=dy/m*180;}}
         burst(q.x,q.y,'#ff7a2f',28,420);burst(q.x,q.y,'#ffd84a',12,260);cfx.push({type:'boom',x:q.x,y:q.y,t0:now,life:380});shk=Math.max(shk,.25);q.life=0;break;}}}
   cfb=cfb.filter(q=>q.life>0&&q.x>-20&&q.x<W+20&&q.y>-20&&q.y<H+20);
   cfx=cfx.filter(e=>now-e.t0<e.life);
