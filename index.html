@@ -3579,7 +3579,7 @@ function flowerStep(b,dt){
           playOneShot(flowerJaronaBuf,1);
           fl.push({x:b.x,y:b.y-b.r-18,life:.9,t:'자로나!',col:'#5fc8ff'});
           burst(b.x,b.y,'#5fc8ff',14,220);
-        }else{b.fcs=null;b.ft=.3;}
+        }else{const a0=Math.random()*6.283;b.vx=Math.cos(a0)*235;b.vy=Math.sin(a0)*235;b.fcs=null;b.ft=.3;}
       }
     }else if(cs.phase==='dash'){
       const dt2=(now-cs.t1)/1000,u=Math.min(1,dt2/.22);
@@ -3595,7 +3595,7 @@ function flowerStep(b,dt){
           burst(o.x,o.y,'#5fc8ff',12,220);shk=Math.max(shk,.25);
         }
       }
-      if(u>=1){b.fcs=null;b.ft=FLOWER_CD;}
+      if(u>=1){const relA=Math.atan2(cs.ey-cs.sy,cs.ex-cs.sx);b.vx=Math.cos(relA)*235;b.vy=Math.sin(relA)*235;b.fcs=null;b.ft=FLOWER_CD;}
     }
   }else{
     b.ft=(b.ft||0)-dt;
