@@ -3878,7 +3878,7 @@ function draw(){
         }
       }
       let fr;
-      if(b.fcs&&b.fcs.phase==='wind'&&typeof flowerCrouchImg!=='undefined'&&flowerCrouchImg.complete)fr=flowerCrouchImg;
+      if(b.fcs&&b.fcs.phase==='wind'&&typeof flowerDashImg!=='undefined'&&flowerDashImg.complete)fr=flowerDashImg;
       else if(b.fcs&&b.fcs.phase==='dash'&&b.fcs.poseImg)fr=b.fcs.poseImg;
       else{
         const frs=(b.animFrames&&b.animFrames.length)?b.animFrames:[b.img];
