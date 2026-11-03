@@ -2787,7 +2787,7 @@ function camStep(b,dt){
     }
     if(U.encore&&ct>=U.encoreT+.5){b.cu=null;const a0=Math.random()*6.283;b.vx=Math.cos(a0)*235;b.vy=Math.sin(a0)*235;}
   }
-  else if(!b.cs){b.g=Math.min(1,(b.g||0)+dt/7);
+  else if(!b.cs){b.g=Math.min(1,(b.g||0)+dt/4.5);
     if(b.g>=1&&!(b.stun>0)){b.g=0;b.cnt=(b.cnt||0)+1;
       if(b.cnt%b.ult===0){b.cu={t0:now,L:[],nl:0};fl.push({x:b.x,y:b.y-b.r-30,o:b,life:1.4,t:'동백이 피어난다',col:'#5cff9a'});}
       else{const ok=Math.random()<.5;b.cs={t0:now,ok:ok,done:false,el:camPop(b,ok)};}}}
