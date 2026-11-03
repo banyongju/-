@@ -3641,7 +3641,7 @@ function flowerStep(b,dt){
     b.ft=(b.ft||0)-dt;
     if(b.ft<=0&&!(b.stun>0)){
       const T=nearest(b);
-      if(T){const combo=flowerPickCombo();b.fcs={phase:'wind',t0:now,T,combo,windPose:flowerWindPoseForCombo(combo)};}
+      if(T){const combo=flowerPickCombo();b.fcs={phase:'wind',t0:now,T,combo,windPose:flowerWindPoseForCombo(combo),flip:b.x<W/2};}
       else b.ft=.3;
     }
   }
@@ -3872,7 +3872,7 @@ function draw(){
     if(b.glow){ctx.save();ctx.lineWidth=5;ctx.shadowBlur=20;const ro=performance.now()/600;ctx.shadowColor='#ff4fd8';ctx.strokeStyle='#ff4fd8';ctx.beginPath();ctx.arc(b.x,b.y,b.r+9,ro,ro+3.14);ctx.stroke();ctx.shadowColor='#5fe6ff';ctx.strokeStyle='#5fe6ff';ctx.beginPath();ctx.arc(b.x,b.y,b.r+9,ro+3.14,ro+6.28);ctx.stroke();ctx.restore();}
     if(b.treasure)drawTreasure(b);
     if(b.freeform&&b.img&&b.img.complete){
-      const flip=b.x<W/2;
+      const flip=b.fcs?b.fcs.flip:(b.x<W/2);
       if(b.ftrail&&b.ftrail.length){
         const nowT=performance.now();
         for(const g of b.ftrail){
