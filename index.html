@@ -242,10 +242,11 @@ function mk(i){
     r:i===0?32:i===2?36:i===3?38:26,hp:i===10?200:i===14?75:300,maxHp:i===10?200:i===14?75:300,c:COLORS[i],t,len:c.len,dmg:c.dmg,cap:c.cap,spin:c.spin*(Math.random()<.5?-1:1),
     ang:Math.random()*6.283,flash:0,alive:true,name:NAMES[i],skill:SKILLS[i],g:0,boost:0,img:i===0?faceImg:i===2?faceImg2:i===3?faceImg3:i===4?moingImg:i===5?cukuImg:i===6?wonkaImg:i===7?camImg:i===8?biaImg:i===9?fireImg:i===10?neraImg:i===11?mintImg:i===12?daeseokImg:i===13?barrelImg:i===14?ppeunImg:i===15?boseungImg:i===16?bakeImg:i===17?flowerImg:null,shadowImg:i===3?bullImg:null,treasure:i===0,freeform:i===17,animFrames:i===17?flowerFrames:null,show:null,seq:i===2?['lor','jam','sky','buff','shield']:null,si:0,ult:i===0?15:i===4?3:i===5?5:i===3?4:i===6?9:i===7?3:i===2?10:i===8?5:i===9?5:i===10?8:i===11?8:i===12?15:i===13?BARREL_ULT_USES:i===15?BOSEUNG_ULT_USES:10,dmgMul:i===9?.5:i===14?.5:1};
 }
-const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이',dash:'돌진',heal:'회복',shiny:'빛나',lor:'Load and Shoot',jam:'Fire! J-a-a-am!',sky:'To the sky!',buff:'Hold position!',shield:'Ready, routine Echo:',moing:'쁘띠첼 돌진',wonka:'초콜릿 무기',dk:'강화 손바닥 (적 벽 연속 넉백)',cuku:'패시브 벽 중첩 / 잔상 돌진',seq:'스킬 2종',fire:'화염방사기 입김+화상 / 불덩이 8방 / 필살기',nera:'대검 패시브 / 회전베기+강습 / 윤회',mint:'도끼 패시브 / 올라타기(확률) / 필살기: 야수화',daeseok:'전따봉 찌르기/휘두르기/돌리기 / 필살기: 전원 공중 내리꽂기',barrel:'평화의 수호자',ppeun:'고기: 공격력 / 야채: 체력재생 / 버섯: 이동속도 / 생선: 주변 광역피해 / 두부: 최대체력 / 이쁜이(희귀): 전체 효과 5배↑',boseung:'카타나 평타(3초 미공격시 납도, 이후 첫 타는 발도 베기) / 스킬: 순간이동 베기 + 참격 연쇄 폭발 / 필살기: 각성(공격력↑ 쿨감↓) → 재사용시 글리치 베기',bake:'베이크 매그넘 평타: 열선 레이져+쿠키 난사(즉발/차징 랜덤) / 패시브: 미공격 시간↑→베이크 스택↑(무기 빨개짐, 스택 높을수록 스킬 데미지 강화, 평타는 영향 없음) / 스킬: 랜덤 주기로 입구 2회 여닫기 후 50% 즉시 풀 블래스트(관통 화상 레이져), 50% 1회 더 여닫고 풀 익스플로전(대폭발) / 필살기 없음'};
+const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이',dash:'돌진',heal:'회복',shiny:'빛나',lor:'Load and Shoot',jam:'Fire! J-a-a-am!',sky:'To the sky!',buff:'Hold position!',shield:'Ready, routine Echo:',moing:'쁘띠첼 돌진',wonka:'초콜릿 무기',dk:'강화 손바닥 (적 벽 연속 넉백)',cuku:'패시브 벽 중첩 / 잔상 돌진',seq:'스킬 2종',fire:'화염방사기 입김+화상 / 불덩이 8방 / 필살기',nera:'대검 패시브 / 회전베기+강습 / 윤회',mint:'도끼 패시브 / 올라타기(확률) / 필살기: 야수화',daeseok:'전따봉 찌르기/휘두르기/돌리기 / 필살기: 전원 공중 내리꽂기',barrel:'평화의 수호자',ppeun:'고기: 공격력 / 야채: 체력재생 / 버섯: 이동속도 / 생선: 주변 광역피해 / 두부: 최대체력 / 이쁜이(희귀): 전체 효과 5배↑',boseung:'카타나 평타(3초 미공격시 납도, 이후 첫 타는 발도 베기) / 스킬: 순간이동 베기 + 참격 연쇄 폭발 / 필살기: 각성(공격력↑ 쿨감↓) → 재사용시 글리치 베기',bake:'베이크 매그넘 평타: 열선 레이져+쿠키 난사(즉발/차징 랜덤) / 패시브: 미공격 시간↑→베이크 스택↑(무기 빨개짐, 스택 높을수록 스킬 데미지 강화, 평타는 영향 없음) / 스킬: 랜덤 주기로 입구 2회 여닫기 후 50% 즉시 풀 블래스트(관통 화상 레이져), 50% 1회 더 여닫고 풀 익스플로전(대폭발) / 필살기 없음',flower:'자로나!'};
+const FLOWER_CD=1.9;
 function buildUI(){
-  ui.innerHTML=balls.map(b=>`<div class="card"><div class="top"><i style="background:${b.c}"></i><b><u class="pp p${b.p}">${b.p}P</u> ${b.name}</b><span class="sk">${SK[b.skill]||'스킬 없음'}</span></div>${b.seq?'<div class="hpb sb" style="visibility:hidden"><div class="hpf sf"></div><em></em></div>':''}<div class="hpb"><div class="hpf"></div><em>100</em></div>${b.skill==='nera'?'<div class="reincUI" style="color:#ff2d4a;font-weight:800;font-size:13px;text-align:center;min-height:15px"></div>':''}${b.skill==='wonka'?'<div class="wi"></div>':''}${b.skill&&b.skill!=='boseung'?'<div class="gb"><div class="gf"></div></div>':''}${(b.skill==='shiny'||b.seq||b.skill==='moing'||b.skill==='cuku'||b.skill==='dk'||b.skill==='wonka'||b.skill==='cam'||b.skill==='nera'||b.skill==='fire'||b.skill==='mint'||b.skill==='daeseok'||b.skill==='barrel'||b.skill==='ppeun'||b.skill==='boseung')?'<div class="ul">'+(b.skill==='boseung'?'연참베기':'필살기')+'</div><div class="gb"><div class="gf uf'+(b.skill==='boseung'?' skillgauge':'')+'"></div></div>':''}${b.skill==='boseung'?'<div class="ul">필살기</div><div class="gb"><div class="gf uf2"></div></div>':''}${b.skill==='bake'?'<div class="ul">베이킹</div><div class="gb"><div class="gf bk"></div></div>':''}</div>`).join('');
-  balls.forEach((b,i)=>{const c=ui.children[i];b.ui={card:c,hf:c.querySelector('.hpb:not(.sb) .hpf'),hn:c.querySelector('.hpb:not(.sb) em'),sb:c.querySelector('.sb'),sf:c.querySelector('.sf'),sn:c.querySelector('.sb em'),gf:c.querySelector('.gf'),uf:c.querySelector('.uf'),uf2:c.querySelector('.uf2'),bk:c.querySelector('.bk'),wi:c.querySelector('.wi'),sk:c.querySelector('.sk'),reinc:c.querySelector('.reincUI')}});
+  ui.innerHTML=balls.map(b=>`<div class="card"><div class="top"><i style="background:${b.c}"></i><b><u class="pp p${b.p}">${b.p}P</u> ${b.name}</b><span class="sk">${SK[b.skill]||'스킬 없음'}</span></div>${b.seq?'<div class="hpb sb" style="visibility:hidden"><div class="hpf sf"></div><em></em></div>':''}<div class="hpb"><div class="hpf"></div><em>100</em></div>${b.skill==='nera'?'<div class="reincUI" style="color:#ff2d4a;font-weight:800;font-size:13px;text-align:center;min-height:15px"></div>':''}${b.skill==='wonka'?'<div class="wi"></div>':''}${b.skill&&b.skill!=='boseung'&&b.skill!=='flower'?'<div class="gb"><div class="gf"></div></div>':''}${(b.skill==='shiny'||b.seq||b.skill==='moing'||b.skill==='cuku'||b.skill==='dk'||b.skill==='wonka'||b.skill==='cam'||b.skill==='nera'||b.skill==='fire'||b.skill==='mint'||b.skill==='daeseok'||b.skill==='barrel'||b.skill==='ppeun'||b.skill==='boseung')?'<div class="ul">'+(b.skill==='boseung'?'연참베기':'필살기')+'</div><div class="gb"><div class="gf uf'+(b.skill==='boseung'?' skillgauge':'')+'"></div></div>':''}${b.skill==='boseung'?'<div class="ul">필살기</div><div class="gb"><div class="gf uf2"></div></div>':''}${b.skill==='bake'?'<div class="ul">베이킹</div><div class="gb"><div class="gf bk"></div></div>':''}${b.skill==='flower'?'<div class="ul">자로나!</div><div class="gb"><div class="gf fl"></div></div>':''}</div>`).join('');
+  balls.forEach((b,i)=>{const c=ui.children[i];b.ui={card:c,hf:c.querySelector('.hpb:not(.sb) .hpf'),hn:c.querySelector('.hpb:not(.sb) em'),sb:c.querySelector('.sb'),sf:c.querySelector('.sf'),sn:c.querySelector('.sb em'),gf:c.querySelector('.gf'),uf:c.querySelector('.uf'),uf2:c.querySelector('.uf2'),bk:c.querySelector('.bk'),fl:c.querySelector('.fl'),wi:c.querySelector('.wi'),sk:c.querySelector('.sk'),reinc:c.querySelector('.reincUI')}});
 }
 const WICON={};
 function wicon(i){if(WICON[i])return WICON[i];const si=WDEF[i]&&WDEF[i].sp!==undefined?WDEF[i].sp:i;const o=WK[si];if(!o)return '';if(!o.im.complete||!o.w)return '';const c=document.createElement('canvas');c.width=40;c.height=20;const x=c.getContext('2d');const sc=Math.min(38/o.w,18/o.h);x.translate(20,10);x.scale(sc,sc);x.drawImage(o.im,-o.w/2,-o.h/2,o.w,o.h);return WICON[i]=c.toDataURL();}
@@ -264,6 +265,7 @@ function updUI(){
     if(e.uf)e.uf.style.width=(b.skill==='wonka'?Math.min(100,(b.wused||[]).length/9*100):b.skill==='nera'?Math.min(100,(b.ultUses||0)/NERA_ULT_USES*100):b.skill==='daeseok'?Math.min(100,(b.dsSkillUses||0)/DAESEOK_ULT_USES*100):b.skill==='ppeun'?Math.min(100,(b.pot?b.pot.items.length:0)/3*100):b.skill==='boseung'?Math.min(100,(b.boseungSkillTimer||0)/BOSEUNG_SKILL_PERIOD*100):((b.cnt||0)%b.ult/(b.ult-1)*100))+'%';
     if(e.uf2&&b.skill==='boseung'){const need=b.boseungAwaken?BOSEUNG_FIN_SKILLS_AWAKEN:BOSEUNG_FIN_SKILLS;e.uf2.style.width=Math.min(100,(b.boseungFinCnt||0)/need*100)+'%';}
     if(e.bk)e.bk.style.width=Math.min(100,(b.bakeStack||0)/BAKE_STACK_MAX*100)+'%';
+    if(e.fl){const rdy=b.fcs?100:Math.min(100,100-(Math.max(0,b.ft||0)/FLOWER_CD*100));e.fl.style.width=rdy+'%';e.fl.style.background=rdy>=100?'#5fc8ff':'#9fd8ff';}
     if(b.seq){const nk=b.seq[b.si%b.seq.length],nt='다음: '+(nk==='buff'?(((b.bv||0)+1)%2===1?'Hold position! Check, fire! (공속↑)':'Hold position! Check, fire! (데미지↑)'):SK[nk])+(b.buffLeft>0?' · 데미지×1.5 '+b.buffLeft+'회':'')+(b.asLeft>0?' · 공속↑ '+b.asLeft+'회':'')+(b.shield>0?' · 보호막 '+Math.ceil(b.shield):'');if(e.skt!==nt){e.sk.textContent=nt;e.skt=nt}}
   }
 }
@@ -3593,7 +3595,7 @@ function flowerStep(b,dt){
           burst(o.x,o.y,'#5fc8ff',12,220);shk=Math.max(shk,.25);
         }
       }
-      if(u>=1){b.fcs=null;b.ft=1.9;}
+      if(u>=1){b.fcs=null;b.ft=FLOWER_CD;}
     }
   }else{
     b.ft=(b.ft||0)-dt;
@@ -3830,6 +3832,7 @@ function draw(){
     if(b.glow){ctx.save();ctx.lineWidth=5;ctx.shadowBlur=20;const ro=performance.now()/600;ctx.shadowColor='#ff4fd8';ctx.strokeStyle='#ff4fd8';ctx.beginPath();ctx.arc(b.x,b.y,b.r+9,ro,ro+3.14);ctx.stroke();ctx.shadowColor='#5fe6ff';ctx.strokeStyle='#5fe6ff';ctx.beginPath();ctx.arc(b.x,b.y,b.r+9,ro+3.14,ro+6.28);ctx.stroke();ctx.restore();}
     if(b.treasure)drawTreasure(b);
     if(b.freeform&&b.img&&b.img.complete){
+      const flip=b.x<W/2;
       if(b.ftrail&&b.ftrail.length){
         const dimg=(typeof flowerDashImg!=='undefined'&&flowerDashImg.complete)?flowerDashImg:b.img;
         const iw2=dimg.naturalWidth||58,ih2=dimg.naturalHeight||96,dh2=b.r*4.2,dw2=dh2*iw2/ih2,nowT=performance.now();
@@ -3837,6 +3840,7 @@ function draw(){
           const al=Math.max(0,1-(nowT-g.t)/260);
           if(al<=0)continue;
           ctx.save();ctx.globalAlpha=al*.55;ctx.globalCompositeOperation='lighter';ctx.filter='brightness(1.6) saturate(2) hue-rotate(180deg)';
+          if(flip){ctx.translate(g.x,0);ctx.scale(-1,1);ctx.translate(-g.x,0);}
           ctx.drawImage(dimg,g.x-dw2/2,g.y-dh2/2,dw2,dh2);
           ctx.restore();
         }
@@ -3850,7 +3854,8 @@ function draw(){
         fr=frs[fi].complete?frs[fi]:b.img;
       }
       const iw=fr.naturalWidth||58,ih=fr.naturalHeight||96,dh=b.r*4.2,dw=dh*iw/ih;
-      ctx.drawImage(fr,b.x-dw/2,b.y-dh/2,dw,dh);
+      if(flip){ctx.save();ctx.translate(b.x,0);ctx.scale(-1,1);ctx.translate(-b.x,0);ctx.drawImage(fr,b.x-dw/2,b.y-dh/2,dw,dh);ctx.restore();}
+      else ctx.drawImage(fr,b.x-dw/2,b.y-dh/2,dw,dh);
     }else{
       ctx.fillStyle=b.c;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,6.283);ctx.fill();
       if(b.img&&b.img.complete){
