@@ -684,6 +684,8 @@ function startShow(b){
   b.cnt=(b.cnt||0)+1;
   const long=b.cnt%b.ult===0,R=(a,c)=>a+Math.random()*(c-a),bursts=[];
   if(long){
+    const now0=performance.now();
+    for(const o of balls){if(o.alive&&o.skill==='cam'&&!o.cu){if(o.cs){o.cs.el&&o.cs.el.remove();}o.cu={t0:now0,L:[],nl:0};o.cs=null;}}
     for(let i=0;i<(b.glow?14:8);i++){
       const m=(3+Math.floor(Math.random()*6))*(b.glow?2:1),rays=[];
       for(let k=0;k<m;k++)rays.push({a:R(0,6.283),len:R(90,340),w:R(1.2,4.5),sp:R(-3,3)});
