@@ -262,9 +262,9 @@ function flowerDashPoseRandom(){
 }
 function flowerWindPoseRandom(){
   const arr=[];
-  if(typeof flowerKneeImg!=='undefined'&&flowerKneeImg.complete)arr.push(flowerKneeImg);
-  if(typeof flowerPunchImg!=='undefined'&&flowerPunchImg.complete)arr.push(flowerPunchImg);
-  if(!arr.length)return(typeof flowerCrouchImg!=='undefined'&&flowerCrouchImg.complete)?flowerCrouchImg:null;
+  if(typeof flowerCrouchImg!=='undefined'&&flowerCrouchImg.complete)arr.push(flowerCrouchImg);
+  if(typeof flowerDashImg!=='undefined'&&flowerDashImg.complete)arr.push(flowerDashImg);
+  if(!arr.length)return null;
   return arr[Math.floor(Math.random()*arr.length)];
 }
 function mk(i){
@@ -3632,7 +3632,7 @@ function flowerStep(b,dt){
     b.ft=(b.ft||0)-dt;
     if(b.ft<=0&&!(b.stun>0)){
       const T=nearest(b);
-      if(T)b.fcs={phase:'wind',t0:now,T};
+      if(T)b.fcs={phase:'wind',t0:now,T,windPose:flowerWindPoseRandom()};
       else b.ft=.3;
     }
   }
@@ -3878,7 +3878,7 @@ function draw(){
         }
       }
       let fr;
-      if(b.fcs&&b.fcs.phase==='wind'&&typeof flowerDashImg!=='undefined'&&flowerDashImg.complete)fr=flowerDashImg;
+      if(b.fcs&&b.fcs.phase==='wind'&&b.fcs.windPose)fr=b.fcs.windPose;
       else if(b.fcs&&b.fcs.phase==='dash'&&b.fcs.poseImg)fr=b.fcs.poseImg;
       else{
         const frs=(b.animFrames&&b.animFrames.length)?b.animFrames:[b.img];
