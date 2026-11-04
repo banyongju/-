@@ -921,10 +921,10 @@ function drawAquas(){
       if(a.ax==null)continue;
       ctx.save();
       if(aquaImg&&aquaImg.complete){
-        const s=.55,iw=aquaImg.naturalWidth*s,ih=aquaImg.naturalHeight*s;
+        const s=1.1,iw=aquaImg.naturalWidth*s,ih=aquaImg.naturalHeight*s;
         ctx.drawImage(aquaImg,a.ax-iw/2,a.ay-ih/2,iw,ih);
       }else{
-        ctx.fillStyle='#5fc8ff';ctx.beginPath();ctx.arc(a.ax,a.ay,10,0,6.283);ctx.fill();
+        ctx.fillStyle='#5fc8ff';ctx.beginPath();ctx.arc(a.ax,a.ay,18,0,6.283);ctx.fill();
       }
       ctx.restore();
     }
@@ -3656,8 +3656,8 @@ function flowerStep(b,dt){
           burst(b.x,b.y,ult?'#ff6b6b':'#5fc8ff',ult?26:14,ult?320:220);if(ult)shk=.3;
           if(ult){
             (b.aquas=b.aquas||[]);
-            if(b.aquas.length<6){
-              b.aquas.push({ang:Math.random()*6.283,r:60+b.aquas.length*16,spd:1.8+Math.random()*.6,throwT:.6+Math.random()*.4});
+            if(b.aquas.length<1){
+              b.aquas.push({ang:Math.random()*6.283,r:62,spd:1.8+Math.random()*.6,throwT:.6+Math.random()*.4});
               fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'아쿠아!',col:'#9fe6ff'});
             }
           }
