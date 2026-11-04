@@ -283,12 +283,13 @@ const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이
 const FLOWER_CD=2.28;
 const SETH_CD=4.5;
 const SETH_WORDS=['단어!','활자!','문장력!','지식!','독해!'];
-function summonBooks(b){
+function summonBooksAt(owner,x,y){
   const now=performance.now();
-  b.books=b.books||[];
-  const targets=[{tx:b.x,ty:0},{tx:b.x,ty:H},{tx:0,ty:b.y},{tx:W,ty:b.y}];
-  for(const tg of targets)b.books.push({x:b.x,y:b.y,sx:b.x,sy:b.y,tx:tg.tx,ty:tg.ty,phase:'fly',t0:now});
+  owner.books=owner.books||[];
+  const targets=[{tx:x,ty:0},{tx:x,ty:H},{tx:0,ty:y},{tx:W,ty:y}];
+  for(const tg of targets)owner.books.push({x:x,y:y,sx:x,sy:y,tx:tg.tx,ty:tg.ty,phase:'fly',t0:now});
 }
+function summonBooks(b){summonBooksAt(b,b.x,b.y);}
 function stepBooks(b,dt){
   if(!b.books||!b.books.length)return;
   const now=performance.now();
@@ -328,17 +329,21 @@ function sethStep(b,dt){
     fl.push({x:b.x,y:b.y-b.r-18,life:.9,t:'책 투척!',col:'#c9a8ff'});
   }
 }
-function drawSethFlash(){
+function drawSeths(){
   for(const b of balls){
-    if(!b.sethFlash)continue;
-    const t=(performance.now()-b.sethFlash.t0)/b.sethFlash.dur;
-    if(t>=1)continue;
-    ctx.save();ctx.globalAlpha=1-t;
-    if(sethImg&&sethImg.complete){
-      const s=1.3,iw=sethImg.naturalWidth*s,ih=sethImg.naturalHeight*s;
-      ctx.drawImage(sethImg,b.x-iw/2,b.y-b.r-ih-6,iw,ih);
+    if(b.skill!=='flower'||!b.alive||!b.seths||!b.seths.length)continue;
+    for(const s of b.seths){
+      if(s.sx==null)continue;
+      ctx.save();
+      if(sethImg&&sethImg.complete){
+        const sc=1.1,iw=sethImg.naturalWidth*sc,ih=sethImg.naturalHeight*sc;
+        if(s.flip){ctx.translate(s.sx,0);ctx.scale(-1,1);ctx.translate(-s.sx,0);}
+        ctx.drawImage(sethImg,s.sx-iw/2,s.sy-ih/2,iw,ih);
+      }else{
+        ctx.fillStyle='#c9a8ff';ctx.beginPath();ctx.arc(s.sx,s.sy,18,0,6.283);ctx.fill();
+      }
+      ctx.restore();
     }
-    ctx.restore();
   }
 }
 function drawBooks(){
@@ -395,7 +400,7 @@ function updUI(){
     if(b.seq){const nk=b.seq[b.si%b.seq.length],nt='다음: '+(nk==='buff'?(((b.bv||0)+1)%2===1?'Hold position! Check, fire! (공속↑)':'Hold position! Check, fire! (데미지↑)'):SK[nk])+(b.buffLeft>0?' · 데미지×1.5 '+b.buffLeft+'회':'')+(b.asLeft>0?' · 공속↑ '+b.asLeft+'회':'')+(b.shield>0?' · 보호막 '+Math.ceil(b.shield):'');if(e.skt!==nt){e.sk.textContent=nt;e.skt=nt}}
   }
 }
-const selEl=document.getElementById('sel'),ROSTER=[0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18],IMGS={0:faceImg,2:faceImg2,3:faceImg3,4:moingImg,5:cukuImg,6:wonkaImg,7:camImg,8:biaImg,9:fireImg,10:neraImg,11:mintImg,12:daeseokImg,13:barrelImg,14:ppeunImg,15:boseungImg,16:bakeImg,17:flowerImg,18:sethImg};
+const selEl=document.getElementById('sel'),ROSTER=[0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],IMGS={0:faceImg,2:faceImg2,3:faceImg3,4:moingImg,5:cukuImg,6:wonkaImg,7:camImg,8:biaImg,9:fireImg,10:neraImg,11:mintImg,12:daeseokImg,13:barrelImg,14:ppeunImg,15:boseungImg,16:bakeImg,17:flowerImg,18:sethImg};
 let pick=[0,2],msg='';
 function renderSel(){
   document.getElementById('msg').textContent=msg;
@@ -3752,11 +3757,12 @@ function flowerStep(b,dt){
             if(b.aquas.length<1){
               b.aquas.push({ang:Math.random()*6.283,r:150,spd:1.8+Math.random()*.6,throwT:.6+Math.random()*.4});
               fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 아쿠아!',col:'#9fe6ff'});
-            }else if(!b.sethSummoned){
-              b.sethSummoned=true;
-              summonBooks(b);
-              b.sethFlash={t0:performance.now(),dur:900};
-              fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 세스!',col:'#c9a8ff'});
+            }else{
+              (b.seths=b.seths||[]);
+              if(b.seths.length<1){
+                b.seths.push({ang:Math.random()*6.283,r:150,spd:1.5+Math.random()*.4,throwT:1+Math.random()*.5});
+                fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 세스!',col:'#c9a8ff'});
+              }
             }
           }
         }else{const a0=Math.random()*6.283;b.vx=Math.cos(a0)*235;b.vy=Math.sin(a0)*235;b.fcs=null;b.ft=.3;}
@@ -3821,6 +3827,19 @@ function flowerStep(b,dt){
           proj.push({x:a.ax,y:a.ay,vx:Math.cos(ang2)*520,vy:Math.sin(ang2)*520,team:b.team,life:1.3,rot:ang2-.53,dmg:8,knife:true});
         }
         burst(a.ax,a.ay,'#9fe6ff',6,120);
+      }
+    }
+  }
+  if(b.seths&&b.seths.length){
+    for(const s of b.seths){
+      s.ang+=dt*s.spd;
+      s.sx=b.x+Math.cos(s.ang)*s.r;
+      s.sy=b.y+Math.sin(s.ang)*s.r;
+      s.flip=s.sx<W/2;
+      s.throwT=(s.throwT||0)-dt;
+      if(s.throwT<=0){
+        s.throwT=3.2;
+        summonBooksAt(b,s.sx,s.sy);
       }
     }
   }
@@ -4035,7 +4054,7 @@ function draw(){
   if(shk>0){shk=Math.max(0,shk-.016);cv.style.transform='translate('+((Math.random()-.5)*20*shk/.3)+'px,'+((Math.random()-.5)*20*shk/.3)+'px)';}else if(cv.style.transform)cv.style.transform='';
   updUI();
   {const d=Math.min(2,window.devicePixelRatio||1),n=Math.round(Math.max(W,(cv.clientWidth||W)*d));if(cv.width!==n){cv.width=n;cv.height=n;}const k=cv.width/W;ctx.setTransform(k,0,0,k,0,0);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';}
-  ctx.clearRect(0,0,W,H);glowA+=((anyGlow()?1:0)-glowA)*.06;if(glowA>.01)drawGlowMap();roofA+=((anyRooftop()?1:0)-roofA)*.08;if(roofA>.01)drawRooftop();drawBeds();drawAquas();drawBooks();drawSethFlash();
+  ctx.clearRect(0,0,W,H);glowA+=((anyGlow()?1:0)-glowA)*.06;if(glowA>.01)drawGlowMap();roofA+=((anyRooftop()?1:0)-roofA)*.08;if(roofA>.01)drawRooftop();drawBeds();drawAquas();drawBooks();drawSeths();
   for(const gf of gfields){const a=Math.min(1,gf.life/.6)*.4;ctx.save();ctx.globalAlpha=a;ctx.fillStyle='#c9ccd1';ctx.beginPath();ctx.ellipse(gf.x,gf.y,gf.r,gf.r*.62,0,0,6.283);ctx.fill();ctx.globalAlpha=Math.min(1,a*2.2);ctx.strokeStyle='#9aa0a8';ctx.lineWidth=2.5;ctx.stroke();ctx.restore();}
   const drawOrder=balls.some(x=>x.ally===true)?balls.slice().sort((a,b2)=>(a.ally===true?0:1)-(b2.ally===true?0:1)):balls;
   for(const b of drawOrder){
