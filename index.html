@@ -71,11 +71,8 @@ button:active{transform:scale(.96)}
       <h3 style="margin:0">히든 캐릭터</h3>
       <button id="hidClose" class="ghost" style="padding:4px 12px">닫기</button>
     </div>
-    <div style="display:flex;gap:8px;margin-bottom:10px">
-      <button id="hidP1" class="ghost" data-p="0">1P로 선택</button>
-      <button id="hidP2" class="ghost" data-p="1">2P로 선택</button>
-    </div>
-    <div id="hidPanel" class="opts" style="width:100%"></div>
+    <div class="row"><span class="pl p1">1P</span><div class="opts" id="hidPanel0"></div></div>
+    <div class="row"><span class="pl p2">2P</span><div class="opts" id="hidPanel1"></div></div>
   </div>
 </div>
 <div id="ui"></div>
@@ -324,11 +321,13 @@ let hiddenUnlocked={};
 try{const sv=JSON.parse(localStorage.getItem('bf_hidden_unlocked')||'{}');if(sv&&typeof sv==='object')hiddenUnlocked=sv;}catch(e){}
 function saveHiddenUnlocked(){try{localStorage.setItem('bf_hidden_unlocked',JSON.stringify(hiddenUnlocked));}catch(e){}}
 function renderHidden(){
-  const panel=document.getElementById('hidPanel');if(!panel)return;
-  panel.innerHTML=HIDDEN.map(c=>{
-    const u=!!hiddenUnlocked[c];
-    return `<div class="opt hidbox${u?'':' locked'}" data-c="${c}"><div class="th" style="background:${u?COLORS[c]:'#111'}">${u&&IMGS[c]?'<img src="'+IMGS[c].src+'">':''}</div><b>${u?NAMES[c]:'???'}</b></div>`;
-  }).join('');
+  for(const p of[0,1]){
+    const panel=document.getElementById('hidPanel'+p);if(!panel)continue;
+    panel.innerHTML=HIDDEN.map(c=>{
+      const u=!!hiddenUnlocked[c];
+      return `<div class="opt hidbox${u?'':' locked'}${u&&pick[p]===c?' on':''}" data-c="${c}"><div class="th" style="background:${u?COLORS[c]:'#111'}">${u&&IMGS[c]?'<img src="'+IMGS[c].src+'">':''}</div><b>${u?NAMES[c]:'???'}</b></div>`;
+    }).join('');
+  }
 }
 window.unlockHidden=(c)=>{if(hiddenUnlocked[c])return;hiddenUnlocked[c]=true;renderHidden();saveHiddenUnlocked();};
 window.unlockFlower=()=>window.unlockHidden(17);
@@ -386,26 +385,16 @@ function go(){
 }
 document.getElementById('go').onclick=()=>{sfx('click');practice=false;go();};
 document.getElementById('prac').onclick=()=>{sfx('click');practice=true;go();};
-let hidPlayer=0;
-function renderHidPlayerBtns(){
-  document.getElementById('hidP1').style.cssText=hidPlayer===0?'border-color:#ffd84a;box-shadow:0 0 0 2px #ffd84a inset':'';
-  document.getElementById('hidP2').style.cssText=hidPlayer===1?'border-color:#ffd84a;box-shadow:0 0 0 2px #ffd84a inset':'';
-  const n1=HIDDEN.includes(pick[0])?NAMES[pick[0]]:null,n2=HIDDEN.includes(pick[1])?NAMES[pick[1]]:null;
-  document.getElementById('hidP1').textContent='1P로 선택'+(n1?' ('+n1+' 선택됨)':'');
-  document.getElementById('hidP2').textContent='2P로 선택'+(n2?' ('+n2+' 선택됨)':'');
-}
-function openHidModal(){document.getElementById('hidModal').style.display='flex';renderHidPlayerBtns();}
+function openHidModal(){document.getElementById('hidModal').style.display='flex';renderHidden();}
 function closeHidModal(){document.getElementById('hidModal').style.display='none';}
 document.getElementById('hidBtn').onclick=()=>{sfx('click');openHidModal();};
 document.getElementById('hidClose').onclick=()=>{sfx('click');closeHidModal();};
 document.getElementById('hidModal').addEventListener('click',e=>{if(e.target.id==='hidModal')closeHidModal();});
-document.getElementById('hidP1').onclick=()=>{sfx('click');hidPlayer=0;renderHidPlayerBtns();};
-document.getElementById('hidP2').onclick=()=>{sfx('click');hidPlayer=1;renderHidPlayerBtns();};
-document.getElementById('hidPanel').addEventListener('click',e=>{
+document.getElementById('hidModal').addEventListener('click',e=>{
   const o=e.target.closest('.opt');if(!o)return;
-  const c=+o.dataset.c;
+  const p=+o.parentNode.id.slice(-1),c=+o.dataset.c;
   if(!hiddenUnlocked[c]){sfx('click');msg='??? (미해금 캐릭터입니다)';document.getElementById('msg').textContent=msg;return;}
-  sfx('click');pick[hidPlayer]=c;closeHidModal();renderSel();
+  sfx('click');pick[p]=c;renderHidden();renderSel();
 });
 document.getElementById('home').onclick=()=>{sfx('click');showSelect();};
 document.getElementById('retry').onclick=()=>{sfx('click');stopSlice();reset();started=true;};
