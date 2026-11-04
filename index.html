@@ -924,6 +924,7 @@ function drawAquas(){
       ctx.save();
       if(fr&&fr.complete){
         const s=1.1,iw=fr.naturalWidth*s,ih=fr.naturalHeight*s;
+        if(a.flip){ctx.translate(a.ax,0);ctx.scale(-1,1);ctx.translate(-a.ax,0);}
         ctx.drawImage(fr,a.ax-iw/2,a.ay-ih/2,iw,ih);
       }else{
         ctx.fillStyle='#5fc8ff';ctx.beginPath();ctx.arc(a.ax,a.ay,18,0,6.283);ctx.fill();
@@ -3714,6 +3715,7 @@ function flowerStep(b,dt){
       a.ang+=dt*a.spd;
       a.ax=b.x+Math.cos(a.ang)*a.r;
       a.ay=b.y+Math.sin(a.ang)*a.r;
+      a.flip=a.ax<W/2;
       a.throwT=(a.throwT||0)-dt;
       if(a.throwT<=0){
         a.throwT=1.8;
