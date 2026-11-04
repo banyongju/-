@@ -283,49 +283,67 @@ const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이
 const FLOWER_CD=2.28;
 const SETH_CD=4.5;
 const SETH_WORDS=['단어!','활자!','문장력!','지식!','독해!'];
+function summonBooks(b){
+  const now=performance.now();
+  b.books=b.books||[];
+  const targets=[{tx:b.x,ty:0},{tx:b.x,ty:H},{tx:0,ty:b.y},{tx:W,ty:b.y}];
+  for(const tg of targets)b.books.push({x:b.x,y:b.y,sx:b.x,sy:b.y,tx:tg.tx,ty:tg.ty,phase:'fly',t0:now});
+}
+function stepBooks(b,dt){
+  if(!b.books||!b.books.length)return;
+  const now=performance.now();
+  for(const bk of b.books){
+    if(bk.phase==='fly'){
+      const t=Math.min(1,(now-bk.t0)/280);
+      bk.x=bk.sx+(bk.tx-bk.sx)*t;bk.y=bk.sy+(bk.ty-bk.sy)*t;
+      if(t>=1){bk.phase='open';bk.t1=now;burst(bk.x,bk.y,'#c9a8ff',10,160);}
+    }else if(bk.phase==='open'){
+      const t=(now-bk.t1)/1000;
+      if(t>=.3){
+        bk.phase='shoot';
+        const T=nearest(b);
+        const baseA=T?Math.atan2(T.y-bk.y,T.x-bk.x):Math.random()*6.283;
+        for(const off of[-.3,0,.3]){
+          const ang=baseA+off;
+          proj.push({x:bk.x,y:bk.y,vx:Math.cos(ang)*300,vy:Math.sin(ang)*300,team:b.team,life:1.4,rot:0,dmg:9,word:true,txt:SETH_WORDS[Math.floor(Math.random()*SETH_WORDS.length)]});
+        }
+        burst(bk.x,bk.y,'#e8d9ff',14,200);
+        bk.phase='gone';bk.t2=now;
+      }
+    }else if(bk.phase==='gone'){
+      if(now-bk.t2>300)bk.dead=true;
+    }
+  }
+  b.books=b.books.filter(bk=>!bk.dead);
+}
 function sethStep(b,dt){
   if(!b.alive)return;
-  if(b.books&&b.books.length){
-    const now=performance.now();
-    for(const bk of b.books){
-      if(bk.phase==='fly'){
-        const t=Math.min(1,(now-bk.t0)/280);
-        bk.x=bk.sx+(bk.tx-bk.sx)*t;bk.y=bk.sy+(bk.ty-bk.sy)*t;
-        if(t>=1){bk.phase='open';bk.t1=now;burst(bk.x,bk.y,'#c9a8ff',10,160);}
-      }else if(bk.phase==='open'){
-        const t=(now-bk.t1)/1000;
-        if(t>=.3){
-          bk.phase='shoot';
-          const T=nearest(b);
-          const baseA=T?Math.atan2(T.y-bk.y,T.x-bk.x):Math.random()*6.283;
-          for(const off of[-.3,0,.3]){
-            const ang=baseA+off;
-            proj.push({x:bk.x,y:bk.y,vx:Math.cos(ang)*300,vy:Math.sin(ang)*300,team:b.team,life:1.4,rot:0,dmg:9,word:true,txt:SETH_WORDS[Math.floor(Math.random()*SETH_WORDS.length)]});
-          }
-          burst(bk.x,bk.y,'#e8d9ff',14,200);
-          bk.phase='gone';bk.t2=now;
-        }
-      }else if(bk.phase==='gone'){
-        if(now-bk.t2>300)bk.dead=true;
-      }
-    }
-    b.books=b.books.filter(bk=>!bk.dead);
-  }
+  stepBooks(b,dt);
   if(b.stun>0)return;
   b.st=(b.st||0)-dt;
   b.g=Math.max(0,Math.min(1,1-Math.max(0,b.st)/SETH_CD));
   if(b.st<=0){
     b.st=SETH_CD;b.g=0;
-    const now=performance.now();
-    b.books=b.books||[];
-    const targets=[{tx:b.x,ty:0},{tx:b.x,ty:H},{tx:0,ty:b.y},{tx:W,ty:b.y}];
-    for(const tg of targets)b.books.push({x:b.x,y:b.y,sx:b.x,sy:b.y,tx:tg.tx,ty:tg.ty,phase:'fly',t0:now});
+    summonBooks(b);
     fl.push({x:b.x,y:b.y-b.r-18,life:.9,t:'책 투척!',col:'#c9a8ff'});
+  }
+}
+function drawSethFlash(){
+  for(const b of balls){
+    if(!b.sethFlash)continue;
+    const t=(performance.now()-b.sethFlash.t0)/b.sethFlash.dur;
+    if(t>=1)continue;
+    ctx.save();ctx.globalAlpha=1-t;
+    if(sethImg&&sethImg.complete){
+      const s=1.3,iw=sethImg.naturalWidth*s,ih=sethImg.naturalHeight*s;
+      ctx.drawImage(sethImg,b.x-iw/2,b.y-b.r-ih-6,iw,ih);
+    }
+    ctx.restore();
   }
 }
 function drawBooks(){
   for(const b of balls){
-    if(b.skill!=='seth'||!b.books||!b.books.length)continue;
+    if(!b.books||!b.books.length)continue;
     for(const bk of b.books){
       ctx.save();ctx.translate(bk.x,bk.y);
       if(bk.phase==='fly'){
@@ -3732,8 +3750,13 @@ function flowerStep(b,dt){
           if(ult){
             (b.aquas=b.aquas||[]);
             if(b.aquas.length<1){
-              b.aquas.push({ang:Math.random()*6.283,r:200,spd:1.8+Math.random()*.6,throwT:.6+Math.random()*.4});
-              fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'아쿠아!',col:'#9fe6ff'});
+              b.aquas.push({ang:Math.random()*6.283,r:175,spd:1.8+Math.random()*.6,throwT:.6+Math.random()*.4});
+              fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 아쿠아!',col:'#9fe6ff'});
+            }else if(!b.sethSummoned){
+              b.sethSummoned=true;
+              summonBooks(b);
+              b.sethFlash={t0:performance.now(),dur:900};
+              fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 세스!',col:'#c9a8ff'});
             }
           }
         }else{const a0=Math.random()*6.283;b.vx=Math.cos(a0)*235;b.vy=Math.sin(a0)*235;b.fcs=null;b.ft=.3;}
@@ -3801,6 +3824,7 @@ function flowerStep(b,dt){
       }
     }
   }
+  stepBooks(b,dt);
 }
 function drawBakeFx(){
   const now=performance.now();
@@ -4011,7 +4035,7 @@ function draw(){
   if(shk>0){shk=Math.max(0,shk-.016);cv.style.transform='translate('+((Math.random()-.5)*20*shk/.3)+'px,'+((Math.random()-.5)*20*shk/.3)+'px)';}else if(cv.style.transform)cv.style.transform='';
   updUI();
   {const d=Math.min(2,window.devicePixelRatio||1),n=Math.round(Math.max(W,(cv.clientWidth||W)*d));if(cv.width!==n){cv.width=n;cv.height=n;}const k=cv.width/W;ctx.setTransform(k,0,0,k,0,0);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';}
-  ctx.clearRect(0,0,W,H);glowA+=((anyGlow()?1:0)-glowA)*.06;if(glowA>.01)drawGlowMap();roofA+=((anyRooftop()?1:0)-roofA)*.08;if(roofA>.01)drawRooftop();drawBeds();drawAquas();drawBooks();
+  ctx.clearRect(0,0,W,H);glowA+=((anyGlow()?1:0)-glowA)*.06;if(glowA>.01)drawGlowMap();roofA+=((anyRooftop()?1:0)-roofA)*.08;if(roofA>.01)drawRooftop();drawBeds();drawAquas();drawBooks();drawSethFlash();
   for(const gf of gfields){const a=Math.min(1,gf.life/.6)*.4;ctx.save();ctx.globalAlpha=a;ctx.fillStyle='#c9ccd1';ctx.beginPath();ctx.ellipse(gf.x,gf.y,gf.r,gf.r*.62,0,0,6.283);ctx.fill();ctx.globalAlpha=Math.min(1,a*2.2);ctx.strokeStyle='#9aa0a8';ctx.lineWidth=2.5;ctx.stroke();ctx.restore();}
   const drawOrder=balls.some(x=>x.ally===true)?balls.slice().sort((a,b2)=>(a.ally===true?0:1)-(b2.ally===true?0:1)):balls;
   for(const b of drawOrder){
