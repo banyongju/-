@@ -3752,6 +3752,11 @@ function flowerStep(b,dt){
             if(b.aquas.length<1){
               b.aquas.push({ang:Math.random()*6.283,r:150,spd:1.8+Math.random()*.6,throwT:.6+Math.random()*.4});
               fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 아쿠아!',col:'#9fe6ff'});
+            }else if(!b.sethSummoned){
+              b.sethSummoned=true;
+              summonBooks(b);
+              b.sethFlash={t0:performance.now(),dur:900};
+              fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 세스!',col:'#c9a8ff'});
             }
           }
         }else{const a0=Math.random()*6.283;b.vx=Math.cos(a0)*235;b.vy=Math.sin(a0)*235;b.fcs=null;b.ft=.3;}
@@ -3819,6 +3824,7 @@ function flowerStep(b,dt){
       }
     }
   }
+  stepBooks(b,dt);
 }
 function drawBakeFx(){
   const now=performance.now();
