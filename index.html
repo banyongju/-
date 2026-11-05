@@ -4258,12 +4258,7 @@ function flowerStep(b,dt){
   stepBooks(b,dt);
 }
 function collectBlueFlowerTargets(b){
-  const out=[];
-  for(const f of (b.blueFlowers||[])){
-    if(!f.alive||!f.split)continue;
-    for(const fr of f.frags){if(fr.alive&&fr.settled)out.push({x:fr.x,y:fr.y,ref:f,frag:fr});}
-  }
-  return out;
+  return []; // flown-out flower fragments are no longer valid interception targets
 }
 function buildFlowerChain(sx,sy,flowers){
   const pool=flowers.slice(),chain=[];
@@ -4291,9 +4286,9 @@ function stepBlueFlowers(b,dt){
       f.split=true;f.frags=[];
       for(let k=0;k<8;k++){
         const a=k/8*6.283;
-        const fx1=Math.max(20,Math.min(W-20,f.x+Math.cos(a)*95));
-        const fy1=Math.max(20,Math.min(H-20,f.y+Math.sin(a)*95));
-        f.frags.push({x:f.x,y:f.y,x0:f.x,y0:f.y,x1:fx1,y1:fy1,ft0:now,fdur:420,alive:true,settled:false});
+        const fx1=Math.max(20,Math.min(W-20,f.x+Math.cos(a)*150));
+        const fy1=Math.max(20,Math.min(H-20,f.y+Math.sin(a)*150));
+        f.frags.push({x:f.x,y:f.y,x0:f.x,y0:f.y,x1:fx1,y1:fy1,ft0:now,fdur:480,alive:true,settled:false});
       }
       burst(f.x,f.y,'#9a8ef0',20,260);
     }
