@@ -305,7 +305,7 @@ function stepBooks(b,dt){
         bk.phase='shoot';
         const vert=bk.side==='top'||bk.side==='bottom';
         const baseA=bk.side==='top'?1.5708:bk.side==='bottom'?-1.5708:bk.side==='left'?0:3.1416;
-        proj.push({x:bk.x,y:bk.y,vx:Math.cos(baseA)*300,vy:Math.sin(baseA)*300,team:b.team,life:1.4,rot:0,dmg:9,word:true,vertical:vert,txt:SETH_WORDS[Math.floor(Math.random()*SETH_WORDS.length)]});
+        proj.push({x:bk.x,y:bk.y,vx:Math.cos(baseA)*300,vy:Math.sin(baseA)*300,team:b.team,life:4,rot:0,dmg:9,word:true,vertical:vert,txt:SETH_WORDS[Math.floor(Math.random()*SETH_WORDS.length)]});
         burst(bk.x,bk.y,'#e8d9ff',14,200);
         bk.phase='gone';bk.t2=now;
       }
