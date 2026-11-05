@@ -3760,13 +3760,13 @@ function flowerStep(b,dt){
           if(ult){
             (b.aquas=b.aquas||[]);
             if(b.aquas.length<1){
-              b.aquas.push({ang:Math.random()*6.283,r:150,spd:1.8+Math.random()*.6,throwT:.6+Math.random()*.4});
+              b.aquas.push({ang:Math.random()*6.283,r:150,spd:1.6,throwT:.6+Math.random()*.4});
               fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 아쿠아!',col:'#9fe6ff'});
             }else{
               (b.seths=b.seths||[]);
               if(b.seths.length<1){
                 const aAng=(b.aquas[0]&&b.aquas[0].ang)||0;
-                b.seths.push({ang:aAng+3.14159,r:210,spd:1.3,throwT:1+Math.random()*.5});
+                b.seths.push({ang:aAng+3.14159,r:210,spd:1.6,throwT:1+Math.random()*.5});
                 fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 세스!',col:'#c9a8ff'});
               }
             }
