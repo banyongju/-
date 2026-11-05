@@ -3923,25 +3923,25 @@ function flowerStep(b,dt){
               (b.seths=b.seths||[]);
               if(b.seths.length<1){
                 const aAng=(b.aquas[0]&&b.aquas[0].ang)||0;
-                b.seths.push({ang:aAng+3.14159,r:210,spd:1.6,throwT:1+Math.random()*.5});
+                b.seths.push({ang:aAng+1.25664,r:210,spd:1.6,throwT:1+Math.random()*.5});
                 fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 세스!',col:'#c9a8ff'});
               }else{
                 (b.yellows=b.yellows||[]);
                 if(b.yellows.length<1){
                   const sAng=(b.seths[0]&&b.seths[0].ang)||0;
-                  b.yellows.push({ang:sAng+2.0944,r:270,spd:1.6,phase:'idle',cd:1+Math.random()*.5});
+                  b.yellows.push({ang:sAng+1.25664,r:270,spd:1.6,phase:'idle',cd:1+Math.random()*.5});
                   fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 옐로우!',col:'#ffd93b'});
                 }else{
   (b.greens=b.greens||[]);
                   if(b.greens.length<1){
                     const yAng=(b.yellows[0]&&b.yellows[0].ang)||0;
-                    b.greens.push({ang:yAng+2.0944,r:330,spd:1.6,phase:'idle',atkT:1+Math.random()*.5});
+                    b.greens.push({ang:yAng+1.25664,r:330,spd:1.6,phase:'idle',atkT:1+Math.random()*.5});
                     fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 그린!',col:'#7ee787'});
                   }else{
                     (b.blues=b.blues||[]);
                     if(b.blues.length<1){
                       const gAng=(b.greens[0]&&b.greens[0].ang)||0;
-                      b.blues.push({ang:gAng+2.0944,r:390,spd:1.6,spawnT:1.5+Math.random()*.5});
+                      b.blues.push({ang:gAng+1.25664,r:390,spd:1.6,spawnT:1.5+Math.random()*.5});
                       fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 블루!',col:'#6aa8ff'});
                     }
                   }
