@@ -4258,7 +4258,12 @@ function flowerStep(b,dt){
   stepBooks(b,dt);
 }
 function collectBlueFlowerTargets(b){
-  return []; // flown-out flower fragments are no longer valid interception targets
+  const out=[];
+  for(const f of (b.blueFlowers||[])){
+    if(!f.alive||f.split)continue; // only the original big flower, before it splits -- never the flown-out small fragments
+    out.push({x:f.x,y:f.y,ref:f,frag:null});
+  }
+  return out;
 }
 function buildFlowerChain(sx,sy,flowers){
   const pool=flowers.slice(),chain=[];
