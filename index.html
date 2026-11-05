@@ -3966,7 +3966,6 @@ function flowerStep(b,dt){
         const T=(cs.T&&cs.T.alive)?cs.T:nearest(b);
         if(T){
           const dx=T.x-b.x,dy=T.y-b.y,dd=Math.hypot(dx,dy)||1,ux=dx/dd,uy=dy/dd;
-          playFlowerJarona();
           cs.orangeFly=!!(b.oranges&&b.oranges.length&&Math.random()<0.5);
           if(cs.orangeFly){
             playOrangeFly();
@@ -3978,6 +3977,7 @@ function flowerStep(b,dt){
             or.fex=Math.max(18,Math.min(W-18,T.x+tux*(T.r+26)));
             or.fey=Math.max(18,Math.min(H-18,T.y+tuy*(T.r+26)));
           }else{
+            playFlowerJarona();
             cs.phase='dash';cs.t1=now;cs.sx=b.x;cs.sy=b.y;
             cs.ex=Math.max(b.r,Math.min(W-b.r,T.x+ux*(T.r+b.r+60)));
             cs.ey=Math.max(b.r,Math.min(H-b.r,T.y+uy*(T.r+b.r+60)));
@@ -4086,9 +4086,9 @@ function flowerStep(b,dt){
           burst(or.ox,or.oy,'#ff8a3a',14,220);shk=Math.max(shk,.12);
         }
       }else if(or.stage==='atk'){
-        if(now-or.atkT0>=120){or.stage='back';or.backT0=now;or.bsx=or.ox;or.bsy=or.oy;}
+        if(now-or.atkT0>=60){or.stage='back';or.backT0=now;or.bsx=or.ox;or.bsy=or.oy;}
       }else if(or.stage==='back'){
-        const u=Math.min(1,(now-or.backT0)/220);
+        const u=Math.min(1,(now-or.backT0)/130);
         const tx=b.x+Math.cos(or.ang)*or.r,ty=b.y+Math.sin(or.ang)*or.r;
         or.ox=or.bsx+(tx-or.bsx)*u;
         or.oy=or.bsy+(ty-or.bsy)*u;
@@ -4291,19 +4291,20 @@ function stepBlueFlowers(b,dt){
       f.split=true;f.frags=[];
       for(let k=0;k<8;k++){
         const a=k/8*6.283;
-        const fx1=Math.max(20,Math.min(W-20,f.x+Math.cos(a)*60));
-        const fy1=Math.max(20,Math.min(H-20,f.y+Math.sin(a)*60));
-        f.frags.push({x:f.x,y:f.y,x0:f.x,y0:f.y,x1:fx1,y1:fy1,ft0:now,fdur:320,alive:true,settled:false});
+        const fx1=Math.max(20,Math.min(W-20,f.x+Math.cos(a)*95));
+        const fy1=Math.max(20,Math.min(H-20,f.y+Math.sin(a)*95));
+        f.frags.push({x:f.x,y:f.y,x0:f.x,y0:f.y,x1:fx1,y1:fy1,ft0:now,fdur:420,alive:true,settled:false});
       }
-      burst(f.x,f.y,'#9a8ef0',10,160);
+      burst(f.x,f.y,'#9a8ef0',20,260);
     }
     if(f.split){
       for(const fr of f.frags){
         if(!fr.alive||fr.settled)continue;
         const u=Math.min(1,(now-fr.ft0)/fr.fdur);
-        fr.x=fr.x0+(fr.x1-fr.x0)*u;
-        fr.y=fr.y0+(fr.y1-fr.y0)*u;
-        if(u>=1)fr.settled=true;
+        const eu=1-Math.pow(1-u,3);
+        fr.x=fr.x0+(fr.x1-fr.x0)*eu;
+        fr.y=fr.y0+(fr.y1-fr.y0)*eu;
+        if(u>=1){fr.x=fr.x1;fr.y=fr.y1;fr.settled=true;}
       }
       if(!f.frags.some(fr=>fr.alive)||age>20)f.alive=false;
     }else if(age>20)f.alive=false;
