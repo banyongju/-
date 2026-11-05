@@ -286,7 +286,9 @@ const SETH_WORDS=['나타마토아완전화려해졌어한때는칙칙했지만'
 function summonBooksAt(owner,x,y){
   const now=performance.now();
   owner.books=owner.books||[];
-  const targets=[{tx:x,ty:0,side:'top'},{tx:x,ty:H,side:'bottom'},{tx:0,ty:y,side:'left'},{tx:W,ty:y,side:'right'}];
+  const T=nearest(owner);
+  const ex=T?T.x:x,ey=T?T.y:y;
+  const targets=[{tx:ex,ty:0,side:'top'},{tx:ex,ty:H,side:'bottom'},{tx:0,ty:ey,side:'left'},{tx:W,ty:ey,side:'right'}];
   const tg=targets[Math.floor(Math.random()*targets.length)];
   owner.books.push({x:x,y:y,sx:x,sy:y,tx:tg.tx,ty:tg.ty,side:tg.side,phase:'fly',t0:now});
 }
