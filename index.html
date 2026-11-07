@@ -959,6 +959,7 @@ function hurt(b,d){
   if(b.skill==='mint'&&b.mintAct&&(b.mintAct.phase==='leap'||b.mintAct.phase==='mount')){if(!b.ivc||performance.now()-b.ivc>400){b.ivc=performance.now();fl.push({x:b.x,y:b.y-b.r,life:.6,t:'무적',col:'#9fe3ff'});}return;}
   if(isD(b))d*=.5;
   if(b.glow)d*=.75;
+  if(b.bakeTransformed)d*=.5;
   if(b.boseungAwaken)d*=2/3;
   if(b.shield>0){const cost=d*2;if(b.shield>=cost){b.shield-=cost;fl.push({x:b.x,y:b.y-b.r,life:.6,t:'-'+Math.ceil(cost),col:'#7be8ff'});b.flash=.1;return;}d-=b.shield/2;fl.push({x:b.x,y:b.y-b.r,life:.6,t:'-'+Math.ceil(b.shield),col:'#7be8ff'});b.shield=0;b.flash=.1;}
   b.hp-=d;b.flash=.15;
@@ -4169,7 +4170,7 @@ function bakeUlt2Step(b,dt,now){
     b.bakeUlt2=null;
     b.bakeTransformed=true;
     b.dmgMul=(b.dmgMul||1)*BAKE_TRANSFORM_ATK_MUL;
-    b.hp=Math.max(b.hp,b.maxHp||b.hp);
+    b.hp=Math.min(b.maxHp||b.hp,b.hp+50);
     if(bakeFinalImg.complete)b.img=bakeFinalImg;
     const relA=Math.random()*6.283;b.vx=Math.cos(relA)*230;b.vy=Math.sin(relA)*230;
     fl.push({x:b.x,y:b.y-b.r-52,o:b,life:1.4,t:'완전 변신!',col:'#ff4fd8',hiCap:true});
