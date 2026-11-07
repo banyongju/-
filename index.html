@@ -34,11 +34,6 @@ p.sub{margin:0 0 12px;font-size:13px;opacity:.7}
 .ul{font-size:10px;opacity:.7;margin-top:4px}
 #sel{width:100%;max-width:600px;text-align:center;max-height:100vh;overflow-y:auto}
 #raidSel{width:100%;max-width:600px;text-align:center;max-height:100vh;overflow-y:auto;box-sizing:border-box}
-#raidSel .opts{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;justify-content:flex-start;padding-bottom:2px}
-#raidSel .opt{flex:0 0 58px}
-#raidSel .th{width:40px;height:40px}
-#raidSel .opt b{font-size:10px;white-space:nowrap}
-#raidSel .row{margin:6px 0;padding:6px}
 #raidBossBox .opt{flex:0 0 auto;min-width:120px}
 #sel h2{margin:0 0 4px;font-size:20px}
 #msg{min-height:20px;font-size:15px;font-weight:700;margin-bottom:6px;color:#e4a400}
@@ -92,7 +87,7 @@ button:active{transform:scale(.96)}
 const cv=document.getElementById('c'),ctx=cv.getContext('2d'),W=600,H=600;
 const COLORS=['#9b5de5','#2e86e4','#5b6b8c','#6fae2f','#b79cff','#e45fa3','#7a3f1a','#c0334d','#2e9e8f','#ff6a1a','#8a1f2b','#3fe0b0','#8a95a6','#4a4f57','#ff9fc2','#232428','#d94f2b','#ff8fd6','#c9a8ff','#4b3b2a'];
 const NAMES=['타마토아','더미','1010','DK웨스트','모잉','쿠쿠양','윌리웡카','연민하','비앙카','예저리콜더싸한','네라뷸','초민트','박대석','더블배럴가이','이쁜이','보승슬레이어','베이크','플라워리','세스','송규호'];
-const SKILLS=['shiny','heal','seq','dk','moing','cuku','wonka','cam','bia','fire','nera','mint','daeseok','barrel','ppeun','boseung','bake','flower','seth',null];
+const SKILLS=['shiny','heal','seq','dk','moing','cuku','wonka','cam','bia','fire','nera','mint','daeseok','barrel','ppeun','boseung','bake','flower','seth','song'];
 const WN=['검','창','단검'];
 const CFG=[{len:48,dmg:5,spin:3.2,cap:110},{len:72,dmg:5,spin:2.4,cap:130},{len:30,dmg:5,spin:5.6,cap:80}];
 let shk=0;
@@ -297,10 +292,10 @@ function flowerDashPoseForCombo(combo){
 function mk(i){
   const a=Math.random()*6.283,t=Math.floor(Math.random()*3),c=CFG[t];
   return{id:i,x:90+Math.random()*420,y:90+Math.random()*420,vx:Math.cos(a)*230,vy:Math.sin(a)*230,
-    r:i===19?46:i===0?32:i===2?36:i===3?38:26,hp:i===19?1000:i===10?200:i===14?75:300,maxHp:i===19?1000:i===10?200:i===14?75:300,c:COLORS[i],t,len:c.len,dmg:c.dmg,cap:c.cap,spin:c.spin*(Math.random()<.5?-1:1),
+    r:i===19?46:i===0?32:i===2?36:i===3?38:26,hp:i===19?6000:i===10?200:i===14?75:300,maxHp:i===19?6000:i===10?200:i===14?75:300,c:COLORS[i],t,len:c.len,dmg:c.dmg,cap:c.cap,spin:c.spin*(Math.random()<.5?-1:1),
     ang:Math.random()*6.283,flash:0,alive:true,name:NAMES[i],skill:SKILLS[i],g:0,boost:0,img:i===0?faceImg:i===2?faceImg2:i===3?faceImg3:i===4?moingImg:i===5?cukuImg:i===6?wonkaImg:i===7?camImg:i===8?biaImg:i===9?fireImg:i===10?neraImg:i===11?mintImg:i===12?daeseokImg:i===13?barrelImg:i===14?ppeunImg:i===15?boseungImg:i===16?bakeImg:i===17?flowerImg:i===18?sethImg:i===19?songImg:null,shadowImg:i===3?bullImg:null,treasure:i===0,freeform:i===17,animFrames:i===17?flowerFrames:null,show:null,seq:i===2?['lor','jam','sky','buff','shield']:null,si:0,ult:i===0?15:i===4?3:i===5?5:i===3?4:i===6?9:i===7?3:i===2?10:i===8?5:i===9?5:i===10?8:i===11?8:i===12?15:i===13?BARREL_ULT_USES:i===15?BOSEUNG_ULT_USES:i===17?3:10,dmgMul:i===9?.5:i===14?.5:i===19?1.8:1};
 }
-const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이',dash:'돌진',heal:'회복',shiny:'빛나',lor:'Load and Shoot',jam:'Fire! J-a-a-am!',sky:'To the sky!',buff:'Hold position!',shield:'Ready, routine Echo:',moing:'허기진 성욕',wonka:'초콜릿 무기',dk:'강화 손바닥 (적 벽 연속 넉백)',cuku:'패시브 벽 중첩 / 잔상 돌진',seq:'스킬 2종',fire:'화염방사기 입김+화상 / 불덩이 8방 / 필살기',nera:'대검 패시브 / 회전베기+강습 / 윤회',mint:'도끼 패시브 / 올라타기(확률) / 필살기: 야수화',daeseok:'전따봉 찌르기/휘두르기/돌리기 / 필살기: 전원 공중 내리꽂기',barrel:'평화의 수호자',ppeun:'고기: 공격력 / 야채: 체력재생 / 버섯: 이동속도 / 생선: 주변 광역피해 / 두부: 최대체력 / 이쁜이(희귀): 전체 효과 5배↑',boseung:'카타나 평타(3초 미공격시 납도, 이후 첫 타는 발도 베기) / 스킬: 순간이동 베기 + 참격 연쇄 폭발 / 필살기: 각성(공격력↑ 쿨감↓) → 재사용시 글리치 베기',bake:'베이크 매그넘 평타: 열선 레이져+쿠키 난사(즉발/차징 랜덤) / 패시브: 미공격 시간↑→베이크 스택↑(무기 빨개짐, 스택 높을수록 스킬 데미지 강화, 평타는 영향 없음) / 스킬: 랜덤 주기로 입구 2회 여닫기 후 50% 즉시 풀 블래스트(관통 화상 레이져), 50% 1회 더 여닫고 풀 익스플로전(대폭발) / 필살기 없음',flower:'자로나!',seth:'사방에 책 투척 → 펼쳐지며 단어 난사'};
+const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이',dash:'돌진',heal:'회복',shiny:'빛나',lor:'Load and Shoot',jam:'Fire! J-a-a-am!',sky:'To the sky!',buff:'Hold position!',shield:'Ready, routine Echo:',moing:'허기진 성욕',wonka:'초콜릿 무기',dk:'강화 손바닥 (적 벽 연속 넉백)',cuku:'패시브 벽 중첩 / 잔상 돌진',seq:'스킬 2종',fire:'화염방사기 입김+화상 / 불덩이 8방 / 필살기',nera:'대검 패시브 / 회전베기+강습 / 윤회',mint:'도끼 패시브 / 올라타기(확률) / 필살기: 야수화',daeseok:'전따봉 찌르기/휘두르기/돌리기 / 필살기: 전원 공중 내리꽂기',barrel:'평화의 수호자',ppeun:'고기: 공격력 / 야채: 체력재생 / 버섯: 이동속도 / 생선: 주변 광역피해 / 두부: 최대체력 / 이쁜이(희귀): 전체 효과 5배↑',boseung:'카타나 평타(3초 미공격시 납도, 이후 첫 타는 발도 베기) / 스킬: 순간이동 베기 + 참격 연쇄 폭발 / 필살기: 각성(공격력↑ 쿨감↓) → 재사용시 글리치 베기',bake:'베이크 매그넘 평타: 열선 레이져+쿠키 난사(즉발/차징 랜덤) / 패시브: 미공격 시간↑→베이크 스택↑(무기 빨개짐, 스택 높을수록 스킬 데미지 강화, 평타는 영향 없음) / 스킬: 랜덤 주기로 입구 2회 여닫기 후 50% 즉시 풀 블래스트(관통 화상 레이져), 50% 1회 더 여닫고 풀 익스플로전(대폭발) / 필살기 없음',flower:'자로나!',seth:'사방에 책 투척 → 펼쳐지며 단어 난사',song:'쓰레받이(원형 휩쓸기/내려찍기)·빗자루(찌르기/휑베기) 중 2패턴 랜덤 연계'};
 const FLOWER_CD=1.5;
 const SETH_CD=4.5;
 const SETH_WORDS=['나타마토아완전화려해졌어한때는칙칙했지만','오때론난망가져갈지모르지','우리아버지성도지방도태돼셨어','크큭선이보인다'];
@@ -348,6 +343,136 @@ function sethStep(b,dt){
     b.st=SETH_CD;b.g=0;
     summonBooks(b);
     fl.push({x:b.x,y:b.y-b.r-18,life:.9,t:'책 투척!',col:'#c9a8ff'});
+  }
+}
+const SONG_PATTERNS={
+  sweep:{wind:.35,hit:.55,rest:.25,dmg:7,tick:.15,label:'원형 휩쓸기'},
+  slam:{wind:.5,hit:.12,rest:.35,dmg:30,label:'내려찍기'},
+  thrust:{wind:.3,hit:.15,rest:.25,dmg:16,label:'찌르기'},
+  swing:{wind:.3,hit:.18,rest:.25,dmg:13,label:'휑베기'}
+};
+function songStartPattern(b,now){
+  const A=b.songAtk,key=A.queue[A.idx],P=SONG_PATTERNS[key];
+  A.phase='wind';A.t0=now;A.hit=false;A.hitTick=0;
+  A.target=(A.target&&A.target.alive)?A.target:nearest(b);
+  fl.push({x:b.x,y:b.y-b.r-20,o:b,life:.9,t:P.label,col:'#ff5a4a'});
+}
+function songStep(b,dt){
+  if(!b.alive)return;
+  const now=performance.now();
+  if(b.songAtk){songAtkStep(b,dt,now);return;}
+  b.songCd=(b.songCd===undefined?2.2:b.songCd)-dt;
+  if(b.songCd<=0){
+    const keys=['sweep','slam','thrust','swing'];
+    const a=keys[Math.floor(Math.random()*4)];
+    let c=keys[Math.floor(Math.random()*4)];
+    while(c===a)c=keys[Math.floor(Math.random()*4)];
+    b.songAtk={queue:[a,c],idx:0,target:nearest(b)};
+    songStartPattern(b,now);
+  }
+}
+function songAtkStep(b,dt,now){
+  const A=b.songAtk,key=A.queue[A.idx],P=SONG_PATTERNS[key];
+  const el=(now-A.t0)/1000;
+  if(A.phase==='wind'){
+    if(el>=P.wind){
+      A.phase='hit';A.t0=now;A.hit=false;A.hitTick=0;
+      if(key==='thrust'||key==='swing'){
+        const T=(A.target&&A.target.alive)?A.target:nearest(b);
+        A.aimAng=T?Math.atan2(T.y-b.y,T.x-b.x):(b.ang||0);
+      }
+    }
+    return;
+  }
+  if(A.phase==='hit'){
+    const hel=(now-A.t0)/1000;
+    if(key==='sweep'){
+      if(now>=(A.hitTick||0)){
+        A.hitTick=now+P.tick*1000;
+        for(const o of balls){if(o.alive&&o.team!==b.team&&!air(o)){
+          const d=Math.hypot(o.x-b.x,o.y-b.y);
+          if(d<b.r+74+o.r){hurt(o,P.dmg);burst(o.x,o.y,'#c0334d',10,160);}
+        }}
+      }
+    }else if(key==='slam'){
+      if(!A.hit){A.hit=true;
+        for(const o of balls){if(o.alive&&o.team!==b.team&&!air(o)){
+          const d=Math.hypot(o.x-b.x,o.y-b.y);
+          if(d<b.r+95+o.r){hurt(o,P.dmg);burst(o.x,o.y,'#ffd23a',20,260);}
+        }}
+        shk=Math.max(shk,.35);
+      }
+    }else if(key==='thrust'){
+      if(!A.hit){A.hit=true;
+        const ang=A.aimAng||0,ex=b.x+Math.cos(ang)*(b.r+150),ey=b.y+Math.sin(ang)*(b.r+150);
+        for(const o of balls){if(o.alive&&o.team!==b.team&&!air(o)){
+          if(segDist(o.x,o.y,b.x,b.y,ex,ey)<o.r+14){hurt(o,P.dmg);burst(o.x,o.y,'#8a95a6',10,220);}
+        }}
+      }
+    }else if(key==='swing'){
+      if(!A.hit){A.hit=true;
+        const aimAng=A.aimAng||0;
+        for(const o of balls){if(o.alive&&o.team!==b.team&&!air(o)){
+          const dx=o.x-b.x,dy=o.y-b.y,d=Math.hypot(dx,dy);
+          if(d<b.r+110+o.r){
+            let ang=Math.atan2(dy,dx)-aimAng;
+            while(ang>Math.PI)ang-=6.283;while(ang<-Math.PI)ang+=6.283;
+            if(Math.abs(ang)<1.05){hurt(o,P.dmg);burst(o.x,o.y,'#8a95a6',10,220);}
+          }
+        }}
+      }
+    }
+    if(hel>=P.hit){A.phase='rest';A.t0=now;}
+    return;
+  }
+  if(A.phase==='rest'){
+    if(el>=P.rest){
+      A.idx++;
+      if(A.idx>=A.queue.length){b.songAtk=null;b.songCd=2.4+Math.random()*.8;}
+      else songStartPattern(b,now);
+    }
+  }
+}
+function drawSong(){
+  for(const b of balls){
+    if(!b.alive||b.skill!=='song'||!b.songAtk)continue;
+    const A=b.songAtk,key=A.queue[A.idx],P=SONG_PATTERNS[key];
+    const el=(performance.now()-A.t0)/1000;
+    if(key==='sweep'){
+      const prog=A.phase==='wind'?Math.min(1,el/P.wind):1;
+      ctx.save();ctx.globalAlpha=.75*prog;
+      ctx.strokeStyle='#8a95a6';ctx.lineWidth=5;ctx.shadowColor='#c0334d';ctx.shadowBlur=12;
+      ctx.beginPath();ctx.arc(b.x,b.y,b.r+74,0,6.283);ctx.stroke();
+      if(A.phase==='hit'){
+        const ang=performance.now()/120;
+        ctx.save();ctx.translate(b.x,b.y);ctx.rotate(ang);
+        ctx.fillStyle='#9aa0a8';ctx.fillRect(b.r+30,-10,50,20);
+        ctx.restore();
+      }
+      ctx.restore();
+    }else if(key==='slam'){
+      const prog=A.phase==='wind'?Math.min(1,el/P.wind):0;
+      ctx.save();ctx.globalAlpha=.5+.3*Math.sin(performance.now()/80);
+      ctx.strokeStyle='#ffd23a';ctx.lineWidth=4;ctx.setLineDash([6,5]);
+      ctx.beginPath();ctx.arc(b.x,b.y,95*(.4+.6*prog),0,6.283);ctx.stroke();ctx.setLineDash([]);
+      ctx.restore();
+      if(A.phase==='hit'){ctx.save();ctx.globalAlpha=.6;ctx.fillStyle='#ffe07a';ctx.beginPath();ctx.arc(b.x,b.y,95,0,6.283);ctx.fill();ctx.restore();}
+    }else if(key==='thrust'){
+      const ang=A.aimAng||0;
+      const len=150*(A.phase==='wind'?Math.min(1,el/P.wind):1);
+      ctx.save();ctx.strokeStyle='#c9a876';ctx.lineWidth=A.phase==='hit'?10:4;ctx.lineCap='round';
+      ctx.globalAlpha=A.phase==='hit'?.95:.5;
+      ctx.beginPath();ctx.moveTo(b.x+Math.cos(ang)*b.r,b.y+Math.sin(ang)*b.r);
+      ctx.lineTo(b.x+Math.cos(ang)*(b.r+len),b.y+Math.sin(ang)*(b.r+len));
+      ctx.stroke();ctx.restore();
+    }else if(key==='swing'){
+      const ang=A.aimAng||0;
+      ctx.save();ctx.strokeStyle='#c9a876';ctx.fillStyle='rgba(201,168,118,.35)';ctx.lineWidth=3;
+      ctx.globalAlpha=A.phase==='hit'?.85:.45;
+      ctx.beginPath();ctx.moveTo(b.x,b.y);
+      ctx.arc(b.x,b.y,b.r+110,ang-1.05,ang+1.05);
+      ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+    }
   }
 }
 function drawSeths(){
@@ -655,7 +780,7 @@ function renderRaidSel(){
     const box=document.getElementById('ro'+p);
     box.innerHTML=ROSTER.map(c=>`<div class="opt${raidPick[p]===c?' on':''}" data-c="${c}"><div class="th" style="background:${COLORS[c]}">${IMGS[c]?'<img src="'+IMGS[c].src+'">':''}</div><b>${NAMES[c]}</b></div>`).join('');
   }
-  document.getElementById('raidBossBox').innerHTML=`<div class="opt on" style="cursor:default"><div class="th" style="background:${COLORS[19]}"><img src="${songImg.src}"></div><b>${NAMES[19]} (HP 1000)</b></div>`;
+  document.getElementById('raidBossBox').innerHTML=`<div class="opt on" style="cursor:default"><div class="th" style="background:${COLORS[19]}"><img src="${songImg.src}"></div><b>${NAMES[19]} (HP 6000)</b></div>`;
 }
 
 const HIDDEN=[17];
@@ -898,7 +1023,8 @@ function step(dt){
     if(b.bakeUlt2&&!b.dummy)bakeUlt2Step(b,dt,performance.now());
     if(b.skill==='flower'&&!b.dummy)flowerStep(b,dt);
     if(b.skill==='seth'&&!b.dummy)sethStep(b,dt);
-    if(b.skill&&b.skill!=='cuku'&&b.skill!=='dk'&&b.skill!=='wonka'&&b.skill!=='cam'&&b.skill!=='bia'&&b.skill!=='fire'&&b.skill!=='nera'&&b.skill!=='mint'&&b.skill!=='daeseok'&&b.skill!=='barrel'&&b.skill!=='ppeun'&&b.skill!=='boseung'&&b.skill!=='bake'&&b.skill!=='flower'&&b.skill!=='seth'){if(!((b.seq||b.skill==='moing')&&b.show))b.g=Math.min(1,b.g+dt*(b.asLeft>0?1.6:1)/(b.skill==='shiny'?2:b.skill==='seq'?2:b.skill==='moing'?3:6));if(b.g>=1&&!b.show&&!(b.stun>0)){b.g=0;useSkill(b);}}
+    if(b.skill==='song'&&!b.dummy)songStep(b,dt);
+    if(b.skill&&b.skill!=='cuku'&&b.skill!=='dk'&&b.skill!=='wonka'&&b.skill!=='cam'&&b.skill!=='bia'&&b.skill!=='fire'&&b.skill!=='nera'&&b.skill!=='mint'&&b.skill!=='daeseok'&&b.skill!=='barrel'&&b.skill!=='ppeun'&&b.skill!=='boseung'&&b.skill!=='bake'&&b.skill!=='flower'&&b.skill!=='seth'&&b.skill!=='song'){if(!((b.seq||b.skill==='moing')&&b.show))b.g=Math.min(1,b.g+dt*(b.asLeft>0?1.6:1)/(b.skill==='shiny'?2:b.skill==='seq'?2:b.skill==='moing'?3:6));if(b.g>=1&&!b.show&&!(b.stun>0)){b.g=0;useSkill(b);}}
     if(b.x<b.r){b.x=b.r;b.vx=Math.abs(b.vx);b.wb=(b.wb||0)+1;sfx('bounce');}
     if(b.x>W-b.r){b.x=W-b.r;b.vx=-Math.abs(b.vx);b.wb=(b.wb||0)+1;sfx('bounce');}
     if(b.y<b.r){b.y=b.r;b.vy=Math.abs(b.vy);b.wb=(b.wb||0)+1;sfx('bounce');}
@@ -4800,7 +4926,7 @@ function draw(){
     ctx.fillStyle='#fff';ctx.fillText(Math.ceil(b.hp),b.x,ny);
     if(z>0)ctx.restore();
   }
-  drawShows();drawClaws();drawCukuFx();drawClap();drawWonka();drawCam();drawBia();drawBiaApo();drawFireFx();drawFireTrail();drawFireballs();drawNeraFx();drawNeraReinc();drawMintFx();drawDaeseokFx();drawBarrelFx();drawBarrelUltFx();drawBpel();drawPpeunBuffFx();drawPpeunProj();drawPpeunFx();drawBoseungFx();drawBoseungUltFx();drawBakeFx();drawBakeUlt2();drawFinalText();drawShatterFx();drawYellowMarks();drawGreenThrows();drawBlueFlowersAndChain();drawOrangeAttack();
+  drawShows();drawClaws();drawCukuFx();drawClap();drawWonka();drawCam();drawBia();drawBiaApo();drawFireFx();drawFireTrail();drawFireballs();drawNeraFx();drawNeraReinc();drawMintFx();drawDaeseokFx();drawBarrelFx();drawBarrelUltFx();drawBpel();drawPpeunBuffFx();drawPpeunProj();drawPpeunFx();drawBoseungFx();drawBoseungUltFx();drawBakeFx();drawBakeUlt2();drawSong();drawFinalText();drawShatterFx();drawYellowMarks();drawGreenThrows();drawBlueFlowersAndChain();drawOrangeAttack();
   for(const q of proj){ctx.save();ctx.translate(q.x,q.y);ctx.rotate(q.rot);if(q.cookie){ctx.fillStyle='#d9a356';ctx.beginPath();ctx.arc(0,0,8,0,6.283);ctx.fill();ctx.strokeStyle='#8a5a28';ctx.lineWidth=1.2;ctx.stroke();ctx.fillStyle='#5a3418';for(const[cx,cy]of[[-3,-2],[3,-1],[0,3],[-2,2.5],[3,2]]){ctx.beginPath();ctx.arc(cx,cy,1.1,0,6.283);ctx.fill();}ctx.restore();continue;}if(q.spark){ctx.shadowColor=q.col;ctx.shadowBlur=12;ctx.fillStyle=q.col;star(0,0,8);ctx.fillStyle='#fff';star(0,0,3.5);ctx.restore();continue;}if(q.fire){const fk=.85+.15*Math.sin(performance.now()/40+q.x);ctx.shadowColor='#ff6a00';ctx.shadowBlur=22;ctx.globalAlpha=.6;ctx.fillStyle='#ff6a00';ctx.beginPath();ctx.arc(0,0,13*fk,0,6.283);ctx.fill();ctx.globalAlpha=1;ctx.fillStyle='#ffcf4d';ctx.beginPath();ctx.arc(0,0,8*fk,0,6.283);ctx.fill();ctx.restore();continue;}if(q.glove){ctx.shadowColor='#ff8a3a';ctx.shadowBlur=10;ctx.fillStyle='#ff8a3a';ctx.beginPath();ctx.arc(0,0,9,0,6.283);ctx.fill();ctx.fillStyle='#ffd0a8';ctx.beginPath();ctx.arc(3,0,4,0,6.283);ctx.fill();ctx.restore();continue;}if(q.knife){if(aquaKnifeImg&&aquaKnifeImg.complete){const s=1.3,iw=aquaKnifeImg.naturalWidth*s,ih=aquaKnifeImg.naturalHeight*s;ctx.drawImage(aquaKnifeImg,-iw/2,-ih/2,iw,ih);}else{ctx.fillStyle='#e0f4ff';ctx.fillRect(-9,-2,18,4);}ctx.restore();continue;}if(q.word){ctx.rotate(-q.rot);ctx.font='700 14px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.6)';ctx.fillStyle='#c9a8ff';const chs=[...q.txt],lh=17,oy=-((chs.length-1)*lh)/2;for(let ci=0;ci<chs.length;ci++){if(q.vertical){const cy=oy+ci*lh;ctx.strokeText(chs[ci],0,cy);ctx.fillText(chs[ci],0,cy);}else{const cx=oy+ci*lh;ctx.strokeText(chs[ci],cx,0);ctx.fillText(chs[ci],cx,0);}}ctx.restore();continue;}ctx.scale(1.7,1.7);ctx.fillStyle='#fff';ctx.strokeStyle='#222';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(0,-9);ctx.lineTo(9,7);ctx.lineTo(-9,7);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#1d3b2a';ctx.fillRect(-9,3,18,4);ctx.restore();}
   for(const p of parts){ctx.globalAlpha=Math.max(0,p.life*2);ctx.fillStyle=p.col;ctx.fillRect(p.x-2,p.y-2,4,4)}
   for(const f of fl){
