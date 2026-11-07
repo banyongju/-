@@ -685,6 +685,7 @@ function checkFlowerUnlock(){
 function pracFill(slot,ult){
   const b=balls[slot];if(!b||!b.alive||!b.skill||b.dummy)return;
   if(b.skill==='wonka'){const u=b.wused||[];b.wused=ult?[0,1,2,3,4,5,6,8,10]:(u.length>=9?u.slice(0,8):u);b.g=1;return;}
+  if(b.skill==='bake'){if(ult&&!b.bakeTransformed)b.bakeUltCharge=Math.max(0,BAKE_ULT_USES-1);b.g=1;return;}
   if(b.ult){const c=b.cnt||0;if(ult)b.cnt=Math.max(c,0)+(((b.ult-1)-(c%b.ult)+b.ult)%b.ult);else if(c%b.ult===b.ult-1)b.cnt=c+1;}
   b.g=1;
 }
@@ -1052,7 +1053,7 @@ function step(dt){
   }
   for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.96;p.vy*=.96;p.life-=dt}
   parts=parts.filter(p=>p.life>0);
-  for(const f of fl){if(f.o){f.x=f.o.x;f.y=f.o.y-f.o.r-14;if(!f.o.alive)f.life=0;}else f.y-=40*dt;f.life-=dt}
+  for(const f of fl){if(f.o){f.x=f.o.x;f.y=f.o.y-f.o.r-(f.hiCap?52:14);if(!f.o.alive)f.life=0;}else f.y-=40*dt;f.life-=dt}
   fl=fl.filter(f=>f.life>0);
   const alive=balls.filter(b=>b.alive&&!b.clone);
   if(!over&&!practice&&alive.length<=1){
@@ -3943,7 +3944,7 @@ function bakeUlt2Step(b,dt,now){
   const S=b.bakeUlt2,el=now-S.voiceT0;
   while(S.capIdx<BAKE_VOICE_CAPS.length&&el>=BAKE_VOICE_CAPS[S.capIdx].t){
     const cap=BAKE_VOICE_CAPS[S.capIdx];
-    fl.push({x:b.x,y:b.y-b.r-16,o:b,life:.8,t:cap.text,col:'#7dfcff'});
+    fl.push({x:b.x,y:b.y-b.r-52,o:b,life:.8,t:cap.text,col:'#7dfcff',hiCap:true});
     if(cap.text==='(체인징)')sfx('bakeVoice');
     S.capIdx++;
   }
@@ -3986,8 +3987,8 @@ function bakeUlt2Step(b,dt,now){
     b.bakeUlt2=null;
     b.bakeTransformed=true;
     b.dmgMul=(b.dmgMul||1)*BAKE_TRANSFORM_ATK_MUL;
-    b.hp=b.maxHp||b.hp;
-    fl.push({x:b.x,y:b.y-b.r-16,o:b,life:1.4,t:'완전 변신!',col:'#ff4fd8'});
+    b.hp=Math.max(b.hp,b.maxHp||b.hp);
+    fl.push({x:b.x,y:b.y-b.r-52,o:b,life:1.4,t:'완전 변신!',col:'#ff4fd8',hiCap:true});
     burst(b.x,b.y,'#ff4fd8',40,340);burst(b.x,b.y,'#ffd23a',40,340);shk=Math.max(shk,.5);
   }
 }
