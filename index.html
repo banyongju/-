@@ -3932,6 +3932,7 @@ function bakeSkillCompleted(b,now){
   b.bakeUltCharge=(b.bakeUltCharge||0)+1;
   if(b.bakeUltCharge>=BAKE_ULT_USES){
     b.bakeUltCharge=0;
+    b.bakeSeq=null;b.bakeCharging=null;b.vx=0;b.vy=0;
     b.bakeUlt2={t0:now,voiceT0:now,capIdx:0};
     playOneShot(bakeVoiceBuf,1);
   }
@@ -3949,6 +3950,7 @@ function bakeUlt2Step(b,dt,now){
 function bakeStep(b,dt){
   if(!b.alive)return;
   const now=performance.now();
+  if(b.bakeUlt2){b.vx=0;b.vy=0;b.bakeCharging=null;b.bakeSeq=null;return;}
   b.bakeStack=b.bakeStack||0;
   if(!b.bakeCharging&&!b.bakeSeq){
     b.bakeIdleT=(b.bakeIdleT||0)+dt;
