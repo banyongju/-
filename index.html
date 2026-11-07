@@ -3869,7 +3869,7 @@ function bakeSeqStep(b,dt,now){
   const S=b.bakeSeq,el=now-S.t0,CT=BAKE_CYCLE_T;
   switch(S.phase){
     case 'c1open': if(el>=CT){S.phase='c1close';S.t0=now;playOneShot(bakeCloseBuf,.9);} break;
-    case 'c1close': if(el>=CT){S.phase='c2open';S.t0=now;playOneShot(bakeOpenBuf,.9);} break;
+    case 'c1close': if(el>=CT){S.phase='c2open';S.t0=now;playOneShot(bakeOpenBuf,.9);fl.push({x:b.x,y:b.y-b.r-16,o:b,life:.7,t:'체인징!',col:'#7dfcff'});sfx('skill');} break;
     case 'c2open': if(el>=CT){S.phase='c2close';S.t0=now;playOneShot(bakeCloseBuf,.9);} break;
     case 'c2close':
       if(el>=CT){
@@ -3935,6 +3935,7 @@ function bakeStep(b,dt){
       b.bakeSkillPeriod=BAKE_SKILL_PERIOD_MIN+Math.random()*(BAKE_SKILL_PERIOD_MAX-BAKE_SKILL_PERIOD_MIN);
       b.bakeSeq={phase:'c1open',t0:now};
       playOneShot(bakeOpenBuf,.9);
+      fl.push({x:b.x,y:b.y-b.r-16,o:b,life:.7,t:'SET!',col:'#7dfcff'});sfx('skill');
       b.bakeCharging=null;
       return;
     }
