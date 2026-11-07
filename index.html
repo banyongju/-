@@ -2800,7 +2800,7 @@ function drawMintFx(){
     }
   }
 }
-const DAESEOK_LEN=112,DAESEOK_DMG=3,DAESEOK_SPIN=5.6,DAESEOK_ULT_USES=3,DAESEOK_FORMS=['찌르기','휘두르기','돌리기'];
+const DAESEOK_LEN=112,DAESEOK_DMG=2,DAESEOK_SPIN=5.6,DAESEOK_ULT_USES=5,DAESEOK_FORMS=['찌르기','휘두르기','돌리기'];
 function daeseokSkillUsed(b){
   b.dsSkillUses=(b.dsSkillUses||0)+1;
   if(b.dsSkillUses>=DAESEOK_ULT_USES){b.dsSkillUses=0;daeseokUlt(b);}
