@@ -34,8 +34,9 @@ p.sub{margin:0 0 12px;font-size:13px;opacity:.7}
 .ul{font-size:10px;opacity:.7;margin-top:4px}
 #sel{width:100%;max-width:600px;text-align:center;max-height:100vh;overflow-y:auto}
 #raidSel{width:100%;max-width:600px;text-align:center;max-height:100vh;overflow-y:auto;box-sizing:border-box}
-#raidSel .row .opts{flex-wrap:wrap}
-#raidSel .row .opts .opt{flex:0 0 calc(50% - 6px)}
+#raidSel .row .opts{flex-direction:column;flex-wrap:wrap;align-content:flex-start;height:216px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#raidSel .row .opts::-webkit-scrollbar{display:none}
+#raidSel .row .opts .opt{flex:0 0 auto;width:80px}
 #raidBossBox .opt{flex:0 0 auto;min-width:120px}
 #sel h2{margin:0 0 4px;font-size:20px}
 #msg{min-height:20px;font-size:15px;font-weight:700;margin-bottom:6px;color:#e4a400}
@@ -1238,7 +1239,7 @@ function step(dt){
       else if(isD(b)&&!isD(a)){a.vx=b.vx*.8;a.vy=b.vy*.8;}
       else{a.vx+=dv*nx;a.vy+=dv*ny;b.vx-=dv*nx;b.vy-=dv*ny;}
       const key=a.id+'-'+b.id;
-      if(!cd[key]){cd[key]=.3;if(!b.dummy)hurt(a,dd(b)*(b.clone?.75:1));if(!a.dummy)hurt(b,dd(a)*(a.clone?.75:1));}
+      if(!cd[key]){cd[key]=.3;if(!b.dummy)hurt(a,dd(b)*(b.clone?.75:1)*(a.skill==='cuku'?.5:1));if(!a.dummy)hurt(b,dd(a)*(a.clone?.75:1)*(b.skill==='cuku'?.5:1));}
     }
   }
   for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.96;p.vy*=.96;p.life-=dt}
