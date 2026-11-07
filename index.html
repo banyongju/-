@@ -3810,6 +3810,8 @@ const BAKE_COOKIE_N=7,BAKE_COOKIE_DMG=1.8,BAKE_COOKIE_SPD_MIN=180,BAKE_COOKIE_SP
 const BAKE_CHARGE_MIN=380,BAKE_CHARGE_MAX=950;
 const BAKE_STACK_MAX=10,BAKE_SKILL_STACK_MUL=.1;
 const BAKE_SKILL_PERIOD_MIN=1,BAKE_SKILL_PERIOD_MAX=10,BAKE_CYCLE_T=300,BAKE_VOICE_GAP=330,BAKE_ULT_USES=6;
+const BAKE_VOICE_CAPS=[{t:0,text:'음, 이렇게 해서...'},{t:900,text:'이거였나...'},{t:1500,text:'(SET)'},{t:2100,text:'(체인징)'},{t:3000,text:'해서... 뭐였더라?'},{t:4200,text:'아, 맞아'},{t:5000,text:'[변신]'}];
+const BAKE_VOICE_TOTAL=6300;
 const BAKE_BLAST_TICK_DMG=5,BAKE_BLAST_TICKS=4,BAKE_BLAST_TICK_GAP=110,BAKE_BLAST_BURN_DMG=2.8125,BAKE_BLAST_BURN_DUR=3,BAKE_BLAST_RANGE=560;
 const BAKE_EXP_DMG=34.875,BAKE_EXP_R=150,BAKE_EXP_KB=560,BAKE_EXP_TRAVEL=420;
 const BAKE_GUN_W=98,BAKE_GUN_H=47,BAKE_GUN_OPEN_W=98,BAKE_GUN_OPEN_H=69;
@@ -3836,10 +3838,9 @@ function bakeFire(b,now){
   b.bakeSkillUses=(b.bakeSkillUses||0)+1;
   if(b.bakeSkillUses>=BAKE_ULT_USES){
     b.bakeSkillUses=0;
-    b.bakeSeq={phase:'c1open',t0:now};
+    b.bakeSeq={phase:'c1open',t0:now,voiceT0:now,capIdx:0};
     playOneShot(bakeOpenBuf,.9);
     playOneShot(bakeVoiceBuf,1);
-    fl.push({x:b.x,y:b.y-b.r-16,o:b,life:.7,t:'SET!',col:'#7dfcff'});
   }
   for(let i=0;i<BAKE_COOKIE_N;i++){
     const a=ang+(Math.random()-.5)*BAKE_COOKIE_SPREAD*2,sp=BAKE_COOKIE_SPD_MIN+Math.random()*(BAKE_COOKIE_SPD_MAX-BAKE_COOKIE_SPD_MIN);
@@ -3885,9 +3886,14 @@ function bakeExplosion(b,now){
 function bakeSeqStep(b,dt,now){
   const S=b.bakeSeq,el=now-S.t0,CT=BAKE_CYCLE_T;
   b.vx=0;b.vy=0;
+  S.capIdx=S.capIdx||0;
+  while(S.capIdx<BAKE_VOICE_CAPS.length&&(now-S.voiceT0)>=BAKE_VOICE_CAPS[S.capIdx].t){
+    fl.push({x:b.x,y:b.y-b.r-16,o:b,life:.8,t:BAKE_VOICE_CAPS[S.capIdx].text,col:'#7dfcff'});
+    S.capIdx++;
+  }
   switch(S.phase){
     case 'c1open': if(el>=CT){S.phase='c1close';S.t0=now;playOneShot(bakeCloseBuf,.9);} break;
-    case 'c1close': if(el>=CT){S.phase='c2open';S.t0=now;playOneShot(bakeOpenBuf,.9);fl.push({x:b.x,y:b.y-b.r-16,o:b,life:.7,t:'체인징!',col:'#7dfcff'});sfx('bakeVoice');} break;
+    case 'c1close': if(el>=CT){S.phase='c2open';S.t0=now;playOneShot(bakeOpenBuf,.9);sfx('bakeVoice');} break;
     case 'c2open': if(el>=CT){S.phase='c2close';S.t0=now;playOneShot(bakeCloseBuf,.9);} break;
     case 'c2close':
       if(el>=CT){
@@ -3927,10 +3933,13 @@ function bakeSeqStep(b,dt,now){
           b.bakeBlastFx={t0:now,ang:b.bakeBlastAng};
           shk=Math.max(shk,.3);
         }
-        if(el>=(BAKE_BLAST_TICKS-1)*BAKE_BLAST_TICK_GAP+220){b.bakeSeq=null;b.bakeStack=0;b.bakeIdleT=0;}
+        if(el>=(BAKE_BLAST_TICKS-1)*BAKE_BLAST_TICK_GAP+220){S.phase='voiceOutro';S.t0=now;}
       }else{
-        if(el>=420){b.bakeSeq=null;b.bakeStack=0;b.bakeIdleT=0;}
+        if(el>=420){S.phase='voiceOutro';S.t0=now;}
       }
+      break;
+    case 'voiceOutro':
+      if(now-S.voiceT0>=BAKE_VOICE_TOTAL){b.bakeSeq=null;b.bakeStack=0;b.bakeIdleT=0;}
       break;
   }
 }
