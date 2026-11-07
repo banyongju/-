@@ -33,12 +33,12 @@ p.sub{margin:0 0 12px;font-size:13px;opacity:.7}
 .sb .hpf{background:#3aa0ff}
 .ul{font-size:10px;opacity:.7;margin-top:4px}
 #sel{width:100%;max-width:600px;text-align:center;max-height:100vh;overflow-y:auto}
-#raidSel{width:100%;max-width:600px;text-align:center;max-height:100vh;overflow-y:auto;box-sizing:border-box}
+#raidSel{width:100%;max-width:696px;text-align:center;max-height:100vh;overflow-y:auto;box-sizing:border-box}
 #raidBossBox .opt{flex:0 0 auto;min-width:120px}
-#raidPickSummary{position:sticky;top:0;z-index:5;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;background:var(--bg);padding:6px 0;margin-bottom:4px}
-#raidPickSummary span{font-size:12px;font-weight:700;padding:4px 8px;border-radius:8px;color:#fff}
-#ro0 .opt.on{border-color:#4aa3ff;box-shadow:0 0 0 2px #4aa3ff inset}
-#ro1 .opt.on{border-color:#ff6a4a;box-shadow:0 0 0 2px #ff6a4a inset}
+#raidPickSummary,#pickSummary{position:sticky;top:0;z-index:5;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;background:var(--bg);padding:6px 0;margin-bottom:4px}
+#raidPickSummary span,#pickSummary span{font-size:12px;font-weight:700;padding:4px 8px;border-radius:8px;color:#fff}
+#ro0 .opt.on,#o0 .opt.on{border-color:#4aa3ff;box-shadow:0 0 0 2px #4aa3ff inset}
+#ro1 .opt.on,#o1 .opt.on{border-color:#ff6a4a;box-shadow:0 0 0 2px #ff6a4a inset}
 #ro2 .opt.on{border-color:#6fae2f;box-shadow:0 0 0 2px #6fae2f inset}
 #sel h2{margin:0 0 4px;font-size:20px}
 #msg{min-height:20px;font-size:15px;font-weight:700;margin-bottom:6px;color:#e4a400}
@@ -71,7 +71,7 @@ button:active{transform:scale(.96)}
 </style>
 </head>
 <body>
-<div id="sel"><h2>캐릭터 선택</h2><div id="msg"></div><div class="row"><span class="pl p1">1P</span><div class="opts" id="o0"></div></div><div class="row"><span class="pl p2">2P</span><div class="opts" id="o1"></div></div><button id="go">대결 시작</button> <button id="prac" class="ghost">연습장</button> <button id="raidBtn" class="ghost">보스레이드</button> <button id="hidBtn" class="ghost">히든</button></div>
+<div id="sel"><h2>캐릭터 선택</h2><div id="msg"></div><div id="pickSummary"></div><div class="row"><span class="pl p1">1P</span><div class="opts" id="o0"></div></div><div class="row"><span class="pl p2">2P</span><div class="opts" id="o1"></div></div><button id="go">대결 시작</button> <button id="prac" class="ghost">연습장</button> <button id="raidBtn" class="ghost">보스레이드</button> <button id="hidBtn" class="ghost">히든</button></div>
 <div id="raidSel" style="display:none"><h2>보스레이드</h2><div id="raidMsg"></div><div id="raidPickSummary"></div><div class="row"><span class="pl p1">1P</span><div class="opts" id="ro0"></div></div><div class="row"><span class="pl p2">2P</span><div class="opts" id="ro1"></div></div><div class="row"><span class="pl p3">3P</span><div class="opts" id="ro2"></div></div><div class="row"><span class="pl p4">BOSS</span><div class="opts" id="raidBossBox"></div></div><button id="raidGo">레이드 시작</button> <button id="raidBack" class="ghost">메인으로</button></div>
 <div id="hidModal" style="display:none;position:fixed;inset:0;background:rgba(10,8,16,.55);z-index:200;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:18px;padding:18px 20px 20px;width:min(92vw,560px);max-height:80vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.35)">
@@ -793,6 +793,8 @@ function renderSel(){
     const box=document.getElementById('o'+p);
     box.innerHTML=ROSTER.map(c=>`<div class="opt${pick[p]===c?' on':''}" data-c="${c}"><div class="th" style="background:${COLORS[c]}">${IMGS[c]?'<img src="'+IMGS[c].src+'">':''}</div><b>${NAMES[c]}</b></div>`).join('');
   }
+  const pCols2=['#4aa3ff','#ff6a4a'];
+  document.getElementById('pickSummary').innerHTML=[0,1].map(p=>`<span style="background:${pCols2[p]}">${p+1}P: ${NAMES[pick[p]]}</span>`).join('');
   renderHidden();
 }
 function renderRaidSel(){
