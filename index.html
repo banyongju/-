@@ -3810,7 +3810,7 @@ const BAKE_ATK_RANGE=340,BAKE_ATK_CD_MIN=.6,BAKE_ATK_CD_MAX=3.5,BAKE_ATK_DMG=7,B
 const BAKE_COOKIE_N=7,BAKE_COOKIE_DMG=1.8,BAKE_COOKIE_SPD_MIN=180,BAKE_COOKIE_SPD_MAX=420,BAKE_COOKIE_LIFE=3.5,BAKE_COOKIE_SPREAD=.55;
 const BAKE_CHARGE_MIN=380,BAKE_CHARGE_MAX=950;
 const BAKE_STACK_MAX=10,BAKE_SKILL_STACK_MUL=.1;
-const BAKE_SKILL_PERIOD_MIN=1,BAKE_SKILL_PERIOD_MAX=10,BAKE_CYCLE_T=300,BAKE_VOICE_GAP=330,BAKE_ULT_USES=5;
+const BAKE_SKILL_PERIOD_MIN=1,BAKE_SKILL_PERIOD_MAX=10,BAKE_CYCLE_T=300,BAKE_VOICE_GAP=330,BAKE_ULT_USES=15,BAKE_TRANSFORM_ATK_MUL=1.5;
 const BAKE_VOICE_CAPS=[{t:0,text:'음, 이렇게 해서...'},{t:1200,text:'이거였나...'},{t:1900,text:'(SET)'},{t:3000,text:'(체인징)'},{t:4540,text:'해서... 뭐였더라?'},{t:6580,text:'아, 맞아'},{t:8680,text:'[변신]'},{t:9950,text:'[Beyond Biology!]'},{t:10590,text:'[Bake!!]'}];
 const BAKE_VOICE_TOTAL=10900;
 const BAKE_ULT_FURNACE_DMG=14;
@@ -3930,6 +3930,7 @@ function bakeSeqStep(b,dt,now){
   }
 }
 function bakeSkillCompleted(b,now){
+  if(b.bakeTransformed)return;
   b.bakeUltCharge=(b.bakeUltCharge||0)+1;
   if(b.bakeUltCharge>=BAKE_ULT_USES){
     b.bakeUltCharge=0;
@@ -3981,7 +3982,14 @@ function bakeUlt2Step(b,dt,now){
   }
   S.dough=S.dough.filter(d=>now-d.t0<4000);
   if(el>=8680&&!S.revealed){S.revealed=true;burst(b.x,b.y,'#ffe07a',40,380);shk=Math.max(shk,.4);}
-  if(el>=BAKE_VOICE_TOTAL)b.bakeUlt2=null;
+  if(el>=BAKE_VOICE_TOTAL){
+    b.bakeUlt2=null;
+    b.bakeTransformed=true;
+    b.dmgMul=(b.dmgMul||1)*BAKE_TRANSFORM_ATK_MUL;
+    b.hp=b.maxHp||b.hp;
+    fl.push({x:b.x,y:b.y-b.r-16,o:b,life:1.4,t:'완전 변신!',col:'#ff4fd8'});
+    burst(b.x,b.y,'#ff4fd8',40,340);burst(b.x,b.y,'#ffd23a',40,340);shk=Math.max(shk,.5);
+  }
 }
 function drawBakeUlt2(){
   const now=performance.now();
@@ -4021,8 +4029,8 @@ function drawBakeUlt2(){
       ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,6.283);ctx.fill();
       ctx.restore();
     }
-    if(el>=9000){
-      const k=Math.min(1,(el-9000)/400);
+    if(el>=8680){
+      const k=Math.min(1,(el-8680)/400);
       ctx.save();ctx.globalAlpha=1-k;ctx.strokeStyle='#fff3c4';ctx.lineWidth=6;ctx.shadowColor='#ffe07a';ctx.shadowBlur=24;
       ctx.beginPath();ctx.arc(b.x,b.y,b.r+10+k*40,0,6.283);ctx.stroke();
       ctx.restore();
@@ -4711,7 +4719,9 @@ function draw(){
       if(b.img&&b.img.complete){
         ctx.save();ctx.clip();
         const awk=b.skill==='boseung'&&b.boseungAwaken;
+        const btf=b.skill==='bake'&&b.bakeTransformed;
         if(awk)ctx.filter='brightness(.5) saturate(1.8) contrast(1.2) hue-rotate(-16deg)';
+        else if(btf)ctx.filter='brightness(.9) saturate(2.4) contrast(1.3) hue-rotate(260deg)';
         ctx.drawImage(b.img,b.x-b.r,b.y-b.r,b.r*2,b.r*2);
         ctx.filter='none';
         if(awk){
@@ -4723,6 +4733,17 @@ function draw(){
           ctx.fillStyle='#ff3030';ctx.shadowColor='#ff3030';ctx.shadowBlur=9;
           ctx.beginPath();ctx.ellipse(b.x-b.r*.22,eyeY,b.r*.11,b.r*.05,0,0,6.283);ctx.fill();
           ctx.beginPath();ctx.ellipse(b.x+b.r*.22,eyeY,b.r*.11,b.r*.05,0,0,6.283);ctx.fill();
+          ctx.globalCompositeOperation='source-over';
+        }
+        if(btf){
+          const g=ctx.createRadialGradient(b.x,b.y,b.r*.15,b.x,b.y,b.r);
+          g.addColorStop(0,'rgba(255,20,160,.2)');g.addColorStop(1,'rgba(40,0,35,.5)');
+          ctx.fillStyle=g;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,6.283);ctx.fill();
+          const eyeY=b.y-b.r*.08,eyeA=performance.now()/160;
+          ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.85+.15*Math.sin(eyeA);
+          ctx.fillStyle='#ffd23a';ctx.shadowColor='#ffd23a';ctx.shadowBlur=10;
+          ctx.beginPath();ctx.ellipse(b.x-b.r*.22,eyeY,b.r*.12,b.r*.06,0,0,6.283);ctx.fill();
+          ctx.beginPath();ctx.ellipse(b.x+b.r*.22,eyeY,b.r*.12,b.r*.06,0,0,6.283);ctx.fill();
           ctx.globalCompositeOperation='source-over';
         }
         ctx.restore();
