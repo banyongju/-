@@ -955,7 +955,6 @@ function hurt(b,d){
   if(isApo(b))return;
   if(!b.dummy&&b.skill==='bia'&&!b.apo&&!b.apoDone&&b.hp-d<=1){b.hp=1;startBiaApo(b);return;}
   if(air(b)){if(!b.ivc||performance.now()-b.ivc>400){b.ivc=performance.now();fl.push({x:b.x,y:b.y-b.r,life:.6,t:'무적',col:'#9fe3ff'});}return;}
-  if(b.bakeUlt2){if(!b.ivc||performance.now()-b.ivc>400){b.ivc=performance.now();fl.push({x:b.x,y:b.y-b.r,life:.6,t:'무적',col:'#ff9fe3'});}return;}
   if(b.skill==='mint'&&b.mintAct&&(b.mintAct.phase==='leap'||b.mintAct.phase==='mount')){if(!b.ivc||performance.now()-b.ivc>400){b.ivc=performance.now();fl.push({x:b.x,y:b.y-b.r,life:.6,t:'무적',col:'#9fe3ff'});}return;}
   if(isD(b))d*=.5;
   if(b.glow)d*=.75;
