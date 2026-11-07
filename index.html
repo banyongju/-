@@ -3995,6 +3995,7 @@ function bakeUlt2Step(b,dt,now){
     b.dmgMul=(b.dmgMul||1)*BAKE_TRANSFORM_ATK_MUL;
     b.hp=Math.max(b.hp,b.maxHp||b.hp);
     if(bakeFinalImg.complete)b.img=bakeFinalImg;
+    const relA=Math.random()*6.283;b.vx=Math.cos(relA)*230;b.vy=Math.sin(relA)*230;
     fl.push({x:b.x,y:b.y-b.r-52,o:b,life:1.4,t:'완전 변신!',col:'#ff4fd8',hiCap:true});
     burst(b.x,b.y,'#ff4fd8',40,340);burst(b.x,b.y,'#ffd23a',40,340);shk=Math.max(shk,.5);
   }
