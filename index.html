@@ -3114,7 +3114,7 @@ function biaFxStep(dt){
   const now=performance.now();
   for(const q of bfb){
     if(q.tgt&&q.tgt.alive){const spd=Math.hypot(q.vx,q.vy)||1,dx2=q.tgt.x-q.x,dy2=q.tgt.y-q.y,dd2=Math.hypot(dx2,dy2)||1;
-      const turn=Math.min(1,dt*3.2);q.vx+=(dx2/dd2*spd-q.vx)*turn;q.vy+=(dy2/dd2*spd-q.vy)*turn;
+      const turn=Math.min(1,dt*4.6);q.vx+=(dx2/dd2*spd-q.vx)*turn;q.vy+=(dy2/dd2*spd-q.vy)*turn;
       const ns=Math.hypot(q.vx,q.vy)||1;q.vx=q.vx/ns*spd;q.vy=q.vy/ns*spd;}
     q.x+=q.vx*dt;q.y+=q.vy*dt;q.life-=dt;
     for(const o of balls){if(!o.alive||o.team===q.team||air(o))continue;
