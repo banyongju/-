@@ -4038,7 +4038,7 @@ function flowerStep(b,dt){
       for(const o of balls){
         if(!o.alive||o.team===b.team||cs.hit[o.id])continue;
         if(Math.hypot(o.x-b.x,o.y-b.y)<b.r*.75+o.r){
-          cs.hit[o.id]=1;hurt(o,20);
+          cs.hit[o.id]=1;hurt(o,10);
           const d2=Math.hypot(o.x-b.x,o.y-b.y)||1;
           o.vx+=(o.x-b.x)/d2*420;o.vy+=(o.y-b.y)/d2*420;o.stun=Math.max(o.stun||0,.3);
           burst(o.x,o.y,'#5fc8ff',12,220);shk=Math.max(shk,.25);
