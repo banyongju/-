@@ -904,7 +904,7 @@ function reset(){
     if(raidMode){b.team=slot<3?1:2;b.x=raidPos[slot].x;b.y=raidPos[slot].y;
       if(slot===3){b.isBoss=true;b.name=NAMES[19];
         const dup=3-new Set(raidPick).size;
-        b.hp=b.maxHp=1000+dup*2000;b.dmgMul=1.4+dup*0.5;
+        b.hp=b.maxHp=1000+dup*2000;b.dmgMul=1.4+dup*1.8;
       }}
     else{b.team=slot+1;b.x=slot?470:130;b.y=200+Math.random()*200;}
     if(practice&&!raidMode&&slot===1){b.dummy=true;b.skill=null;b.name='루아녹스';b.img=ruaImg;b.x=430;b.y=300;b.vx=b.vy=0;}
