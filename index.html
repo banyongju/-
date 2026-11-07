@@ -763,6 +763,7 @@ function hurt(b,d){
   if(isApo(b))return;
   if(!b.dummy&&b.skill==='bia'&&!b.apo&&!b.apoDone&&b.hp-d<=1){b.hp=1;startBiaApo(b);return;}
   if(air(b)){if(!b.ivc||performance.now()-b.ivc>400){b.ivc=performance.now();fl.push({x:b.x,y:b.y-b.r,life:.6,t:'무적',col:'#9fe3ff'});}return;}
+  if(b.bakeUlt2){if(!b.ivc||performance.now()-b.ivc>400){b.ivc=performance.now();fl.push({x:b.x,y:b.y-b.r,life:.6,t:'무적',col:'#ff9fe3'});}return;}
   if(b.skill==='mint'&&b.mintAct&&(b.mintAct.phase==='leap'||b.mintAct.phase==='mount')){if(!b.ivc||performance.now()-b.ivc>400){b.ivc=performance.now();fl.push({x:b.x,y:b.y-b.r,life:.6,t:'무적',col:'#9fe3ff'});}return;}
   if(isD(b))d*=.5;
   if(b.glow)d*=.75;
@@ -3815,7 +3816,7 @@ const BAKE_COOKIE_N=7,BAKE_COOKIE_DMG=1.8,BAKE_COOKIE_SPD_MIN=180,BAKE_COOKIE_SP
 const BAKE_CHARGE_MIN=380,BAKE_CHARGE_MAX=950;
 const BAKE_STACK_MAX=10,BAKE_SKILL_STACK_MUL=.1;
 const BAKE_SKILL_PERIOD_MIN=1,BAKE_SKILL_PERIOD_MAX=10,BAKE_CYCLE_T=300,BAKE_VOICE_GAP=330,BAKE_ULT_USES=6,BAKE_TRANSFORM_ATK_MUL=1.5;
-const BAKE_VOICE_CAPS=[{t:0,text:'음,'},{t:900,text:'이렇게 해서...'},{t:1800,text:'이거였나...'},{t:2700,text:'(SET)'},{t:3800,text:'(체인징)'},{t:4800,text:'해서... 뭐였더라?'},{t:6580,text:'아, 맞아'},{t:8680,text:'[변신]'},{t:9300,text:'Fire!'},{t:9950,text:'[Beyond Biology!]'},{t:10590,text:'[Bake!!]'}];
+const BAKE_VOICE_CAPS=[{t:0,text:'음,'},{t:900,text:'이렇게 해서...'},{t:1800,text:'(SET)'},{t:2700,text:'이거였나...'},{t:3800,text:'(체인징)'},{t:4800,text:'해서... 뭐였더라?'},{t:6580,text:'아, 맞아'},{t:8680,text:'[변신]'},{t:9300,text:'Fire!'},{t:9950,text:'[Beyond Biology!]'},{t:10590,text:'[Bake!!]'}];
 const BAKE_VOICE_TOTAL=11100;
 const BAKE_ULT_FURNACE_DMG=14;
 const BAKE_BLAST_TICK_DMG=5,BAKE_BLAST_TICKS=4,BAKE_BLAST_TICK_GAP=110,BAKE_BLAST_BURN_DMG=2.8125,BAKE_BLAST_BURN_DUR=3,BAKE_BLAST_RANGE=560;
