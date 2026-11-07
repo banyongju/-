@@ -34,6 +34,9 @@ p.sub{margin:0 0 12px;font-size:13px;opacity:.7}
 .ul{font-size:10px;opacity:.7;margin-top:4px}
 #sel{width:100%;max-width:600px;text-align:center;max-height:100vh;overflow-y:auto}
 #raidSel{width:100%;max-width:600px;text-align:center;max-height:100vh;overflow-y:auto;box-sizing:border-box}
+#raidSel .row .opts{flex-direction:column;flex-wrap:wrap;align-content:flex-start;height:216px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+#raidSel .row .opts .opt{flex:0 0 auto;width:80px}
+#ro2 .opt.on{border-color:#6fae2f;box-shadow:0 0 0 2px #6fae2f inset}
 #raidBossBox .opt{flex:0 0 auto;min-width:120px}
 #sel h2{margin:0 0 4px;font-size:20px}
 #msg{min-height:20px;font-size:15px;font-weight:700;margin-bottom:6px;color:#e4a400}
@@ -346,22 +349,25 @@ function sethStep(b,dt){
   }
 }
 const SONG_PATTERNS={
-  sweep:{wind:.35,hit:.55,rest:.25,dmg:7,tick:.15,label:'원형 휩쓸기'},
-  slam:{wind:.5,hit:.12,rest:.35,dmg:30,label:'내려찍기'},
-  thrust:{wind:.3,hit:.15,rest:.25,dmg:16,label:'찌르기'},
-  swing:{wind:.3,hit:.18,rest:.25,dmg:13,label:'휑베기'}
+  sweep:{wind:.26,hit:.55,rest:.18,dmg:9,tick:.15,label:'원형 휩쓸기'},
+  slam:{wind:.38,hit:.12,rest:.26,dmg:38,label:'내려찍기'},
+  thrust:{wind:.22,hit:.15,rest:.18,dmg:22,label:'찌르기'},
+  swing:{wind:.22,hit:.18,rest:.18,dmg:18,label:'휑베기'}
 };
 function songStartPattern(b,now){
   const A=b.songAtk,key=A.queue[A.idx],P=SONG_PATTERNS[key];
   A.phase='wind';A.t0=now;A.hit=false;A.hitTick=0;
   A.target=(A.target&&A.target.alive)?A.target:nearest(b);
-  fl.push({x:b.x,y:b.y-b.r-20,o:b,life:.9,t:P.label,col:'#ff5a4a'});
+  const ang=A.target?Math.atan2(A.target.y-b.y,A.target.x-b.x):Math.atan2(b.vy,b.vx);
+  b.vx=Math.cos(ang)*460;b.vy=Math.sin(ang)*460;
+  burst(b.x,b.y,'#ff5a4a',16,240);shk=Math.max(shk,.22);
+  fl.push({x:b.x,y:b.y-b.r-20,o:b,life:.9,t:P.label,col:'#ff5a4a',big:true});
 }
 function songStep(b,dt){
   if(!b.alive)return;
   const now=performance.now();
   if(b.songAtk){songAtkStep(b,dt,now);return;}
-  b.songCd=(b.songCd===undefined?2.2:b.songCd)-dt;
+  b.songCd=(b.songCd===undefined?1.7:b.songCd)-dt;
   if(b.songCd<=0){
     const keys=['sweep','slam','thrust','swing'];
     const a=keys[Math.floor(Math.random()*4)];
@@ -428,7 +434,7 @@ function songAtkStep(b,dt,now){
   if(A.phase==='rest'){
     if(el>=P.rest){
       A.idx++;
-      if(A.idx>=A.queue.length){b.songAtk=null;b.songCd=2.4+Math.random()*.8;}
+      if(A.idx>=A.queue.length){b.songAtk=null;b.songCd=1.8+Math.random()*.6;}
       else songStartPattern(b,now);
     }
   }
