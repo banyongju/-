@@ -2660,7 +2660,7 @@ function ppeunStep(b,dt){
     if(pot.boilT>=.8){
       let meat=0,veg=0,mush=0,fish=0,tofu=0,self=0;
       for(const it of pot.items){if(it==='meat')meat++;else if(it==='veg')veg++;else if(it==='mush')mush++;else if(it==='fish')fish++;else if(it==='tofu')tofu++;else self++;}
-      const mul=(self>0?(b.ppeunOriginal?1+4*self:1+1*self):1)*(b.ppeunOriginal?2:1);
+      const mul=self>0?(b.ppeunOriginal?1+4*self:1+1*self):(b.ppeunOriginal?2:1);
       const dmg=(50+meat*26)*mul;
       shk=Math.max(shk,self>0?1:.5);sfx('ult');
       fl.push({x:pot.x,y:pot.y-pot.r-18,life:1.2,t:self>0?'이쁜이 특제 전골!! 완성':'가마솥 완성!!',col:self>0?'#ff5fa8':'#ff6a1a'});
