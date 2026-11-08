@@ -90,9 +90,9 @@ button:active{transform:scale(.96)}
 <div class="bar" id="bar" style="display:none"><button class="ghost" id="home">메인으로</button><button id="retry">다시하기</button></div>
 <script>
 const cv=document.getElementById('c'),ctx=cv.getContext('2d'),W=600,H=600;
-const COLORS=['#9b5de5','#2e86e4','#5b6b8c','#6fae2f','#b79cff','#e45fa3','#7a3f1a','#c0334d','#2e9e8f','#ff6a1a','#8a1f2b','#3fe0b0','#8a95a6','#4a4f57','#ff9fc2','#232428','#d94f2b','#ff8fd6','#c9a8ff','#4b3b2a'];
-const NAMES=['타마토아','더미','1010','DK웨스트','모잉','쿠쿠양','윌리웡카','연민하','비앙카','예저리콜더싸한','네라뷸','초민트','박대석','더블배럴가이','이쁜이','보승슬레이어','베이크','플라워리','세스','송규호'];
-const SKILLS=['shiny','heal','seq','dk','moing','cuku','wonka','cam','bia','fire','nera','mint','daeseok','barrel','ppeun','boseung','bake','flower','seth','song'];
+const COLORS=['#9b5de5','#2e86e4','#5b6b8c','#6fae2f','#b79cff','#e45fa3','#7a3f1a','#c0334d','#2e9e8f','#ff6a1a','#8a1f2b','#3fe0b0','#8a95a6','#4a4f57','#ff9fc2','#232428','#d94f2b','#ff8fd6','#c9a8ff','#4b3b2a','#ffd54f'];
+const NAMES=['타마토아','더미','1010','DK웨스트','모잉','쿠쿠양','윌리웡카','연민하','비앙카','예저리콜더싸한','네라뷸','초민트','박대석','더블배럴가이','이쁜이','보승슬레이어','베이크','플라워리','세스','송규호','오리지날이쁜이'];
+const SKILLS=['shiny','heal','seq','dk','moing','cuku','wonka','cam','bia','fire','nera','mint','daeseok','barrel','ppeun','boseung','bake','flower','seth','song','ppeun'];
 const WN=['검','창','단검'];
 const CFG=[{len:48,dmg:5,spin:3.2,cap:110},{len:72,dmg:5,spin:2.4,cap:130},{len:30,dmg:5,spin:5.6,cap:80}];
 let shk=0;
@@ -305,8 +305,8 @@ function flowerDashPoseForCombo(combo){
 function mk(i){
   const a=Math.random()*6.283,t=Math.floor(Math.random()*3),c=CFG[t];
   return{id:i,x:90+Math.random()*420,y:90+Math.random()*420,vx:Math.cos(a)*230,vy:Math.sin(a)*230,
-    r:i===19?46:i===0?32:i===2?36:i===3?38:26,hp:i===19?1000:i===10?200:i===14?75:300,maxHp:i===19?1000:i===10?200:i===14?75:300,c:COLORS[i],t,len:c.len,dmg:c.dmg,cap:c.cap,spin:c.spin*(Math.random()<.5?-1:1),
-    ang:Math.random()*6.283,flash:0,alive:true,name:NAMES[i],skill:SKILLS[i],g:0,boost:0,img:i===0?faceImg:i===2?faceImg2:i===3?faceImg3:i===4?moingImg:i===5?cukuImg:i===6?wonkaImg:i===7?camImg:i===8?biaImg:i===9?fireImg:i===10?neraImg:i===11?mintImg:i===12?daeseokImg:i===13?barrelImg:i===14?ppeunImg:i===15?boseungImg:i===16?bakeImg:i===17?flowerImg:i===18?sethImg:i===19?songImg:null,shadowImg:i===3?bullImg:null,treasure:i===0,freeform:i===17,animFrames:i===17?flowerFrames:null,show:null,seq:i===2?['lor','jam','sky','buff','shield']:null,si:0,ult:i===0?15:i===4?3:i===5?5:i===3?4:i===6?9:i===7?3:i===2?10:i===8?5:i===9?5:i===10?8:i===11?8:i===12?15:i===13?BARREL_ULT_USES:i===15?BOSEUNG_ULT_USES:i===17?3:10,dmgMul:i===9?.5:i===14?.5:i===19?1.4:1};
+    r:i===19?46:i===0?32:i===2?36:i===3?38:26,hp:i===19?1000:i===10?200:i===14?75:i===20?300:300,maxHp:i===19?1000:i===10?200:i===14?75:i===20?300:300,c:COLORS[i],t,len:c.len,dmg:c.dmg,cap:c.cap,spin:c.spin*(Math.random()<.5?-1:1),
+    ang:Math.random()*6.283,flash:0,alive:true,name:NAMES[i],skill:SKILLS[i],g:0,boost:0,img:i===0?faceImg:i===2?faceImg2:i===3?faceImg3:i===4?moingImg:i===5?cukuImg:i===6?wonkaImg:i===7?camImg:i===8?biaImg:i===9?fireImg:i===10?neraImg:i===11?mintImg:i===12?daeseokImg:i===13?barrelImg:i===14?ppeunImg:i===15?boseungImg:i===16?bakeImg:i===17?flowerImg:i===18?sethImg:i===19?songImg:i===20?ppeunImg:null,shadowImg:i===3?bullImg:null,treasure:i===0,freeform:i===17,animFrames:i===17?flowerFrames:null,show:null,seq:i===2?['lor','jam','sky','buff','shield']:null,si:0,ult:i===0?15:i===4?3:i===5?5:i===3?4:i===6?9:i===7?3:i===2?10:i===8?5:i===9?5:i===10?8:i===11?8:i===12?15:i===13?BARREL_ULT_USES:i===15?BOSEUNG_ULT_USES:i===17?3:10,dmgMul:i===9?.5:i===14?.5:i===20?.5:i===19?1.4:1};
 }
 const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이',dash:'돌진',heal:'회복',shiny:'빛나',lor:'Load and Shoot',jam:'Fire! J-a-a-am!',sky:'To the sky!',buff:'Hold position!',shield:'Ready, routine Echo:',moing:'허기진 성욕',wonka:'초콜릿 무기',dk:'강화 손바닥 (적 벽 연속 넉백)',cuku:'패시브 벽 중첩 / 잔상 돌진',seq:'스킬 2종',fire:'화염방사기 입김+화상 / 불덩이 8방 / 필살기',nera:'대검 패시브 / 회전베기+강습 / 윤회',mint:'도끼 패시브 / 올라타기(확률) / 필살기: 야수화',daeseok:'전따봉 찌르기/휘두르기/돌리기 / 필살기: 전원 공중 내리꽂기',barrel:'평화의 수호자',ppeun:'고기: 공격력 / 야채: 체력재생 / 버섯: 이동속도 / 생선: 주변 광역피해 / 두부: 최대체력 / 이쁜이(희귀): 전체 효과 2배↑',boseung:'카타나 평타(3초 미공격시 납도, 이후 첫 타는 발도 베기) / 스킬: 순간이동 베기 + 참격 연쇄 폭발 / 필살기: 각성(공격력↑ 쿨감↓) → 재사용시 글리치 베기',bake:'베이크 매그넘 평타: 열선 레이져+쿠키 난사(즉발/차징 랜덤) / 패시브: 미공격 시간↑→베이크 스택↑(무기 빨개짐, 스택 높을수록 스킬 데미지 강화, 평타는 영향 없음) / 스킬: 랜덤 주기로 입구 2회 여닫기 후 50% 즉시 풀 블래스트(관통 화상 레이져), 50% 1회 더 여닫고 풀 익스플로전(대폭발) / 필살기 없음',flower:'자로나!',seth:'사방에 책 투척 → 펼쳐지며 단어 난사',song:'쓰레받이(원형 휩쓸기/내려찍기)·빗자루(찌르기/휑베기) 중 2패턴 랜덤 연계'};
 const FLOWER_CD=1.5;
@@ -790,7 +790,7 @@ function updUI(){
     if(b.seq){const nk=b.seq[b.si%b.seq.length],nt='다음: '+(nk==='buff'?(((b.bv||0)+1)%2===1?'Hold position! Check, fire! (공속↑)':'Hold position! Check, fire! (데미지↑)'):SK[nk])+(b.buffLeft>0?' · 데미지×1.5 '+b.buffLeft+'회':'')+(b.asLeft>0?' · 공속↑ '+b.asLeft+'회':'')+(b.shield>0?' · 보호막 '+Math.ceil(b.shield):'');if(e.skt!==nt){e.sk.textContent=nt;e.skt=nt}}
   }
 }
-const selEl=document.getElementById('sel'),ROSTER=[0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],IMGS={0:faceImg,2:faceImg2,3:faceImg3,4:moingImg,5:cukuImg,6:wonkaImg,7:camImg,8:biaImg,9:fireImg,10:neraImg,11:mintImg,12:daeseokImg,13:barrelImg,14:ppeunImg,15:boseungImg,16:bakeImg,17:flowerImg,18:sethImg};
+const selEl=document.getElementById('sel'),ROSTER=[0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],IMGS={0:faceImg,2:faceImg2,3:faceImg3,4:moingImg,5:cukuImg,6:wonkaImg,7:camImg,8:biaImg,9:fireImg,10:neraImg,11:mintImg,12:daeseokImg,13:barrelImg,14:ppeunImg,15:boseungImg,16:bakeImg,17:flowerImg,18:sethImg,20:ppeunImg};
 let pick=[0,2],msg='';
 let raidPick=[0,2,4],raidMode=false;
 function renderSel(){
@@ -815,7 +815,7 @@ function renderRaidSel(){
   document.getElementById('raidBossBox').innerHTML=`<div class="opt on" style="cursor:default"><div class="th" style="background:${COLORS[19]}"><img src="${songImg.src}"></div><b>${NAMES[19]} (HP ${hpPrev})</b></div>`;
 }
 
-const HIDDEN=[17];
+const HIDDEN=[17,20];
 let hiddenUnlocked={};
 try{const sv=JSON.parse(localStorage.getItem('bf_hidden_unlocked')||'{}');if(sv&&typeof sv==='object')hiddenUnlocked=sv;}catch(e){}
 function saveHiddenUnlocked(){try{localStorage.setItem('bf_hidden_unlocked',JSON.stringify(hiddenUnlocked));}catch(e){}}
@@ -857,6 +857,19 @@ function checkFlowerUnlock(){
           }
         }
       }
+    }
+  }
+}
+function checkPpeunOriginalUnlock(){
+  if(hiddenUnlocked[20]||mode!=='fight')return;
+  for(const b of balls){
+    if(b.alive&&b.skill==='ppeun'&&!b.dummy&&!b.ppeunOriginal&&(b.maxHp||0)>=700){
+      hiddenUnlocked[20]=true;renderHidden();saveHiddenUnlocked();
+      playOneShot(flowerUnlockBuf,1);
+      fl.push({x:W/2,y:H/2-60,o:null,life:2.6,t:'히든 캐릭터 해금! 오리지날이쁜이',col:'#ffd54f'});
+      burst(b.x,b.y,'#ffd54f',30,420);burst(b.x,b.y,'#ff9fc2',30,420);
+      shk=Math.max(shk,.5);
+      return;
     }
   }
 }
@@ -915,7 +928,7 @@ document.getElementById('retry').onclick=()=>{sfx('click');stopSlice();reset();s
 function reset(){
   clearTimeout(timer);
   const raidPos=[{x:110,y:140},{x:110,y:300},{x:110,y:460},{x:490,y:300}];
-  balls=(raidMode?[...raidPick,19]:practice?[pick[0],1]:pick).map((c,slot)=>{const b=mk(c);b.id=slot;b.p=slot+1;
+  balls=(raidMode?[...raidPick,19]:practice?[pick[0],1]:pick).map((c,slot)=>{const b=mk(c);b.id=slot;b.p=slot+1;if(c===20)b.ppeunOriginal=true;
     if(raidMode){b.team=slot<3?1:2;b.x=raidPos[slot].x;b.y=raidPos[slot].y;
       if(slot===3){b.isBoss=true;b.name=NAMES[19];
         const dup=3-new Set(raidPick).size;
@@ -1009,6 +1022,7 @@ function useSkill(b){
 }
 function step(dt){
   checkFlowerUnlock();
+  checkPpeunOriginalUnlock();
   for(const b of balls){if(b.song&&!b.alive){try{b.song.stop()}catch(e){}b.song=null}}
   for(const q of proj){if(q.homing&&q.homeT&&q.homeT.alive){const hdx=q.homeT.x-q.x,hdy=q.homeT.y-q.y,hdd=Math.hypot(hdx,hdy)||1,hsp=Math.hypot(q.vx,q.vy)||360;q.vx+=(hdx/hdd*hsp-q.vx)*Math.min(1,dt*6);q.vy+=(hdy/hdd*hsp-q.vy)*Math.min(1,dt*6);}q.x+=q.vx*dt;q.y+=q.vy*dt;q.rot+=dt*8;q.life-=dt;if(q.cookie){if(q.x<8){q.x=8;q.vx=Math.abs(q.vx);}if(q.x>W-8){q.x=W-8;q.vx=-Math.abs(q.vx);}if(q.y<8){q.y=8;q.vy=Math.abs(q.vy);}if(q.y>H-8){q.y=H-8;q.vy=-Math.abs(q.vy);}q.vx*=.992;q.vy*=.992;}if(q.fire){q.trT=(q.trT||0)-dt;if(q.trT<=0){q.trT=.03;parts.push({x:q.x,y:q.y,vx:(Math.random()-.5)*20,vy:(Math.random()-.5)*20,life:.25+Math.random()*.1,col:Math.random()<.5?'#ff8a1e':'#ffcf4d'});}}for(const o of balls){if(!o.alive||o.team===q.team||air(o))continue;if(Math.hypot(o.x-q.x,o.y-q.y)<o.r+(q.spark?5:(q.glove?14:12))){hurt(o,q.dmg||6);burst(q.x,q.y,q.col||'#ffffff',q.fire?16:6,q.fire?200:120);q.life=0;break;}}}
   proj=proj.filter(q=>q.life>0&&q.x>-20&&q.x<W+20&&q.y>-20&&q.y<H+20);
@@ -2646,7 +2660,7 @@ function ppeunStep(b,dt){
     if(pot.boilT>=.8){
       let meat=0,veg=0,mush=0,fish=0,tofu=0,self=0;
       for(const it of pot.items){if(it==='meat')meat++;else if(it==='veg')veg++;else if(it==='mush')mush++;else if(it==='fish')fish++;else if(it==='tofu')tofu++;else self++;}
-      const mul=self>0?1+1*self:1;
+      const mul=(self>0?(b.ppeunOriginal?1+4*self:1+1*self):1)*(b.ppeunOriginal?2:1);
       const dmg=(50+meat*26)*mul;
       shk=Math.max(shk,self>0?1:.5);sfx('ult');
       fl.push({x:pot.x,y:pot.y-pot.r-18,life:1.2,t:self>0?'이쁜이 특제 전골!! 완성':'가마솥 완성!!',col:self>0?'#ff5fa8':'#ff6a1a'});
