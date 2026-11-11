@@ -310,7 +310,6 @@ function mk(i){
     ang:Math.random()*6.283,flash:0,alive:true,name:NAMES[i],skill:SKILLS[i],g:0,boost:0,img:i===0?faceImg:i===2?faceImg2:i===3?faceImg3:i===4?moingImg:i===5?cukuImg:i===6?wonkaImg:i===7?camImg:i===8?biaImg:i===9?fireImg:i===10?neraImg:i===11?mintImg:i===12?daeseokImg:i===13?barrelImg:i===14?ppeunImg:i===15?boseungImg:i===16?bakeImg:i===17?flowerImg:i===18?sethImg:i===19?songImg:i===20?ppeunImg:i===21?banyongImg:null,shadowImg:i===3?bullImg:null,treasure:i===0,freeform:i===17,animFrames:i===17?flowerFrames:null,show:null,seq:i===2?['lor','jam','sky','buff','shield']:null,si:0,ult:i===0?15:i===4?3:i===5?5:i===3?4:i===6?9:i===7?3:i===2?10:i===8?5:i===9?5:i===10?8:i===11?8:i===12?15:i===13?BARREL_ULT_USES:i===15?BOSEUNG_ULT_USES:i===17?3:10,dmgMul:i===9?.5:i===14?.5:i===20?.5:i===21?.7:i===19?1.4:1};
 }
 const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이',dash:'돌진',heal:'회복',shiny:'빛나',lor:'Load and Shoot',jam:'Fire! J-a-a-am!',sky:'To the sky!',buff:'Hold position!',shield:'Ready, routine Echo:',moing:'허기진 성욕',wonka:'초콜릿 무기',dk:'강화 손바닥 (적 벽 연속 넉백)',cuku:'패시브 벽 중첩 / 잔상 돌진',seq:'스킬 2종',fire:'화염방사기 입김+화상 / 불덩이 8방 / 필살기',nera:'대검 패시브 / 회전베기+강습 / 윤회',mint:'도끼 패시브 / 올라타기(확률) / 필살기: 야수화',daeseok:'전따봉 찌르기/휘두르기/돌리기 / 필살기: 전원 공중 내리꽂기',barrel:'평화의 수호자',ppeun:'고기: 공격력 / 야채: 체력재생 / 버섯: 이동속도 / 생선: 주변 광역피해 / 두부: 최대체력 / 이쁜이(희귀): 전체 효과 2배↑',boseung:'카타나 평타(3초 미공격시 납도, 이후 첫 타는 발도 베기) / 스킬: 순간이동 베기 + 참격 연쇄 폭발 / 필살기: 각성(공격력↑ 쿨감↓) → 재사용시 글리치 베기',bake:'베이크 매그넘 평타: 열선 레이져+쿠키 난사(즉발/차징 랜덤) / 패시브: 미공격 시간↑→베이크 스택↑(무기 빨개짐, 스택 높을수록 스킬 데미지 강화, 평타는 영향 없음) / 스킬: 랜덤 주기로 입구 2회 여닫기 후 50% 즉시 풀 블래스트(관통 화상 레이져), 50% 1회 더 여닫고 풀 익스플로전(대폭발) / 필살기 없음',flower:'자로나!',seth:'사방에 책 투척 → 펼쳐지며 단어 난사',song:'쓰레받이(원형 휩쓸기/내려찍기)·빗자루(찌르기/휑베기) 중 2패턴 랜덤 연계',banyong:'주기적으로 반용주 공을 필드에 포물선으로 투척(적 지정X) → 착지 시 랜덤 공격방식의 반용주 소환 (돌진/원거리/폭탄 중 1) / 5% 확률로 개씹반용주로 강화 소환'};
-const BANYONG_THROW_CD=[1.5,2.3];
 const FLOWER_CD=1.5;
 const SETH_CD=4.5;
 const SETH_WORDS=['나타마토아완전화려해졌어한때는칙칙했지만','오때론난망가져갈지모르지','우리아버지성도지방도태돼셨어','크큭선이보인다'];
@@ -2598,10 +2597,11 @@ let banyongThrows=[],banyongPets=[],banyongBullets=[];
 const BANYONG_STYLES=['rush','ranged','bomb'];
 function banyongStep(b,dt){
   if(b.cz||b.cm||b.stun>0)return;
-  if(!b.banyongPeriod)b.banyongPeriod=BANYONG_THROW_CD[0]+Math.random()*(BANYONG_THROW_CD[1]-BANYONG_THROW_CD[0]);
-  b.g=Math.min(1,(b.g||0)+dt/b.banyongPeriod);
+  const alliedPets=banyongPets.filter(p=>p.team===b.team).length;
+  const period=1+alliedPets;
+  b.g=Math.min(1,(b.g||0)+dt/period);
   if(b.g>=1){
-    b.g=0;b.banyongPeriod=BANYONG_THROW_CD[0]+Math.random()*(BANYONG_THROW_CD[1]-BANYONG_THROW_CD[0]);
+    b.g=0;
     const tx=60+Math.random()*(W-120),ty=60+Math.random()*(H-120);
     banyongThrows.push({x0:b.x,y0:b.y,x1:tx,y1:ty,t:0,dur:.85+Math.random()*.25,team:b.team});
   }
