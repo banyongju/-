@@ -2791,12 +2791,18 @@ function banyongPetsStep(dt){
       if(p.tearT<1){
         p.pillarX1=p.x-10;p.pillarX2=p.x+10;
       }else if(target){
-        p.pillarX1=(p.pillarX1===undefined)?target.x-10:p.pillarX1+((target.x-10)-p.pillarX1)*Math.min(1,dt*2.5);
-        p.pillarX2=(p.pillarX2===undefined)?target.x+10:p.pillarX2+((target.x+10)-p.pillarX2)*Math.min(1,dt*2.5);
+        // slower, inertia-based tracking: the beams accelerate toward the enemy like they're being dragged,
+        // so if the enemy suddenly stops the beams overshoot forward before swinging back (under-damped spring)
+        if(p.pillarX1===undefined){p.pillarX1=target.x-10;p.pillarX2=target.x+10;p.pillarVx1=0;p.pillarVx2=0;}
+        const k=5.5,damp=.94;
+        p.pillarVx1=(p.pillarVx1+((target.x-10)-p.pillarX1)*k*dt)*damp;
+        p.pillarVx2=(p.pillarVx2+((target.x+10)-p.pillarX2)*k*dt)*damp;
+        p.pillarX1+=p.pillarVx1*dt;
+        p.pillarX2+=p.pillarVx2*dt;
         if(Math.abs(target.x-p.pillarX1)<20||Math.abs(target.x-p.pillarX2)<20)hurt(target,6*mul*dt);
       }
     }else if(grp==='rush'){
-      const hitPad=p.style==='thorns'?14:4;
+      const hitPad=4;
       if(target){
         const a=Math.atan2(target.y-p.y,target.x-p.x),sp=p.trans?340:230;
         p.vx=Math.cos(a)*sp;p.vy=Math.sin(a)*sp;
