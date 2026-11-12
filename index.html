@@ -2659,7 +2659,8 @@ function banyongStep(b,dt){
       return;
     }
     const tx=60+Math.random()*(W-120),ty=60+Math.random()*(H-120);
-    banyongThrows.push({x0:b.x,y0:b.y,x1:tx,y1:ty,t:0,dur:.85+Math.random()*.25,team:b.team});
+    const style=BANYONG_STYLES[Math.floor(Math.random()*BANYONG_STYLES.length)];
+    banyongThrows.push({x0:b.x,y0:b.y,x1:tx,y1:ty,t:0,dur:.85+Math.random()*.25,team:b.team,style});
   }
 }
 function spawnBanyongPet(x,y,team,opts){
@@ -2671,7 +2672,7 @@ function spawnBanyongPet(x,y,team,opts){
 function banyongThrowsStep(dt){
   for(const th of banyongThrows){
     th.t+=dt;
-    if(th.t>=th.dur&&!th.dead){th.dead=true;spawnBanyongPet(th.x1,th.y1,th.team);}
+    if(th.t>=th.dur&&!th.dead){th.dead=true;spawnBanyongPet(th.x1,th.y1,th.team,{style:th.style});}
   }
   banyongThrows=banyongThrows.filter(th=>!th.dead);
 }
@@ -2807,7 +2808,8 @@ function drawBanyongThrows(){
     ctx.save();ctx.globalAlpha=.25*(1-arc/90);ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x,y0,rr*.8,rr*.3,0,0,6.283);ctx.fill();ctx.restore();
     ctx.save();ctx.translate(x,yy);ctx.rotate(t*10);
     ctx.beginPath();ctx.arc(0,0,rr,0,6.283);ctx.closePath();ctx.clip();
-    if(banyongImg&&banyongImg.complete)ctx.drawImage(banyongImg,-rr,-rr,rr*2,rr*2);
+    const thImg=BANYONG_STYLE_IMG[th.style]||banyongImg;
+    if(thImg&&thImg.complete)ctx.drawImage(thImg,-rr,-rr,rr*2,rr*2);
     else{ctx.fillStyle='#3a7dff';ctx.fillRect(-rr,-rr,rr*2,rr*2);}
     ctx.restore();
     ctx.save();ctx.beginPath();ctx.arc(x,yy,rr,0,6.283);ctx.strokeStyle='#3a7dff';ctx.lineWidth=2;ctx.stroke();ctx.restore();
