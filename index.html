@@ -2692,7 +2692,7 @@ function banyongPetsStep(dt){
     for(const o of balls){
       if(!o.alive||o.team===p.team||air(o))continue;
       if(Math.hypot(o.x-p.x,o.y-p.y)<o.r+p.r&&p.hitCd<=0){
-        p.hitCd=.4;p.hp-=10;
+        p.hitCd=.4;p.hp-=4;
         burst(p.x,p.y,'#ff5a4a',6,160);
       }
     }
@@ -2805,21 +2805,33 @@ function banyongPetsStep(dt){
       }
     }else if(grp==='tears'){
       // 슬픈용주: stands in place, fires TWO tear-beams straight up for a 1s windup (no damage yet), then both beams
-      // come down and continuously (gapless) track+damage the enemy
+      // come down and continuously (gapless) track the enemy, falling like tear drops that splash (hitbox) on landing
       p.vx=0;p.vy=0;
       p.tearT=(p.tearT===undefined)?0:p.tearT+dt;
+      p.splashT1=Math.max(0,(p.splashT1||0)-dt);
+      p.splashT2=Math.max(0,(p.splashT2||0)-dt);
       if(p.tearT<1){
         p.pillarX1=p.x-10;p.pillarX2=p.x+10;
       }else if(target){
         // slower, inertia-based tracking: the beams accelerate toward the enemy like they're being dragged,
         // so if the enemy suddenly stops the beams overshoot forward before swinging back (under-damped spring)
-        if(p.pillarX1===undefined){p.pillarX1=target.x-10;p.pillarX2=target.x+10;p.pillarVx1=0;p.pillarVx2=0;}
+        if(p.pillarVx1===undefined){p.pillarX1=target.x-10;p.pillarX2=target.x+10;p.pillarVx1=0;p.pillarVx2=0;}
         const k=5.5,damp=.94;
         p.pillarVx1=(p.pillarVx1+((target.x-10)-p.pillarX1)*k*dt)*damp;
         p.pillarVx2=(p.pillarVx2+((target.x+10)-p.pillarX2)*k*dt)*damp;
         p.pillarX1+=p.pillarVx1*dt;
         p.pillarX2+=p.pillarVx2*dt;
-        if(Math.abs(target.x-p.pillarX1)<20||Math.abs(target.x-p.pillarX2)<20)hurt(target,6*mul*dt);
+        p.tearY=target.y;
+        // 눈물방울이 하늘에서 바닥(적이 있는 지점)까지 떨어지는 애니메이션. 두 방울이 서로 엇갈려 떨어져서 끊김없이 느껴짐.
+        // 히트박스는 떨어진 방울이 바닥에 닿아 별모양으로 튀는 그 지점에만 존재함
+        const fallDur=.5;
+        p.dropT1=(p.dropT1===undefined)?0:p.dropT1+dt/fallDur;
+        p.dropT2=(p.dropT2===undefined)?.5:p.dropT2+dt/fallDur;
+        let landed1=false,landed2=false;
+        if(p.dropT1>=1){p.dropT1-=1;landed1=true;}
+        if(p.dropT2>=1){p.dropT2-=1;landed2=true;}
+        if(landed1&&Math.abs(target.x-p.pillarX1)<22){hurt(target,1.5*mul);p.splashT1=.25;burst(p.pillarX1,p.tearY,'#eaf6ff',12,200);}
+        if(landed2&&Math.abs(target.x-p.pillarX2)<22){hurt(target,1.5*mul);p.splashT2=.25;burst(p.pillarX2,p.tearY,'#eaf6ff',12,200);}
       }
     }else if(grp==='rush'){
       const hitPad=4;
@@ -2884,6 +2896,18 @@ function drawBanyongThrows(){
     ctx.save();ctx.beginPath();ctx.arc(x,yy,rr,0,6.283);ctx.strokeStyle='#3a7dff';ctx.lineWidth=2;ctx.stroke();ctx.restore();
   }
 }
+function drawBanyongStar(cx,cy,r,rot,col){
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(rot);
+  ctx.beginPath();
+  for(let i=0;i<10;i++){
+    const rad=i%2===0?r:r*.45,a=i*Math.PI/5-Math.PI/2;
+    const px=Math.cos(a)*rad,py=Math.sin(a)*rad;
+    if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.closePath();
+  ctx.fillStyle=col;ctx.shadowColor=col;ctx.shadowBlur=8;ctx.fill();
+  ctx.restore();
+}
 function drawBanyongPets(){
   for(const p of banyongPets){
     if(p.trans){
@@ -2904,10 +2928,14 @@ function drawBanyongPets(){
         ctx.restore();
       }else{
         if(p.pillarX1!==undefined){
-          ctx.save();ctx.globalAlpha=.5+.1*Math.sin(performance.now()/120);ctx.fillStyle='#7ec8ff';
-          ctx.fillRect(p.pillarX1-12,0,24,H);
-          ctx.fillRect(p.pillarX2-12,0,24,H);
-          ctx.restore();
+          const ty=p.tearY!==undefined?p.tearY:H-20;
+          const y1=(p.dropT1||0)*ty,y2=(p.dropT2||0)*ty;
+          // 하늘에서 떨어지는 눈물방울 (별모양)
+          drawBanyongStar(p.pillarX1,y1,7,performance.now()/260,'#7ec8ff');
+          drawBanyongStar(p.pillarX2,y2,7,performance.now()/260+1.3,'#7ec8ff');
+          // 바닥(적이 있는 지점)에 닿아 튀는 스플래시 - 이 위치가 곧 히트박스
+          if(p.splashT1>0){ctx.save();ctx.globalAlpha=p.splashT1/.25;drawBanyongStar(p.pillarX1,ty,14+(.25-p.splashT1)*44,0,'#eaf6ff');ctx.restore();}
+          if(p.splashT2>0){ctx.save();ctx.globalAlpha=p.splashT2/.25;drawBanyongStar(p.pillarX2,ty,14+(.25-p.splashT2)*44,0,'#eaf6ff');ctx.restore();}
         }
       }
     }
@@ -2918,6 +2946,16 @@ function drawBanyongPets(){
     else{ctx.fillStyle=p.trans?'#ff2d2d':'#3a7dff';ctx.fillRect(-p.r,-p.r,p.r*2,p.r*2);}
     ctx.restore();
     ctx.save();ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.283);ctx.strokeStyle=p.trans?'#ff2d2d':'#3a7dff';ctx.lineWidth=p.trans?3:2;ctx.stroke();ctx.restore();
+    // 베이비 용주 체력바
+    if(p.hp!==undefined&&p.maxHp){
+      const bw=p.r*2,bx=p.x-p.r,by=p.y-p.r-9,ratio=Math.max(0,p.hp/p.maxHp);
+      ctx.save();
+      ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(bx,by,bw,5);
+      ctx.fillStyle=ratio>.5?'#5fe67a':(ratio>.25?'#ffd84a':'#ff5a4a');
+      ctx.fillRect(bx,by,bw*ratio,5);
+      ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=1;ctx.strokeRect(bx+.5,by+.5,bw-1,4);
+      ctx.restore();
+    }
   }
 }
 function drawBanyongBullets(){
