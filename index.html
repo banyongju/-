@@ -326,7 +326,7 @@ function mk(i){
     r:i===19?46:i===0?32:i===2?36:i===3?38:26,hp:i===19?1000:i===10?200:i===14?75:i===20?300:i===21?240:300,maxHp:i===19?1000:i===10?200:i===14?75:i===20?300:i===21?240:300,c:COLORS[i],t,len:c.len,dmg:c.dmg,cap:c.cap,spin:c.spin*(Math.random()<.5?-1:1),
     ang:Math.random()*6.283,flash:0,alive:true,name:NAMES[i],skill:SKILLS[i],g:0,boost:0,img:i===0?faceImg:i===2?faceImg2:i===3?faceImg3:i===4?moingImg:i===5?cukuImg:i===6?wonkaImg:i===7?camImg:i===8?biaImg:i===9?fireImg:i===10?neraImg:i===11?mintImg:i===12?daeseokImg:i===13?barrelImg:i===14?ppeunImg:i===15?boseungImg:i===16?bakeImg:i===17?flowerImg:i===18?sethImg:i===19?songImg:i===20?ppeunImg:i===21?banyongImg:null,shadowImg:i===3?bullImg:null,treasure:i===0,freeform:i===17,animFrames:i===17?flowerFrames:null,show:null,seq:i===2?['lor','jam','sky','buff','shield']:null,si:0,ult:i===0?15:i===4?3:i===5?5:i===3?4:i===6?9:i===7?3:i===2?10:i===8?5:i===9?5:i===10?8:i===11?8:i===12?15:i===13?BARREL_ULT_USES:i===15?BOSEUNG_ULT_USES:i===17?3:10,dmgMul:i===9?.5:i===14?.5:i===20?.5:i===21?.7:i===19?1.4:1};
 }
-const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이',dash:'돌진',heal:'회복',shiny:'빛나',lor:'Load and Shoot',jam:'Fire! J-a-a-am!',sky:'To the sky!',buff:'Hold position!',shield:'Ready, routine Echo:',moing:'허기진 성욕',wonka:'초콜릿 무기',dk:'강화 손바닥 (적 벽 연속 넉백)',cuku:'패시브 벽 중첩 / 잔상 돌진',seq:'스킬 2종',fire:'화염방사기 입김+화상 / 불덩이 8방 / 필살기',nera:'대검 패시브 / 회전베기+강습 / 윤회',mint:'도끼 패시브 / 올라타기(확률) / 필살기: 야수화',daeseok:'전따봉 찌르기/휘두르기/돌리기 / 필살기: 전원 공중 내리꽂기',barrel:'평화의 수호자',ppeun:'고기: 공격력 / 야채: 체력재생 / 버섯: 이동속도 / 생선: 주변 광역피해 / 두부: 최대체력 / 이쁜이(희귀): 전체 효과 2배↑',boseung:'카타나 평타(3초 미공격시 납도, 이후 첫 타는 발도 베기) / 스킬: 순간이동 베기 + 참격 연쇄 폭발 / 필살기: 각성(공격력↑ 쿨감↓) → 재사용시 글리치 베기',bake:'베이크 매그넘 평타: 열선 레이져+쿠키 난사(즉발/차징 랜덤) / 패시브: 미공격 시간↑→베이크 스택↑(무기 빨개짐, 스택 높을수록 스킬 데미지 강화, 평타는 영향 없음) / 스킬: 랜덤 주기로 입구 2회 여닫기 후 50% 즉시 풀 블래스트(관통 화상 레이져), 50% 1회 더 여닫고 풀 익스플로전(대폭발) / 필살기 없음',flower:'자로나!',seth:'사방에 책 투척 → 펼쳐지며 단어 난사',song:'쓰레받이(원형 휩쓸기/내려찍기)·빗자루(찌르기/휑베기) 중 2패턴 랜덤 연계',banyong:'주기적으로 반용주 공을 필드에 포물선으로 투척(적 지정X) → 착지 시 18종 중 랜덤 공격방식의 미니반용주 소환 / 5% 확률로 개쌉반용주로 강화 소환 (눈레이저 사방 휩쓸기+벽 화상, 소환주기 1초 고정)'};
+const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이',dash:'돌진',heal:'회복',shiny:'빛나',lor:'Load and Shoot',jam:'Fire! J-a-a-am!',sky:'To the sky!',buff:'Hold position!',shield:'Ready, routine Echo:',moing:'허기진 성욕',wonka:'초콜릿 무기',dk:'강화 손바닥 (적 벽 연속 넉백)',cuku:'패시브 벽 중첩 / 잔상 돌진',seq:'스킬 2종',fire:'화염방사기 입김+화상 / 불덩이 8방 / 필살기',nera:'대검 패시브 / 회전베기+강습 / 윤회',mint:'도끼 패시브 / 올라타기(확률) / 필살기: 야수화',daeseok:'전따봉 찌르기/휘두르기/돌리기 / 필살기: 전원 공중 내리꽂기',barrel:'평화의 수호자',ppeun:'고기: 공격력 / 야채: 체력재생 / 버섯: 이동속도 / 생선: 주변 광역피해 / 두부: 최대체력 / 이쁜이(희귀): 전체 효과 2배↑',boseung:'카타나 평타(3초 미공격시 납도, 이후 첫 타는 발도 베기) / 스킬: 순간이동 베기 + 참격 연쇄 폭발 / 필살기: 각성(공격력↑ 쿨감↓) → 재사용시 글리치 베기',bake:'베이크 매그넘 평타: 열선 레이져+쿠키 난사(즉발/차징 랜덤) / 패시브: 미공격 시간↑→베이크 스택↑(무기 빨개짐, 스택 높을수록 스킬 데미지 강화, 평타는 영향 없음) / 스킬: 랜덤 주기로 입구 2회 여닫기 후 50% 즉시 풀 블래스트(관통 화상 레이져), 50% 1회 더 여닫고 풀 익스플로전(대폭발) / 필살기 없음',flower:'자로나!',seth:'사방에 책 투척 → 펼쳐지며 단어 난사',song:'쓰레받이(원형 휩쓸기/내려찍기)·빗자루(찌르기/휑베기) 중 2패턴 랜덤 연계',banyong:'주기적으로 반용주 공을 필드에 포물선으로 투척(적 지정X) → 착지 시 18종 중 랜덤 공격방식의 미니반용주 소환 / 5% 확률로 본체가 개쌉반용주로 변신 (제자리 고정, 1초마다 미니반용주 자동 소환, 두꺼운 눈레이저를 제자리에서 회전시키며 휩쓸기+벽 화상)'};
 const FLOWER_CD=1.5;
 const SETH_CD=4.5;
 const SETH_WORDS=['나타마토아완전화려해졌어한때는칙칙했지만','오때론난망가져갈지모르지','우리아버지성도지방도태돼셨어','크큭선이보인다'];
@@ -2618,23 +2618,55 @@ const BANYONG_GRP={sponge:'sponge',happy:'rush',galtong:'ranged',bigeye:'ranged'
 const BANYONG_STYLES=Object.keys(BANYONG_GRP);
 function banyongStep(b,dt){
   if(b.cz||b.cm||b.stun>0)return;
+  if(b.trans){
+    // 개쌉반용주: the main body itself has transformed - stays in place, auto-summons a mini every 1s, sweeps a big laser
+    b.vx=0;b.vy=0;
+    b.transT=(b.transT||0)-dt;
+    if(b.transT<=0){b.trans=false;b.img=banyongImg;return;}
+    b.miniCd=(b.miniCd||0)-dt;
+    if(b.miniCd<=0){b.miniCd=1;spawnBanyongPet(b.x,b.y,b.team,{small:true});}
+    b.laserAng=(b.laserAng||0)+dt*2.0;
+    b.beamCd=Math.max(0,(b.beamCd||0)-dt);
+    if(b.beamCd<=0){
+      let hitAny=false;
+      for(const o of balls){
+        if(!o.alive||o.team===b.team||air(o))continue;
+        const dx=o.x-b.x,dy=o.y-b.y,dist=Math.hypot(dx,dy);
+        if(dist>520)continue;
+        let diff=Math.atan2(dy,dx)-b.laserAng;diff=Math.abs(Math.atan2(Math.sin(diff),Math.cos(diff)));
+        if(diff<0.22){hurt(o,14);burst(o.x,o.y,'#ff2d2d',10,180);hitAny=true;}
+      }
+      if(hitAny)b.beamCd=.2;
+    }
+    b.wallBurnCd=Math.max(0,(b.wallBurnCd||0)-dt);
+    if(b.wallBurnCd<=0){
+      const ddx=Math.cos(b.laserAng),ddy=Math.sin(b.laserAng);
+      let t=Infinity;
+      if(ddx>0.0001)t=Math.min(t,(W-b.x)/ddx);else if(ddx<-0.0001)t=Math.min(t,(0-b.x)/ddx);
+      if(ddy>0.0001)t=Math.min(t,(H-b.y)/ddy);else if(ddy<-0.0001)t=Math.min(t,(0-b.y)/ddy);
+      if(isFinite(t)&&t>0){burst(b.x+ddx*t,b.y+ddy*t,'#ff6a1a',8,160);b.wallBurnCd=.3;}
+    }
+    return;
+  }
   const alliedPets=banyongPets.filter(p=>p.team===b.team);
-  const transAlive=alliedPets.some(p=>p.trans);
-  const period=transAlive?1:1+alliedPets.length;
+  const period=1+alliedPets.length;
   b.g=Math.min(1,(b.g||0)+dt/period);
   if(b.g>=1){
     b.g=0;
+    if(Math.random()<0.05){
+      b.trans=true;b.transT=8;b.img=banyongTransImg;b.miniCd=0;b.laserAng=Math.random()*6.283;b.beamCd=0;b.wallBurnCd=0;
+      shk=Math.max(shk,.4);fl.push({x:b.x,y:b.y-b.r-20,life:1.3,t:'개쌉반용주!',col:'#ff2d2d'});burst(b.x,b.y,'#ff2d2d',30,320);
+      return;
+    }
     const tx=60+Math.random()*(W-120),ty=60+Math.random()*(H-120);
     banyongThrows.push({x0:b.x,y0:b.y,x1:tx,y1:ty,t:0,dur:.85+Math.random()*.25,team:b.team});
   }
 }
 function spawnBanyongPet(x,y,team,opts){
   opts=opts||{};
-  const trans=opts.noSpawn?false:Math.random()<0.05;
   const style=opts.style||BANYONG_STYLES[Math.floor(Math.random()*BANYONG_STYLES.length)];
-  banyongPets.push({x,y,vx:0,vy:0,r:trans?26:(opts.small?13:17),team,style,trans,life:trans?12:(opts.small?6:9),atkCd:0,laserAng:Math.random()*6.283,noSpawn:!!opts.noSpawn});
-  burst(x,y,trans?'#ff2d2d':'#3a7dff',trans?28:14,trans?320:200);
-  if(trans){shk=Math.max(shk,.35);fl.push({x,y:y-30,life:1.2,t:'개쌉반용주!',col:'#ff2d2d'});}
+  banyongPets.push({x,y,vx:0,vy:0,r:opts.small?13:17,team,style,trans:false,life:opts.small?6:9,atkCd:0,laserAng:Math.random()*6.283,noSpawn:!!opts.noSpawn});
+  burst(x,y,'#3a7dff',14,200);
 }
 function banyongThrowsStep(dt){
   for(const th of banyongThrows){
@@ -5152,6 +5184,17 @@ function draw(){
     if(b.asLeft>0){ctx.save();ctx.strokeStyle='rgba(120,255,200,.85)';ctx.lineWidth=2;ctx.setLineDash([6,5]);ctx.beginPath();ctx.arc(b.x,b.y,b.r+12,0,6.283);ctx.stroke();ctx.restore();}
     if(b.buffT>0||b.buffLeft>0){ctx.save();ctx.shadowColor='#ffd84a';ctx.shadowBlur=18;ctx.strokeStyle='rgba(255,216,74,.9)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(b.x,b.y,b.r+6+2*Math.sin(performance.now()/120),0,6.283);ctx.stroke();ctx.restore();}
     if(b.burnT>0){ctx.save();ctx.globalAlpha=.55+.25*Math.sin(performance.now()/90);ctx.shadowColor='#ff5a14';ctx.shadowBlur=16;ctx.strokeStyle='#ff7a2f';ctx.lineWidth=3;ctx.setLineDash([5,4]);ctx.beginPath();ctx.arc(b.x,b.y,b.r+9,0,6.283);ctx.stroke();ctx.restore();}
+    if(b.skill==='banyong'&&b.trans){
+      const ddx=Math.cos(b.laserAng||0),ddy=Math.sin(b.laserAng||0);
+      let t=2000;
+      if(ddx>0.0001)t=Math.min(t,(W-b.x)/ddx);else if(ddx<-0.0001)t=Math.min(t,(0-b.x)/ddx);
+      if(ddy>0.0001)t=Math.min(t,(H-b.y)/ddy);else if(ddy<-0.0001)t=Math.min(t,(0-b.y)/ddy);
+      const ex=b.x+ddx*t,ey=b.y+ddy*t;
+      ctx.save();ctx.strokeStyle='#ff2d2d';ctx.lineWidth=9;ctx.globalAlpha=.8;ctx.shadowColor='#ff2d2d';ctx.shadowBlur=18;
+      ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(ex,ey);ctx.stroke();
+      ctx.restore();
+      ctx.save();ctx.strokeStyle='#ff2d2d';ctx.lineWidth=2;ctx.shadowColor='#ff2d2d';ctx.shadowBlur=14;ctx.beginPath();ctx.arc(b.x,b.y,b.r+8+2*Math.sin(performance.now()/100),0,6.283);ctx.stroke();ctx.restore();
+    }
     if(b.shadowImg&&b.shadowImg.complete&&bullBody.complete)drawBull(b);
     if(b.glow){ctx.save();ctx.lineWidth=5;ctx.shadowBlur=20;const ro=performance.now()/600;ctx.shadowColor='#ff4fd8';ctx.strokeStyle='#ff4fd8';ctx.beginPath();ctx.arc(b.x,b.y,b.r+9,ro,ro+3.14);ctx.stroke();ctx.shadowColor='#5fe6ff';ctx.strokeStyle='#5fe6ff';ctx.beginPath();ctx.arc(b.x,b.y,b.r+9,ro+3.14,ro+6.28);ctx.stroke();ctx.restore();}
     if(b.treasure)drawTreasure(b);
@@ -5205,6 +5248,13 @@ function draw(){
           ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.35+.1*Math.sin(performance.now()/180);
           const g=ctx.createRadialGradient(b.x,b.y,b.r*.5,b.x,b.y,b.r);
           g.addColorStop(0,'rgba(255,45,180,0)');g.addColorStop(1,'rgba(255,210,58,.55)');
+          ctx.fillStyle=g;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,6.283);ctx.fill();
+          ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
+        }
+        if(b.skill==='banyong'&&b.trans){
+          ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.4+.15*Math.sin(performance.now()/140);
+          const g=ctx.createRadialGradient(b.x,b.y,b.r*.4,b.x,b.y,b.r);
+          g.addColorStop(0,'rgba(255,45,45,0)');g.addColorStop(1,'rgba(255,45,45,.6)');
           ctx.fillStyle=g;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,6.283);ctx.fill();
           ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
         }
