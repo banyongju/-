@@ -2616,6 +2616,8 @@ const BANYONG_GRP={sponge:'sponge',happy:'rush',galtong:'ranged',bigeye:'ranged'
   napjug:'napjug',daegal:'bomb',gasorob:'ranged',rage:'rage',bignose2:'bomb',
   sparkle:'ranged',thorns:'rush',smell:'bomb'};
 const BANYONG_STYLES=Object.keys(BANYONG_GRP);
+// 현재 제작 완료되어 실제로 등장시킬 스타일만 (나머지는 제작중이라 롤에서 제외)
+const BANYONG_READY_STYLES=['sponge','newsummon','tears','napjug','spin'];
 function banyongStep(b,dt){
   if(b.cz||b.cm||b.stun>0)return;
   if(b.trans){
@@ -2663,14 +2665,14 @@ function banyongStep(b,dt){
       return;
     }
     const tx=60+Math.random()*(W-120),ty=60+Math.random()*(H-120);
-    const style=BANYONG_STYLES[Math.floor(Math.random()*BANYONG_STYLES.length)];
+    const style=BANYONG_READY_STYLES[Math.floor(Math.random()*BANYONG_READY_STYLES.length)];
     banyongThrows.push({x0:b.x,y0:b.y,x1:tx,y1:ty,t:0,dur:.85+Math.random()*.25,team:b.team,style});
   }
 }
 function spawnBanyongPet(x,y,team,opts){
   opts=opts||{};
-  const style=opts.style||BANYONG_STYLES[Math.floor(Math.random()*BANYONG_STYLES.length)];
-  banyongPets.push({x,y,vx:opts.vx||0,vy:opts.vy||0,r:opts.small?14:16,team,style,trans:false,life:opts.small?6:9,atkCd:0,laserAng:Math.random()*6.283,noSpawn:!!opts.noSpawn,fountainT:opts.fountain?0.45:0});
+  const style=opts.style||BANYONG_READY_STYLES[Math.floor(Math.random()*BANYONG_READY_STYLES.length)];
+  banyongPets.push({x,y,vx:opts.vx||0,vy:opts.vy||0,r:opts.small?14:16,team,style,trans:false,life:opts.small?5:9,atkCd:0,hitCd:0,hp:20,maxHp:20,laserAng:Math.random()*6.283,noSpawn:!!opts.noSpawn,fountainT:opts.fountain?0.45:0});
   burst(x,y,'#3a7dff',14,200);
 }
 function banyongThrowsStep(dt){
@@ -2682,8 +2684,26 @@ function banyongThrowsStep(dt){
 }
 function banyongPetsStep(dt){
   for(const p of banyongPets){
+    if(p.hp===undefined){p.hp=p.maxHp=20;}
     p.life-=dt;
     if(p.life<=0){p.dead=true;continue;}
+    // 베이비 용주: 적의 공격을 맞으면 체력(20)이 깎이고, 0이 되면 죽는다
+    p.hitCd=Math.max(0,(p.hitCd||0)-dt);
+    for(const o of balls){
+      if(!o.alive||o.team===p.team||air(o))continue;
+      if(Math.hypot(o.x-p.x,o.y-p.y)<o.r+p.r&&p.hitCd<=0){
+        p.hitCd=.4;p.hp-=10;
+        burst(p.x,p.y,'#ff5a4a',6,160);
+      }
+    }
+    for(const q of proj){
+      if(q.team===p.team||q.life<=0)continue;
+      if(Math.hypot(q.x-p.x,q.y-p.y)<p.r+(q.spark?5:(q.glove?14:12))){
+        p.hp-=q.dmg||6;q.life=0;
+        burst(p.x,p.y,q.col||'#ffffff',6,160);
+      }
+    }
+    if(p.hp<=0){p.dead=true;burst(p.x,p.y,'#3a7dff',18,260);continue;}
     if(p.fountainT>0){
       p.fountainT-=dt;
       p.vy+=dt*260;
@@ -2753,7 +2773,7 @@ function banyongPetsStep(dt){
       if(!p.noSpawn&&p.atkCd<=0){
         p.atkCd=3.2;
         const tx=60+Math.random()*(W-120),ty=60+Math.random()*(H-120);
-        const cstyle=BANYONG_STYLES[Math.floor(Math.random()*BANYONG_STYLES.length)];
+        const cstyle=BANYONG_READY_STYLES[Math.floor(Math.random()*BANYONG_READY_STYLES.length)];
         banyongThrows.push({x0:p.x,y0:p.y,x1:tx,y1:ty,t:0,dur:.6+Math.random()*.2,team:p.team,style:cstyle,small:true,noSpawn:true});
       }
     }else if(grp==='rage'){
