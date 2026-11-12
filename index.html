@@ -2612,8 +2612,8 @@ function drawBarrelUltFx(){
 let ppeunIng=[],ppeunIngId=0,ppeunProj=[];
 let banyongThrows=[],banyongPets=[],banyongBullets=[];
 const BANYONG_GRP={sponge:'sponge',happy:'rush',galtong:'ranged',bigeye:'ranged',bignose:'bomb',
-  spin:'spin',cartoon:'rush',newsummon:'newsummon',gaeddi:'bomb',tears:'ranged',
-  napjug:'rush',daegal:'bomb',gasorob:'ranged',rage:'rage',bignose2:'bomb',
+  spin:'spin',cartoon:'rush',newsummon:'newsummon',gaeddi:'bomb',tears:'tears',
+  napjug:'napjug',daegal:'bomb',gasorob:'ranged',rage:'rage',bignose2:'bomb',
   sparkle:'ranged',thorns:'rush',smell:'bomb'};
 const BANYONG_STYLES=Object.keys(BANYONG_GRP);
 function banyongStep(b,dt){
@@ -2670,13 +2670,13 @@ function banyongStep(b,dt){
 function spawnBanyongPet(x,y,team,opts){
   opts=opts||{};
   const style=opts.style||BANYONG_STYLES[Math.floor(Math.random()*BANYONG_STYLES.length)];
-  banyongPets.push({x,y,vx:opts.vx||0,vy:opts.vy||0,r:opts.small?13:17,team,style,trans:false,life:opts.small?6:9,atkCd:0,laserAng:Math.random()*6.283,noSpawn:!!opts.noSpawn,fountainT:opts.fountain?0.45:0});
+  banyongPets.push({x,y,vx:opts.vx||0,vy:opts.vy||0,r:opts.small?14:16,team,style,trans:false,life:opts.small?6:9,atkCd:0,laserAng:Math.random()*6.283,noSpawn:!!opts.noSpawn,fountainT:opts.fountain?0.45:0});
   burst(x,y,'#3a7dff',14,200);
 }
 function banyongThrowsStep(dt){
   for(const th of banyongThrows){
     th.t+=dt;
-    if(th.t>=th.dur&&!th.dead){th.dead=true;spawnBanyongPet(th.x1,th.y1,th.team,{style:th.style});}
+    if(th.t>=th.dur&&!th.dead){th.dead=true;spawnBanyongPet(th.x1,th.y1,th.team,{style:th.style,small:th.small,noSpawn:th.noSpawn});}
   }
   banyongThrows=banyongThrows.filter(th=>!th.dead);
 }
@@ -2723,17 +2723,21 @@ function banyongPetsStep(dt){
     }
     const grp=BANYONG_GRP[p.style]||'rush';
     if(grp==='sponge'){
-      if(target){
-        const ddx=target.x-p.x,ddy=target.y-p.y,sp=200;
-        if(Math.abs(ddx)>Math.abs(ddy)){p.vx=Math.sign(ddx)*sp;p.vy=0;}else{p.vx=0;p.vy=Math.sign(ddy)*sp;}
-        if(bd<target.r+p.r+4&&p.atkCd<=0){
-          p.atkCd=.6;hurt(target,8*mul);
-          const a=Math.atan2(ddy,ddx);target.vx+=Math.cos(a)*220;target.vy+=Math.sin(a)*220;
-          burst(target.x,target.y,'#3a7dff',10,200);
-        }
-      }else{p.vx*=.9;p.vy*=.9;}
+      p.spongeT=(p.spongeT===undefined?0:p.spongeT)-dt;
+      if(p.spongeT<=0){
+        p.spongeT=.35+Math.random()*.35;
+        const dir=Math.floor(Math.random()*4),sp=210;
+        p.vx=dir===0?sp:dir===1?-sp:0;
+        p.vy=dir===2?sp:dir===3?-sp:0;
+      }
       p.x+=p.vx*dt;p.y+=p.vy*dt;
+      if(p.x<=p.r||p.x>=W-p.r||p.y<=p.r||p.y>=H-p.r)p.spongeT=0;
       p.x=Math.max(p.r,Math.min(W-p.r,p.x));p.y=Math.max(p.r,Math.min(H-p.r,p.y));
+      if(target&&bd<target.r+p.r+4&&p.atkCd<=0){
+        p.atkCd=.6;hurt(target,8*mul);
+        const a=Math.atan2(target.y-p.y,target.x-p.x);target.vx+=Math.cos(a)*220;target.vy+=Math.sin(a)*220;
+        burst(target.x,target.y,'#3a7dff',10,200);
+      }
     }else if(grp==='spin'){
       p.vx*=.95;p.vy*=.95;p.x+=p.vx*dt;p.y+=p.vy*dt;
       p.spinAng=(p.spinAng||0)+dt*6;
@@ -2748,7 +2752,9 @@ function banyongPetsStep(dt){
       p.x=Math.max(p.r,Math.min(W-p.r,p.x));p.y=Math.max(p.r,Math.min(H-p.r,p.y));
       if(!p.noSpawn&&p.atkCd<=0){
         p.atkCd=3.2;
-        spawnBanyongPet(p.x,p.y,p.team,{small:true,noSpawn:true});
+        const tx=60+Math.random()*(W-120),ty=60+Math.random()*(H-120);
+        const cstyle=BANYONG_STYLES[Math.floor(Math.random()*BANYONG_STYLES.length)];
+        banyongThrows.push({x0:p.x,y0:p.y,x1:tx,y1:ty,t:0,dur:.6+Math.random()*.2,team:p.team,style:cstyle,small:true,noSpawn:true});
       }
     }else if(grp==='rage'){
       const baseLife=p.trans?12:9,age=baseLife-p.life,rageMul=Math.min(2.2,1+age*0.15);
@@ -2763,6 +2769,27 @@ function banyongPetsStep(dt){
       }else{p.vx*=.9;p.vy*=.9;}
       p.x+=p.vx*dt;p.y+=p.vy*dt;
       p.x=Math.max(p.r,Math.min(W-p.r,p.x));p.y=Math.max(p.r,Math.min(H-p.r,p.y));
+    }else if(grp==='napjug'){
+      // 넙죽이용주: chases the enemy, self-destructs after a 3s fuse, movement goes sluggish in the last second before it blows
+      p.fuseT=(p.fuseT===undefined)?3:p.fuseT-dt;
+      if(p.fuseT<=0){
+        for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd2=Math.hypot(o.x-p.x,o.y-p.y);if(dd2<70){hurt(o,22*mul);const ka=Math.atan2(o.y-p.y,o.x-p.x);o.vx+=Math.cos(ka)*300;o.vy+=Math.sin(ka)*300;}}
+        burst(p.x,p.y,'#ffb020',26,320);shk=Math.max(shk,.18);
+        p.dead=true;
+      }else{
+        const slow=p.fuseT<1?0.22:1;
+        if(target){const a=Math.atan2(target.y-p.y,target.x-p.x),sp=190*slow;p.vx=Math.cos(a)*sp;p.vy=Math.sin(a)*sp;}
+        else{p.vx*=.9;p.vy*=.9;}
+        p.x+=p.vx*dt;p.y+=p.vy*dt;
+        p.x=Math.max(p.r,Math.min(W-p.r,p.x));p.y=Math.max(p.r,Math.min(H-p.r,p.y));
+      }
+    }else if(grp==='tears'){
+      // 슬픈용주: stands in place, fires a tear-waterfall upward, then a tear-pillar tracks the enemy and deals continuous (gapless) damage
+      p.vx=0;p.vy=0;
+      if(target){
+        p.pillarX=(p.pillarX===undefined)?target.x:p.pillarX+(target.x-p.pillarX)*Math.min(1,dt*2.5);
+        if(Math.abs(target.x-p.pillarX)<28)hurt(target,6*mul*dt);
+      }
     }else if(grp==='rush'){
       const hitPad=p.style==='thorns'?14:4;
       if(target){
@@ -2837,6 +2864,16 @@ function drawBanyongPets(){
       ctx.save();ctx.strokeStyle='#ff2d2d';ctx.lineWidth=3;ctx.globalAlpha=.75;ctx.shadowColor='#ff2d2d';ctx.shadowBlur=8;
       ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(ex,ey);ctx.stroke();
       ctx.restore();
+    }
+    if(p.style==='tears'&&BANYONG_GRP[p.style]==='tears'){
+      ctx.save();ctx.strokeStyle='rgba(126,200,255,.85)';ctx.lineWidth=5;ctx.shadowColor='#7ec8ff';ctx.shadowBlur=10;
+      ctx.beginPath();ctx.moveTo(p.x,p.y-p.r);ctx.lineTo(p.x,0);ctx.stroke();
+      ctx.restore();
+      if(p.pillarX!==undefined){
+        ctx.save();ctx.globalAlpha=.5+.1*Math.sin(performance.now()/120);ctx.fillStyle='#7ec8ff';
+        ctx.fillRect(p.pillarX-14,0,28,H);
+        ctx.restore();
+      }
     }
     ctx.save();ctx.translate(p.x,p.y);
     ctx.beginPath();ctx.arc(0,0,p.r,0,6.283);ctx.closePath();ctx.clip();
