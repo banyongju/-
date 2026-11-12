@@ -309,7 +309,7 @@ function mk(i){
     r:i===19?46:i===0?32:i===2?36:i===3?38:26,hp:i===19?1000:i===10?200:i===14?75:i===20?300:i===21?240:300,maxHp:i===19?1000:i===10?200:i===14?75:i===20?300:i===21?240:300,c:COLORS[i],t,len:c.len,dmg:c.dmg,cap:c.cap,spin:c.spin*(Math.random()<.5?-1:1),
     ang:Math.random()*6.283,flash:0,alive:true,name:NAMES[i],skill:SKILLS[i],g:0,boost:0,img:i===0?faceImg:i===2?faceImg2:i===3?faceImg3:i===4?moingImg:i===5?cukuImg:i===6?wonkaImg:i===7?camImg:i===8?biaImg:i===9?fireImg:i===10?neraImg:i===11?mintImg:i===12?daeseokImg:i===13?barrelImg:i===14?ppeunImg:i===15?boseungImg:i===16?bakeImg:i===17?flowerImg:i===18?sethImg:i===19?songImg:i===20?ppeunImg:i===21?banyongImg:null,shadowImg:i===3?bullImg:null,treasure:i===0,freeform:i===17,animFrames:i===17?flowerFrames:null,show:null,seq:i===2?['lor','jam','sky','buff','shield']:null,si:0,ult:i===0?15:i===4?3:i===5?5:i===3?4:i===6?9:i===7?3:i===2?10:i===8?5:i===9?5:i===10?8:i===11?8:i===12?15:i===13?BARREL_ULT_USES:i===15?BOSEUNG_ULT_USES:i===17?3:10,dmgMul:i===9?.5:i===14?.5:i===20?.5:i===21?.7:i===19?1.4:1};
 }
-const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이',dash:'돌진',heal:'회복',shiny:'빛나',lor:'Load and Shoot',jam:'Fire! J-a-a-am!',sky:'To the sky!',buff:'Hold position!',shield:'Ready, routine Echo:',moing:'허기진 성욕',wonka:'초콜릿 무기',dk:'강화 손바닥 (적 벽 연속 넉백)',cuku:'패시브 벽 중첩 / 잔상 돌진',seq:'스킬 2종',fire:'화염방사기 입김+화상 / 불덩이 8방 / 필살기',nera:'대검 패시브 / 회전베기+강습 / 윤회',mint:'도끼 패시브 / 올라타기(확률) / 필살기: 야수화',daeseok:'전따봉 찌르기/휘두르기/돌리기 / 필살기: 전원 공중 내리꽂기',barrel:'평화의 수호자',ppeun:'고기: 공격력 / 야채: 체력재생 / 버섯: 이동속도 / 생선: 주변 광역피해 / 두부: 최대체력 / 이쁜이(희귀): 전체 효과 2배↑',boseung:'카타나 평타(3초 미공격시 납도, 이후 첫 타는 발도 베기) / 스킬: 순간이동 베기 + 참격 연쇄 폭발 / 필살기: 각성(공격력↑ 쿨감↓) → 재사용시 글리치 베기',bake:'베이크 매그넘 평타: 열선 레이져+쿠키 난사(즉발/차징 랜덤) / 패시브: 미공격 시간↑→베이크 스택↑(무기 빨개짐, 스택 높을수록 스킬 데미지 강화, 평타는 영향 없음) / 스킬: 랜덤 주기로 입구 2회 여닫기 후 50% 즉시 풀 블래스트(관통 화상 레이져), 50% 1회 더 여닫고 풀 익스플로전(대폭발) / 필살기 없음',flower:'자로나!',seth:'사방에 책 투척 → 펼쳐지며 단어 난사',song:'쓰레받이(원형 휩쓸기/내려찍기)·빗자루(찌르기/휑베기) 중 2패턴 랜덤 연계',banyong:'주기적으로 반용주 공을 필드에 포물선으로 투척(적 지정X) → 착지 시 랜덤 공격방식의 반용주 소환 (돌진/원거리/폭탄 중 1) / 5% 확률로 개씹반용주로 강화 소환'};
+const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이',dash:'돌진',heal:'회복',shiny:'빛나',lor:'Load and Shoot',jam:'Fire! J-a-a-am!',sky:'To the sky!',buff:'Hold position!',shield:'Ready, routine Echo:',moing:'허기진 성욕',wonka:'초콜릿 무기',dk:'강화 손바닥 (적 벽 연속 넉백)',cuku:'패시브 벽 중첩 / 잔상 돌진',seq:'스킬 2종',fire:'화염방사기 입김+화상 / 불덩이 8방 / 필살기',nera:'대검 패시브 / 회전베기+강습 / 윤회',mint:'도끼 패시브 / 올라타기(확률) / 필살기: 야수화',daeseok:'전따봉 찌르기/휘두르기/돌리기 / 필살기: 전원 공중 내리꽂기',barrel:'평화의 수호자',ppeun:'고기: 공격력 / 야채: 체력재생 / 버섯: 이동속도 / 생선: 주변 광역피해 / 두부: 최대체력 / 이쁜이(희귀): 전체 효과 2배↑',boseung:'카타나 평타(3초 미공격시 납도, 이후 첫 타는 발도 베기) / 스킬: 순간이동 베기 + 참격 연쇄 폭발 / 필살기: 각성(공격력↑ 쿨감↓) → 재사용시 글리치 베기',bake:'베이크 매그넘 평타: 열선 레이져+쿠키 난사(즉발/차징 랜덤) / 패시브: 미공격 시간↑→베이크 스택↑(무기 빨개짐, 스택 높을수록 스킬 데미지 강화, 평타는 영향 없음) / 스킬: 랜덤 주기로 입구 2회 여닫기 후 50% 즉시 풀 블래스트(관통 화상 레이져), 50% 1회 더 여닫고 풀 익스플로전(대폭발) / 필살기 없음',flower:'자로나!',seth:'사방에 책 투척 → 펼쳐지며 단어 난사',song:'쓰레받이(원형 휩쓸기/내려찍기)·빗자루(찌르기/휑베기) 중 2패턴 랜덤 연계',banyong:'주기적으로 반용주 공을 필드에 포물선으로 투척(적 지정X) → 착지 시 18종 중 랜덤 공격방식의 미니반용주 소환 / 5% 확률로 개쌉반용주로 강화 소환 (눈레이저 사방 휩쓸기+벽 화상, 소환주기 1초 고정)'};
 const FLOWER_CD=1.5;
 const SETH_CD=4.5;
 const SETH_WORDS=['나타마토아완전화려해졌어한때는칙칙했지만','오때론난망가져갈지모르지','우리아버지성도지방도태돼셨어','크큭선이보인다'];
@@ -2594,11 +2594,16 @@ function drawBarrelUltFx(){
 }
 let ppeunIng=[],ppeunIngId=0,ppeunProj=[];
 let banyongThrows=[],banyongPets=[],banyongBullets=[];
-const BANYONG_STYLES=['rush','ranged','bomb'];
+const BANYONG_GRP={sponge:'sponge',happy:'rush',galtong:'ranged',bigeye:'ranged',bignose:'bomb',
+  spin:'spin',cartoon:'rush',newsummon:'newsummon',gaeddi:'bomb',tears:'ranged',
+  napjug:'rush',daegal:'bomb',gasorob:'ranged',rage:'rage',bignose2:'bomb',
+  sparkle:'ranged',thorns:'rush',smell:'bomb'};
+const BANYONG_STYLES=Object.keys(BANYONG_GRP);
 function banyongStep(b,dt){
   if(b.cz||b.cm||b.stun>0)return;
-  const alliedPets=banyongPets.filter(p=>p.team===b.team).length;
-  const period=1+alliedPets;
+  const alliedPets=banyongPets.filter(p=>p.team===b.team);
+  const transAlive=alliedPets.some(p=>p.trans);
+  const period=transAlive?1:1+alliedPets.length;
   b.g=Math.min(1,(b.g||0)+dt/period);
   if(b.g>=1){
     b.g=0;
@@ -2606,12 +2611,13 @@ function banyongStep(b,dt){
     banyongThrows.push({x0:b.x,y0:b.y,x1:tx,y1:ty,t:0,dur:.85+Math.random()*.25,team:b.team});
   }
 }
-function spawnBanyongPet(x,y,team){
-  const trans=Math.random()<0.05;
-  const style=BANYONG_STYLES[Math.floor(Math.random()*BANYONG_STYLES.length)];
-  banyongPets.push({x,y,vx:0,vy:0,r:trans?26:17,team,style,trans,life:trans?12:9,atkCd:0});
+function spawnBanyongPet(x,y,team,opts){
+  opts=opts||{};
+  const trans=opts.noSpawn?false:Math.random()<0.05;
+  const style=opts.style||BANYONG_STYLES[Math.floor(Math.random()*BANYONG_STYLES.length)];
+  banyongPets.push({x,y,vx:0,vy:0,r:trans?26:(opts.small?13:17),team,style,trans,life:trans?12:(opts.small?6:9),atkCd:0,laserAng:Math.random()*6.283,noSpawn:!!opts.noSpawn});
   burst(x,y,trans?'#ff2d2d':'#3a7dff',trans?28:14,trans?320:200);
-  if(trans){shk=Math.max(shk,.35);fl.push({x,y:y-30,life:1.2,t:'개씹반용주!',col:'#ff2d2d'});}
+  if(trans){shk=Math.max(shk,.35);fl.push({x,y:y-30,life:1.2,t:'개쌉반용주!',col:'#ff2d2d'});}
 }
 function banyongThrowsStep(dt){
   for(const th of banyongThrows){
@@ -2628,11 +2634,80 @@ function banyongPetsStep(dt){
     let target=null,bd=1e9;
     for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const d=Math.hypot(o.x-p.x,o.y-p.y);if(d<bd){bd=d;target=o;}}
     p.atkCd=Math.max(0,(p.atkCd||0)-dt);
-    if(p.style==='rush'){
+    if(p.trans){
+      p.laserAng=(p.laserAng||0)+dt*3.2;
+      p.vx*=.95;p.vy*=.95;p.x+=p.vx*dt;p.y+=p.vy*dt;
+      p.x=Math.max(p.r,Math.min(W-p.r,p.x));p.y=Math.max(p.r,Math.min(H-p.r,p.y));
+      p.beamCd=Math.max(0,(p.beamCd||0)-dt);
+      if(p.beamCd<=0){
+        let hitAny=false;
+        for(const o of balls){
+          if(!o.alive||o.team===p.team||air(o))continue;
+          const dx=o.x-p.x,dy=o.y-p.y,dist=Math.hypot(dx,dy);
+          if(dist>420)continue;
+          let diff=Math.atan2(dy,dx)-p.laserAng;diff=Math.abs(Math.atan2(Math.sin(diff),Math.cos(diff)));
+          if(diff<0.12){hurt(o,10*mul);burst(o.x,o.y,'#ff2d2d',8,160);hitAny=true;}
+        }
+        if(hitAny)p.beamCd=.25;
+      }
+      p.wallBurnCd=Math.max(0,(p.wallBurnCd||0)-dt);
+      if(p.wallBurnCd<=0){
+        const ddx=Math.cos(p.laserAng),ddy=Math.sin(p.laserAng);
+        let t=Infinity;
+        if(ddx>0.0001)t=Math.min(t,(W-p.x)/ddx);else if(ddx<-0.0001)t=Math.min(t,(0-p.x)/ddx);
+        if(ddy>0.0001)t=Math.min(t,(H-p.y)/ddy);else if(ddy<-0.0001)t=Math.min(t,(0-p.y)/ddy);
+        if(isFinite(t)&&t>0){burst(p.x+ddx*t,p.y+ddy*t,'#ff6a1a',6,140);p.wallBurnCd=.3;}
+      }
+      continue;
+    }
+    const grp=BANYONG_GRP[p.style]||'rush';
+    if(grp==='sponge'){
+      if(target){
+        const ddx=target.x-p.x,ddy=target.y-p.y,sp=200;
+        if(Math.abs(ddx)>Math.abs(ddy)){p.vx=Math.sign(ddx)*sp;p.vy=0;}else{p.vx=0;p.vy=Math.sign(ddy)*sp;}
+        if(bd<target.r+p.r+4&&p.atkCd<=0){
+          p.atkCd=.6;hurt(target,8*mul);
+          const a=Math.atan2(ddy,ddx);target.vx+=Math.cos(a)*220;target.vy+=Math.sin(a)*220;
+          burst(target.x,target.y,'#3a7dff',10,200);
+        }
+      }else{p.vx*=.9;p.vy*=.9;}
+      p.x+=p.vx*dt;p.y+=p.vy*dt;
+      p.x=Math.max(p.r,Math.min(W-p.r,p.x));p.y=Math.max(p.r,Math.min(H-p.r,p.y));
+    }else if(grp==='spin'){
+      p.vx*=.95;p.vy*=.95;p.x+=p.vx*dt;p.y+=p.vy*dt;
+      p.spinAng=(p.spinAng||0)+dt*6;
+      if(p.atkCd<=0){
+        p.atkCd=.9;let hit=false;
+        for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd2=Math.hypot(o.x-p.x,o.y-p.y);if(dd2<60){hurt(o,10*mul);const ka=Math.atan2(o.y-p.y,o.x-p.x);o.vx+=Math.cos(ka)*180;o.vy+=Math.sin(ka)*180;hit=true;}}
+        if(hit)burst(p.x,p.y,'#3a7dff',14,200);
+      }
+    }else if(grp==='newsummon'){
+      if(target){const a=Math.atan2(target.y-p.y,target.x-p.x),sp=130;p.vx=Math.cos(a)*sp;p.vy=Math.sin(a)*sp;}else{p.vx*=.9;p.vy*=.9;}
+      p.x+=p.vx*dt;p.y+=p.vy*dt;
+      p.x=Math.max(p.r,Math.min(W-p.r,p.x));p.y=Math.max(p.r,Math.min(H-p.r,p.y));
+      if(!p.noSpawn&&p.atkCd<=0){
+        p.atkCd=3.2;
+        spawnBanyongPet(p.x,p.y,p.team,{small:true,noSpawn:true});
+      }
+    }else if(grp==='rage'){
+      const baseLife=p.trans?12:9,age=baseLife-p.life,rageMul=Math.min(2.2,1+age*0.15);
+      if(target){
+        const a=Math.atan2(target.y-p.y,target.x-p.x),sp=(p.trans?340:230)*rageMul;
+        p.vx=Math.cos(a)*sp;p.vy=Math.sin(a)*sp;
+        if(bd<target.r+p.r+4&&p.atkCd<=0){
+          p.atkCd=Math.max(.15,.6/rageMul);hurt(target,8*mul*rageMul);
+          target.vx+=Math.cos(a)*220;target.vy+=Math.sin(a)*220;
+          burst(target.x,target.y,'#ff6a1a',10,200);
+        }
+      }else{p.vx*=.9;p.vy*=.9;}
+      p.x+=p.vx*dt;p.y+=p.vy*dt;
+      p.x=Math.max(p.r,Math.min(W-p.r,p.x));p.y=Math.max(p.r,Math.min(H-p.r,p.y));
+    }else if(grp==='rush'){
+      const hitPad=p.style==='thorns'?14:4;
       if(target){
         const a=Math.atan2(target.y-p.y,target.x-p.x),sp=p.trans?340:230;
         p.vx=Math.cos(a)*sp;p.vy=Math.sin(a)*sp;
-        if(bd<target.r+p.r+4&&p.atkCd<=0){
+        if(bd<target.r+p.r+hitPad&&p.atkCd<=0){
           p.atkCd=.6;hurt(target,8*mul);
           target.vx+=Math.cos(a)*220;target.vy+=Math.sin(a)*220;
           burst(target.x,target.y,p.trans?'#ff2d2d':'#3a7dff',10,200);
@@ -2640,14 +2715,14 @@ function banyongPetsStep(dt){
       }else{p.vx*=.9;p.vy*=.9;}
       p.x+=p.vx*dt;p.y+=p.vy*dt;
       p.x=Math.max(p.r,Math.min(W-p.r,p.x));p.y=Math.max(p.r,Math.min(H-p.r,p.y));
-    }else if(p.style==='ranged'){
+    }else if(grp==='ranged'){
       p.vx*=.9;p.vy*=.9;p.x+=p.vx*dt;p.y+=p.vy*dt;
       if(target&&p.atkCd<=0){
         p.atkCd=p.trans?1.0:1.6;
         const a=Math.atan2(target.y-p.y,target.x-p.x);
-        banyongBullets.push({x:p.x,y:p.y,vx:Math.cos(a)*320,vy:Math.sin(a)*320,team:p.team,dmg:6*mul,r:8,life:2,trans:p.trans});
+        banyongBullets.push({x:p.x,y:p.y,vx:Math.cos(a)*320,vy:Math.sin(a)*320,team:p.team,dmg:6*mul,r:8,life:2,trans:p.trans,tear:p.style==='tears'});
       }
-    }else if(p.style==='bomb'){
+    }else if(grp==='bomb'){
       if(target){
         const a=Math.atan2(target.y-p.y,target.x-p.x),sp=p.trans?260:170;
         p.vx=Math.cos(a)*sp;p.vy=Math.sin(a)*sp;
@@ -2691,6 +2766,16 @@ function drawBanyongThrows(){
 }
 function drawBanyongPets(){
   for(const p of banyongPets){
+    if(p.trans){
+      const ddx=Math.cos(p.laserAng||0),ddy=Math.sin(p.laserAng||0);
+      let t=2000;
+      if(ddx>0.0001)t=Math.min(t,(W-p.x)/ddx);else if(ddx<-0.0001)t=Math.min(t,(0-p.x)/ddx);
+      if(ddy>0.0001)t=Math.min(t,(H-p.y)/ddy);else if(ddy<-0.0001)t=Math.min(t,(0-p.y)/ddy);
+      const ex=p.x+ddx*t,ey=p.y+ddy*t;
+      ctx.save();ctx.strokeStyle='#ff2d2d';ctx.lineWidth=3;ctx.globalAlpha=.75;ctx.shadowColor='#ff2d2d';ctx.shadowBlur=8;
+      ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(ex,ey);ctx.stroke();
+      ctx.restore();
+    }
     ctx.save();ctx.translate(p.x,p.y);
     ctx.beginPath();ctx.arc(0,0,p.r,0,6.283);ctx.closePath();ctx.clip();
     if(banyongImg&&banyongImg.complete)ctx.drawImage(banyongImg,-p.r,-p.r,p.r*2,p.r*2);
@@ -2701,7 +2786,7 @@ function drawBanyongPets(){
 }
 function drawBanyongBullets(){
   for(const bl of banyongBullets){
-    ctx.save();ctx.beginPath();ctx.arc(bl.x,bl.y,bl.r,0,6.283);ctx.fillStyle=bl.trans?'#ff2d2d':'#3a7dff';ctx.fill();ctx.restore();
+    ctx.save();ctx.beginPath();ctx.arc(bl.x,bl.y,bl.r,0,6.283);ctx.fillStyle=bl.trans?'#ff2d2d':(bl.tear?'#7ec8ff':'#3a7dff');ctx.fill();ctx.restore();
   }
 }
 const PPEUN_POT_R=66,PPEUN_ING_R=13,PPEUN_SPAWN_T=2.8,PPEUN_MAX_ING=5,PPEUN_SELF_CHANCE=.06;
