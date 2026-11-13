@@ -2798,14 +2798,14 @@ function drawBanyongPets(){
     else{ctx.fillStyle=p.trans?'#ff2d2d':'#3a7dff';ctx.fillRect(-p.r,-p.r,p.r*2,p.r*2);}
     ctx.restore();
     ctx.save();ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.283);ctx.strokeStyle=p.trans?'#ff2d2d':'#3a7dff';ctx.lineWidth=p.trans?3:2;ctx.stroke();ctx.restore();
-    // 베이비 용주 체력바
+    // 베이비 용주 체력: 본체 캐릭터처럼 몸 중앙에 흰색 숫자로 표시
     if(p.hp!==undefined&&p.maxHp){
-      const bw=p.r*2,bx=p.x-p.r,by=p.y-p.r-9,ratio=Math.max(0,p.hp/p.maxHp);
       ctx.save();
-      ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(bx,by,bw,5);
-      ctx.fillStyle=ratio>.5?'#5fe67a':(ratio>.25?'#ffd84a':'#ff5a4a');
-      ctx.fillRect(bx,by,bw*ratio,5);
-      ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=1;ctx.strokeRect(bx+.5,by+.5,bw-1,4);
+      ctx.font='700 13px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.55)';
+      ctx.strokeText(Math.ceil(Math.max(0,p.hp)),p.x,p.y);
+      ctx.fillStyle='#fff';
+      ctx.fillText(Math.ceil(Math.max(0,p.hp)),p.x,p.y);
       ctx.restore();
     }
   }
