@@ -2599,7 +2599,6 @@ function drawBarrelUltFx(){
 }
 let ppeunIng=[],ppeunIngId=0,ppeunProj=[];
 let banyongThrows=[],banyongPets=[],banyongBullets=[];
-const BANYONG_BASE_STYLES=['rush','ranged','bomb'];
 // 이름 있는 펫 스타일(사진 있는 애들만 실제로 등장함)
 const BANYONG_STYLE_IMG={sponge:banyongStyleImg_sponge,newsummon:banyongStyleImg_newsummon,tears:banyongStyleImg_tears,napjug:banyongStyleImg_napjug,spin:banyongStyleImg_spin};
 const BANYONG_READY_STYLES=Object.keys(BANYONG_STYLE_IMG);
@@ -2651,37 +2650,7 @@ function banyongPetsStep(dt){
     for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const d=Math.hypot(o.x-p.x,o.y-p.y);if(d<bd){bd=d;target=o;}}
     p.atkCd=Math.max(0,(p.atkCd||0)-dt);
     const grp=p.style;
-    if(grp==='rush'){
-      if(target){
-        const a=Math.atan2(target.y-p.y,target.x-p.x),sp=p.trans?340:230;
-        p.vx=Math.cos(a)*sp;p.vy=Math.sin(a)*sp;
-        if(bd<target.r+p.r+4&&p.atkCd<=0){
-          p.atkCd=.6;hurt(target,8*mul);
-          target.vx+=Math.cos(a)*220;target.vy+=Math.sin(a)*220;
-          burst(target.x,target.y,p.trans?'#ff2d2d':'#3a7dff',10,200);
-        }
-      }else{p.vx*=.9;p.vy*=.9;}
-      p.x+=p.vx*dt;p.y+=p.vy*dt;
-      p.x=Math.max(p.r,Math.min(W-p.r,p.x));p.y=Math.max(p.r,Math.min(H-p.r,p.y));
-    }else if(grp==='ranged'){
-      p.vx*=.9;p.vy*=.9;p.x+=p.vx*dt;p.y+=p.vy*dt;
-      if(target&&p.atkCd<=0){
-        p.atkCd=p.trans?1.0:1.6;
-        const a=Math.atan2(target.y-p.y,target.x-p.x);
-        banyongBullets.push({x:p.x,y:p.y,vx:Math.cos(a)*320,vy:Math.sin(a)*320,team:p.team,dmg:6*mul,r:8,life:2,trans:p.trans});
-      }
-    }else if(grp==='bomb'){
-      if(target){
-        const a=Math.atan2(target.y-p.y,target.x-p.x),sp=p.trans?260:170;
-        p.vx=Math.cos(a)*sp;p.vy=Math.sin(a)*sp;
-        p.x+=p.vx*dt;p.y+=p.vy*dt;
-        if(bd<target.r+p.r+10||p.life<.3){
-          for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd2=Math.hypot(o.x-p.x,o.y-p.y);if(dd2<70){hurt(o,22*mul);const ka=Math.atan2(o.y-p.y,o.x-p.x);o.vx+=Math.cos(ka)*300;o.vy+=Math.sin(ka)*300;}}
-          burst(p.x,p.y,p.trans?'#ff2d2d':'#ffb020',26,320);shk=Math.max(shk,p.trans?.3:.18);
-          p.dead=true;
-        }
-      }else{p.vx*=.9;p.vy*=.9;p.x+=p.vx*dt;p.y+=p.vy*dt;}
-    }else if(grp==='sponge'){
+    if(grp==='sponge'){
       // 스폰지용주: 소환시 십자가(상하좌우)로 랜덤하게 움직이고 접촉시 데미지
       p.spongeT=(p.spongeT===undefined)?0:p.spongeT-dt;
       if(p.spongeT<=0||p.x<=p.r+2||p.x>=W-p.r-2||p.y<=p.r+2||p.y>=H-p.r-2){
