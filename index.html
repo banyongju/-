@@ -944,7 +944,7 @@ function reset(){
     else{b.team=slot+1;b.x=slot?470:130;b.y=200+Math.random()*200;}
     if(practice&&!raidMode&&slot===1){b.dummy=true;b.skill=null;b.name='루아녹스';b.img=ruaImg;b.x=430;b.y=300;b.vx=b.vy=0;}
     return b});
-  stopSlice();parts=[];fl=[];proj=[];wproj=[];wfall=[];wfx=[];cfb=[];cfx=[];camClear();bfb=[];bfx=[];biaClear();ffb=[];ftrail=[];cd={};over=null;ppeunIng=[];items=[];itemSpawnT=5;banyongThrows=[];banyongPets=[];banyongBullets=[];buildUI();
+  stopSlice();parts=[];fl=[];proj=[];wproj=[];wfall=[];wfx=[];cfb=[];cfx=[];camClear();bfb=[];bfx=[];biaClear();ffb=[];ftrail=[];cd={};over=null;ppeunIng=[];items=[];itemSpawnT=5;banyongThrows=[];banyongBullets=[];buildUI();
   try{fuSrc&&fuSrc.stop()}catch(e){}fuSrc=null;
   dkT0=performance.now();
   if(balls.some(x=>x.name==='DK웨스트'&&!x.dummy))playDK();
@@ -1280,7 +1280,7 @@ function step(dt){
   parts=parts.filter(p=>p.life>0);
   for(const f of fl){if(f.o){f.x=f.o.x;f.y=f.o.y-f.o.r-(f.hiCap?52:14);if(!f.o.alive)f.life=0;}else f.y-=40*dt;f.life-=dt}
   fl=fl.filter(f=>f.life>0);
-  const alive=balls.filter(b=>b.alive&&!b.clone);
+  const alive=balls.filter(b=>b.alive&&!b.clone&&!b.banyongPet);
   const teamsAlive=new Set(alive.map(b=>b.team));
   if(!over&&!practice&&teamsAlive.size<=1){
     over=alive[0]||{draw:true};sfx('win');
@@ -2599,7 +2599,7 @@ function drawBarrelUltFx(){
   }
 }
 let ppeunIng=[],ppeunIngId=0,ppeunProj=[];
-let banyongThrows=[],banyongPets=[],banyongBullets=[];
+let banyongThrows=[],banyongBullets=[],banyongPetIdSeq=100000;
 // 이름 있는 펫 스타일(사진 있는 애들만 실제로 등장함)
 const BANYONG_STYLE_IMG={sponge:banyongStyleImg_sponge,newsummon:banyongStyleImg_newsummon,tears:banyongStyleImg_tears,napjug:banyongStyleImg_napjug,spin:banyongStyleImg_spin};
 const BANYONG_READY_STYLES=Object.keys(BANYONG_STYLE_IMG);
@@ -2639,7 +2639,7 @@ function banyongStep(b,dt){
     }
     return;
   }
-  const alliedPets=banyongPets.filter(p=>p.team===b.team).length;
+  const alliedPets=balls.filter(o=>o.banyongPet&&o.alive&&o.team===b.team).length;
   const period=1+alliedPets;
   b.g=Math.min(1,(b.g||0)+dt/period);
   if(b.g>=1){
@@ -2655,9 +2655,19 @@ function banyongStep(b,dt){
   }
 }
 function spawnBanyongPet(x,y,team,opts={}){
+  // 미니용주: 덩치만 작은 '진짜' 캐릭터 - balls 배열에 직접 들어가서 다른 모든 스킬/투사체/충돌 피해 시스템을 그대로 받는다
   const style=opts.style||BANYONG_READY_STYLES[Math.floor(Math.random()*BANYONG_READY_STYLES.length)];
-  banyongPets.push({x,y,vx:opts.vx||0,vy:opts.vy||0,r:opts.small?14:17,team,style,trans:false,
-    life:opts.small?5:9,atkCd:0,hitCd:0,hp:20,maxHp:20,noSpawn:!!opts.noSpawn,laserAng:Math.random()*6.283,fountainT:opts.fountain?0.45:0});
+  const r=opts.small?14:17;
+  balls.push({
+    id:banyongPetIdSeq++,x,y,vx:opts.vx||0,vy:opts.vy||0,r,
+    hp:20,maxHp:20,c:'#3a7dff',t:0,len:0,dmg:0,cap:0,spin:0,ang:0,flash:0,alive:true,
+    name:'미니용주',skill:null,g:0,boost:0,
+    img:BANYONG_STYLE_IMG[style]||banyongImg,shadowImg:null,treasure:false,freeform:false,animFrames:null,
+    show:null,seq:null,si:0,ult:999,dmgMul:1,p:team,team,isBoss:false,
+    banyongPet:true,style,trans:false,
+    life:opts.small?5:9,atkCd:0,noSpawn:!!opts.noSpawn,laserAng:Math.random()*6.283,
+    fountainT:opts.fountain?0.45:0
+  });
   burst(x,y,'#3a7dff',14,200);
 }
 function banyongThrowsStep(dt){
@@ -2668,27 +2678,18 @@ function banyongThrowsStep(dt){
   banyongThrows=banyongThrows.filter(th=>!th.dead);
 }
 function banyongPetsStep(dt){
-  for(const p of banyongPets){
-    if(p.hp===undefined){p.hp=p.maxHp=20;}
+  // 수명이 다했거나(hp<=0으로 이미 죽은) 미니용주를 balls에서 정리
+  balls=balls.filter(b=>!(b.banyongPet&&!b.alive));
+  for(const p of balls){
+    if(!p.banyongPet||!p.alive)continue;
     p.life-=dt;
-    if(p.life<=0){p.dead=true;continue;}
-    // 베이비 용주: 적의 공격을 맞으면 체력(20)이 깎이고, 0이 되면 죽는다
-    p.hitCd=Math.max(0,(p.hitCd||0)-dt);
-    for(const o of balls){
-      if(!o.alive||o.team===p.team||air(o))continue;
-      if(Math.hypot(o.x-p.x,o.y-p.y)<o.r+p.r&&p.hitCd<=0){p.hitCd=.4;p.hp-=4;burst(p.x,p.y,'#ff5a4a',6,160);}
-    }
-    for(const q of proj){
-      if(q.team===p.team||q.life<=0)continue;
-      if(Math.hypot(q.x-p.x,q.y-p.y)<p.r+(q.spark?5:(q.glove?14:12))){p.hp-=q.dmg||6;q.life=0;burst(p.x,p.y,q.col||'#fff',6,160);}
-    }
-    if(p.hp<=0){p.dead=true;burst(p.x,p.y,'#3a7dff',18,260);continue;}
+    if(p.life<=0){p.alive=false;burst(p.x,p.y,'#3a7dff',16,220);continue;}
+    // 체력/피격 판정은 더 이상 여기서 따로 하지 않음: balls에 실제로 속해있기 때문에
+    // 다른 모든 스킬의 투사체/접촉/광역 피해 로직(hurt() 호출)이 그대로 적용된다(=덩치만 작은 기본 캐릭터).
     if(p.fountainT>0){
-      // 개쌉반용주 분수 소환: 포물선으로 튀어오르는 동안은 스타일 AI를 건너뛴다 (단, 피격/사망은 위에서 이미 처리됨)
+      // 개쌉반용주 분수 소환: 포물선으로 튀어오르는 동안은 스타일 AI를 건너뛴다 (이동은 아래 공용 물리 루프가 처리)
       p.fountainT-=dt;
       p.vy+=dt*260;
-      p.x+=p.vx*dt;p.y+=p.vy*dt;
-      p.x=Math.max(p.r,Math.min(W-p.r,p.x));p.y=Math.max(p.r,Math.min(H-p.r,p.y));
       continue;
     }
     const mul=p.trans?3:1;
@@ -2705,13 +2706,10 @@ function banyongPetsStep(dt){
         const d=dirs[Math.floor(Math.random()*4)];
         p.vx=d[0]*(p.trans?300:210);p.vy=d[1]*(p.trans?300:210);
       }
-      p.x+=p.vx*dt;p.y+=p.vy*dt;
-      p.x=Math.max(p.r,Math.min(W-p.r,p.x));p.y=Math.max(p.r,Math.min(H-p.r,p.y));
       if(target&&bd<target.r+p.r+4&&p.atkCd<=0){p.atkCd=.5;hurt(target,8*mul);burst(target.x,target.y,'#7ec8ff',10,200);}
     }else if(grp==='newsummon'){
       // NEW용주: 기존 반용주 본체처럼 주기적으로 자기 자신도 투척체를 던져서 소환수를 소환함 (무한증식 방지용 noSpawn)
-      p.vx*=.9;p.vy*=.9;p.x+=p.vx*dt;p.y+=p.vy*dt;
-      p.x=Math.max(p.r,Math.min(W-p.r,p.x));p.y=Math.max(p.r,Math.min(H-p.r,p.y));
+      p.vx*=.9;p.vy*=.9;
       if(!p.noSpawn&&p.atkCd<=0){
         p.atkCd=1.3;
         const tx=60+Math.random()*(W-120),ty=60+Math.random()*(H-120);
@@ -2738,12 +2736,10 @@ function banyongPetsStep(dt){
         const a=Math.atan2(target.y-p.y,target.x-p.x),sp=p.trans?380:270;
         p.vx=Math.cos(a)*sp;p.vy=Math.sin(a)*sp;
       }
-      p.x+=p.vx*dt;p.y+=p.vy*dt;
-      p.x=Math.max(p.r,Math.min(W-p.r,p.x));p.y=Math.max(p.r,Math.min(H-p.r,p.y));
       if(p.fuseT<=0||(target&&bd<target.r+p.r+6)){
         for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd2=Math.hypot(o.x-p.x,o.y-p.y);if(dd2<75){hurt(o,24*mul);const ka=Math.atan2(o.y-p.y,o.x-p.x);o.vx+=Math.cos(ka)*300;o.vy+=Math.sin(ka)*300;}}
         burst(p.x,p.y,p.trans?'#ff2d2d':'#ffb020',28,330);shk=Math.max(shk,p.trans?.3:.2);
-        p.dead=true;
+        p.alive=false;
       }
     }else if(grp==='spin'){
       // 소용주돌이: 주변 범위를 회전하며 주기적으로 주변에 데미지
@@ -2755,7 +2751,6 @@ function banyongPetsStep(dt){
       }
     }
   }
-  banyongPets=banyongPets.filter(p=>!p.dead);
 }
 function banyongBulletsStep(dt){
   for(const bl of banyongBullets){
@@ -2786,27 +2781,12 @@ function drawBanyongThrows(){
   }
 }
 function drawBanyongPets(){
-  for(const p of banyongPets){
-    if(p.style==='tears'&&p.tearBeamT>0){
+  // 몸/링/체력 숫자는 이제 미니용주가 balls에 실제로 속해있어서 공용 캐릭터 드로잉 루프가 그려준다.
+  // 여기서는 미니용주 전용 비주얼(눈물레이저 빔)만 그린다.
+  for(const p of balls){
+    if(p.banyongPet&&p.alive&&p.style==='tears'&&p.tearBeamT>0){
       ctx.save();ctx.strokeStyle='#7ec8ff';ctx.lineWidth=5;ctx.globalAlpha=p.tearBeamT/.18;
       ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.tearTx,p.tearTy);ctx.stroke();ctx.restore();
-    }
-    const img=BANYONG_STYLE_IMG[p.style]||banyongImg;
-    ctx.save();ctx.translate(p.x,p.y);
-    ctx.beginPath();ctx.arc(0,0,p.r,0,6.283);ctx.closePath();ctx.clip();
-    if(img&&img.complete)ctx.drawImage(img,-p.r,-p.r,p.r*2,p.r*2);
-    else{ctx.fillStyle=p.trans?'#ff2d2d':'#3a7dff';ctx.fillRect(-p.r,-p.r,p.r*2,p.r*2);}
-    ctx.restore();
-    ctx.save();ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.283);ctx.strokeStyle=p.trans?'#ff2d2d':'#3a7dff';ctx.lineWidth=p.trans?3:2;ctx.stroke();ctx.restore();
-    // 베이비 용주 체력: 본체 캐릭터처럼 몸 중앙에 흰색 숫자로 표시
-    if(p.hp!==undefined&&p.maxHp){
-      ctx.save();
-      ctx.font='700 13px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.55)';
-      ctx.strokeText(Math.ceil(Math.max(0,p.hp)),p.x,p.y);
-      ctx.fillStyle='#fff';
-      ctx.fillText(Math.ceil(Math.max(0,p.hp)),p.x,p.y);
-      ctx.restore();
     }
   }
 }
