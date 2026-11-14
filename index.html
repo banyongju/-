@@ -2753,11 +2753,21 @@ function banyongPetsStep(dt){
         p.alive=false;
       }
     }else if(grp==='spin'){
-      // 소용주돌이: 주변 범위를 회전하며 주기적으로 주변에 데미지
-      p.laserAng=(p.laserAng||0)+dt*6;
+      // 소용주돌이: 제자리 주변 원형 범위를 빙글빙글 돌면서 주기적으로 피해를 주고, 범위 안의 적을 아주 살짝 끌어당긴다
+      if(p.spinCx===undefined){p.spinCx=p.x;p.spinCy=p.y;p.spinAng=0;}
+      p.spinAng=(p.spinAng||0)+dt*6;
+      const orbitR=16,pullRange=60;
+      p.x=p.spinCx+Math.cos(p.spinAng)*orbitR;
+      p.y=p.spinCy+Math.sin(p.spinAng)*orbitR;
+      p.vx=0;p.vy=0;
+      for(const o of balls){
+        if(!o.alive||o.team===p.team||air(o))continue;
+        const ddx=p.x-o.x,ddy=p.y-o.y,dd2=Math.hypot(ddx,ddy);
+        if(dd2<pullRange&&dd2>1){const pa=Math.atan2(ddy,ddx);o.x+=Math.cos(pa)*18*dt;o.y+=Math.sin(pa)*18*dt;}
+      }
       if(p.atkCd<=0){
         p.atkCd=.9;
-        for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd2=Math.hypot(o.x-p.x,o.y-p.y);if(dd2<60){hurt(o,10*mul);}}
+        for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd2=Math.hypot(o.x-p.x,o.y-p.y);if(dd2<pullRange){hurt(o,10*mul);}}
         burst(p.x,p.y,'#c77dff',14,220);
       }
     }
