@@ -2732,7 +2732,7 @@ function banyongPetsStep(dt){
       if(target&&p.atkCd<=0){
         p.atkCd=.9;
         p.tearBeamT=.18;p.tearTx=target.x;p.tearTy=target.y;
-        hurt(target,9*mul);
+        hurt(target,5*mul);
         burst(target.x,target.y,'#7ec8ff',10,200);
       }
       p.tearBeamT=Math.max(0,(p.tearBeamT||0)-dt);
