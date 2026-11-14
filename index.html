@@ -2768,26 +2768,13 @@ function banyongPetsStep(dt){
         p.alive=false;
       }
     }else if(grp==='spin'){
-      // 소용주돌이: 적을 추적하지 않고 맵을 랜덤하게 떠돌면서 자기 몸은 제자리에서 스스로 빙글빙글 회전하고(궤도를 그리며 움직이지 않음),
-      // 자신의 원형 범위에 적이 접촉하면(닿으면) 끌어당기고 주기적으로 피해를 준다
-      if(p.spinCx===undefined){p.spinCx=p.x;p.spinCy=p.y;p.roamVx=0;p.roamVy=0;p.roamTVx=0;p.roamTVy=0;p.roamT=0;p.spin=24;}
-      p.roamT=(p.roamT===undefined?0:p.roamT)-dt;
-      if(p.roamT<=0){
-        p.roamT=.6+Math.random()*.8;
-        const ra=Math.random()*6.283,rs=50+Math.random()*40;
-        p.roamTVx=Math.cos(ra)*rs;p.roamTVy=Math.sin(ra)*rs;
+      // 소용주돌이: 팽이처럼 제자리에서 스스로 빙글빙글 회전하면서(자전), 적을 추적하지 않고 일반 공처럼
+      // 랜덤한 방향으로 튕겨다닌다(벽/다른 캐릭터에 부딫히면 일반 공과 똑같이 튕김). 주변 원형 범위에 주기적으로 피해를 주고 끌어당긴다.
+      if(p.spinInit===undefined){
+        p.spinInit=true;p.spin=24;
+        const ra=Math.random()*6.283,rs=90+Math.random()*60;
+        p.vx=Math.cos(ra)*rs;p.vy=Math.sin(ra)*rs;
       }
-      // 목표 방향으로 속도를 부드럽게 보간해서 매번 방향이 뚝뚝 끊기며 바뀌는 "버벅거림" 없이 자연스럽게 흘러가도록 함
-      const ease=1-Math.exp(-dt*3.2);
-      p.roamVx+=(p.roamTVx-p.roamVx)*ease;p.roamVy+=(p.roamTVy-p.roamVy)*ease;
-      p.spinCx+=p.roamVx*dt;p.spinCy+=p.roamVy*dt;
-      const pad=p.r+20;
-      if(p.spinCx<pad){p.spinCx=pad;p.roamVx=Math.abs(p.roamVx);p.roamTVx=Math.abs(p.roamTVx);}
-      if(p.spinCx>W-pad){p.spinCx=W-pad;p.roamVx=-Math.abs(p.roamVx);p.roamTVx=-Math.abs(p.roamTVx);}
-      if(p.spinCy<pad){p.spinCy=pad;p.roamVy=Math.abs(p.roamVy);p.roamTVy=Math.abs(p.roamTVy);}
-      if(p.spinCy>H-pad){p.spinCy=H-pad;p.roamVy=-Math.abs(p.roamVy);p.roamTVy=-Math.abs(p.roamTVy);}
-      p.x=p.spinCx;p.y=p.spinCy;
-      p.vx=0;p.vy=0;
       const pullRange=p.r+45;
       for(const o of balls){
         if(!o.alive||o.team===p.team||air(o))continue;
