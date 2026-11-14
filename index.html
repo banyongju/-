@@ -2750,7 +2750,14 @@ function banyongPetsStep(dt){
       p.fuseT=(p.fuseT===undefined)?3:p.fuseT-dt;
       const growT=Math.max(0,Math.min(1,1-p.fuseT/3));
       p.r=p.napjugR0*(1+growT*0.9);
-      if(target){
+      // 크리퍼처럼: 터지기 직전(퓨즈 후반부)에는 추적을 멈추고 가만히 선 채로 몸이 하얗게 깜빡깜빡 점멸한다 (터질수록 더 빠르게)
+      const blinking=growT>=0.5;
+      if(blinking){
+        p.vx=0;p.vy=0;
+        p.fuseBlinkT=(p.fuseBlinkT||0)+dt;
+        const freq=5+(growT-0.5)*2*14;
+        p.flash=(Math.floor(p.fuseBlinkT*freq)%2===0)?0.08:0;
+      }else if(target){
         const a=Math.atan2(target.y-p.y,target.x-p.x),sp=p.trans?380:270;
         p.vx=Math.cos(a)*sp;p.vy=Math.sin(a)*sp;
       }
