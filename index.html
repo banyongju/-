@@ -2719,12 +2719,20 @@ function banyongPetsStep(dt){
       if(target&&bd<target.r+p.r+4&&p.atkCd<=0){p.atkCd=.5;hurt(target,8*mul);burst(target.x,target.y,'#7ec8ff',10,200);}
     }else if(grp==='newsummon'){
       // NEW용주: 기존 반용주 본체처럼 주기적으로 자기 자신도 투척체를 던져서 소환수를 소환함 (무한증식 방지용 noSpawn)
+      // 소환을 3번 하고 나면 더 이상 던지지 않고 스스로 폭발한다
       p.vx*=.9;p.vy*=.9;
-      if(!p.noSpawn&&p.atkCd<=0){
+      if(!p.noSpawn&&p.atkCd<=0&&(p.summonCount||0)<3){
         p.atkCd=1.3;
         const tx=60+Math.random()*(W-120),ty=60+Math.random()*(H-120);
         const cstyle=BANYONG_READY_STYLES[Math.floor(Math.random()*BANYONG_READY_STYLES.length)];
         banyongThrows.push({x0:p.x,y0:p.y,x1:tx,y1:ty,t:0,dur:.7,team:p.team,style:cstyle,small:true,noSpawn:true});
+        p.summonCount=(p.summonCount||0)+1;
+        if(p.summonCount>=3){
+          p.exploded=true;
+          for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd2=Math.hypot(o.x-p.x,o.y-p.y);if(dd2<70){hurt(o,20*mul);const ka=Math.atan2(o.y-p.y,o.x-p.x);o.vx+=Math.cos(ka)*280;o.vy+=Math.sin(ka)*280;}}
+          burst(p.x,p.y,'#ffd84a',26,300);shk=Math.max(shk,.25);
+          p.alive=false;
+        }
       }
     }else if(grp==='tears'){
       // 슬픈용주: 제자리에 서서 적에게 눈물레이저를 발사 (고정형 빔샷)
