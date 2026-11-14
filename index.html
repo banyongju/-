@@ -2763,8 +2763,7 @@ function banyongPetsStep(dt){
     }else if(grp==='spin'){
       // 소용주돌이: 적을 추적하지 않고 맵을 랜덤하게 떠돌면서 자기 몸은 제자리에서 스스로 빙글빙글 회전하고(궤도를 그리며 움직이지 않음),
       // 자신의 원형 범위에 적이 접촉하면(닿으면) 끌어당기고 주기적으로 피해를 준다
-      if(p.spinCx===undefined){p.spinCx=p.x;p.spinCy=p.y;p.roamVx=0;p.roamVy=0;p.roamTVx=0;p.roamTVy=0;p.roamT=0;p.spin=24;p.whirlAng=0;}
-      p.whirlAng=(p.whirlAng||0)+dt*9;
+      if(p.spinCx===undefined){p.spinCx=p.x;p.spinCy=p.y;p.roamVx=0;p.roamVy=0;p.roamTVx=0;p.roamTVy=0;p.roamT=0;p.spin=24;}
       p.roamT=(p.roamT===undefined?0:p.roamT)-dt;
       if(p.roamT<=0){
         p.roamT=.6+Math.random()*.8;
@@ -2833,17 +2832,9 @@ function drawBanyongPets(){
       ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.tearTx,p.tearTy);ctx.stroke();ctx.restore();
     }
     if(p.banyongPet&&p.alive&&p.style==='spin'){
-      // 회오리바람처럼: 끌어오는 범위(원형 범위)를 따라 작은 바람 입자 3개가 빙글빙글 소용돌이치며 돈다
-      const wa=p.whirlAng||0,pr=p.r+45;
+      // 회전 파티클은 지우고, 끌어오는 원형 범위만 점선으로 표시
+      const pr=p.r+45;
       ctx.save();
-      for(let i=0;i<3;i++){
-        const a=wa+i*2.094;
-        const ring=pr*(0.5+i*0.17);
-        const wx=p.x+Math.cos(a)*ring,wy=p.y+Math.sin(a)*ring*0.55;
-        ctx.globalAlpha=.35+i*.1;
-        ctx.fillStyle='#c77dff';
-        ctx.beginPath();ctx.arc(wx,wy,3+i,0,6.283);ctx.fill();
-      }
       ctx.globalAlpha=.18;ctx.strokeStyle='#c77dff';ctx.lineWidth=2;ctx.setLineDash([4,6]);
       ctx.beginPath();ctx.arc(p.x,p.y,pr,0,6.283);ctx.stroke();
       ctx.restore();
