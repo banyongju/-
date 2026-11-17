@@ -2611,6 +2611,7 @@ function kingcarStep(b,dt){
   if(b.combFreezeT>0){
     b.vx=0;b.vy=0;
     b.combFreezeT=Math.max(0,b.combFreezeT-dt);
+    if(b.combFreezeT<=0){const a0=Math.random()*6.283;b.vx=Math.cos(a0)*235;b.vy=Math.sin(a0)*235;} // 멈췄다가 다시 튕겨나감
   }
   if(!b.combBusy){
     b.combCd=Math.max(0,b.combCd-dt);
