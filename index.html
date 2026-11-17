@@ -2605,16 +2605,23 @@ let kingcarCombs=[];
 // 킹카봇: 리젠트 머리를 빗으로 빗으며 제자리에서 충전을 쌓다가(3초 쿨타임), 충전이 다 차면 가만히 선 채로
 // 빗을 부메랑처럼 던진다. 빗은 2개뿐이라 던질 때마다 번갈아 사용한다(연출용).
 function kingcarStep(b,dt){
-  if(b.combCd===undefined){b.combCd=3;b.combIdx=0;b.combBusy=false;}
+  if(b.combCd===undefined){b.combCd=3;b.combIdx=0;b.combBusy=false;b.g=0;}
   b.vx=0;b.vy=0; // 가만히 제자리에 서있는 캐릭터
   if(!b.combBusy){
     b.combCd=Math.max(0,b.combCd-dt);
+    b.g=Math.min(1,1-b.combCd/3); // 충전이 쌓이는 걸 공용 게이지 바로 보여줌
     if(b.combCd<=0){
-      const T=nearest(b);
-      const a=T?Math.atan2(T.y-b.y,T.x-b.x):Math.random()*6.283,sp=520;
-      kingcarCombs.push({x:b.x,y:b.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,team:b.team,ownerId:b.id,phase:'out',t:0,dmg:14,hitOut:false,hitBack:false,idx:b.combIdx,rot:0});
-      b.combIdx=1-b.combIdx;
-      b.combBusy=true;
+      // 베이크처럼: 3초마다 그냥 머리를 빗기만 할지, 꼬리빗을 부메랑처럼 던질지 랜덤하게 결정
+      if(Math.random()<.5){
+        b.combCd=3;b.g=0;
+        burst(b.x,b.y-b.r-10,'#cfd3da',8,120);
+      }else{
+        const T=nearest(b);
+        const a=T?Math.atan2(T.y-b.y,T.x-b.x):Math.random()*6.283,sp=520;
+        kingcarCombs.push({x:b.x,y:b.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,team:b.team,ownerId:b.id,phase:'out',t:0,dmg:14,hitOut:false,hitBack:false,idx:b.combIdx,rot:0});
+        b.combIdx=1-b.combIdx;
+        b.combBusy=true;b.g=1;
+      }
     }
   }
 }
@@ -2630,7 +2637,7 @@ function kingcarCombsStep(dt){
         const dx=owner.x-c.x,dy=owner.y-c.y,d=Math.hypot(dx,dy)||1,sp=560;
         c.vx=dx/d*sp;c.vy=dy/d*sp;
         c.x+=c.vx*dt;c.y+=c.vy*dt;
-        if(d<owner.r+10){c.dead=true;owner.combBusy=false;owner.combCd=3;}
+        if(d<owner.r+10){c.dead=true;owner.combBusy=false;owner.combCd=3;owner.g=0;}
       }else{
         c.dead=true;
       }
@@ -2652,13 +2659,23 @@ function kingcarCombsStep(dt){
   }
   kingcarCombs=kingcarCombs.filter(c=>!c.dead);
 }
+// 꼬리빗: 한쪽엔 짧고 넓은 빗살 머리, 반대쪽엔 길고 가느다란 꼬리 손잡이가 뾰족하게 뻗어있는 모양
+function drawTailComb(scale){
+  ctx.fillStyle='#2b2b2b';
+  ctx.fillRect(-11*scale,-2.2*scale,9*scale,4.4*scale);
+  for(let i=-10*scale;i<=-3*scale;i+=2.6*scale)ctx.fillRect(i,-2.2*scale,1.2*scale,6.2*scale);
+  ctx.beginPath();
+  ctx.moveTo(-2*scale,-1.3*scale);
+  ctx.lineTo(15*scale,0);
+  ctx.lineTo(-2*scale,1.3*scale);
+  ctx.closePath();ctx.fill();
+}
 function drawKingcarIdle(){
   for(const b of balls){
     if(b.skill==='kingcar'&&b.alive&&!b.combBusy){
       const t=performance.now()/1000,swing=Math.sin(t*6)*8;
-      ctx.save();ctx.translate(b.x+swing*0.4,b.y-b.r-10);ctx.rotate(swing*0.05);
-      ctx.fillStyle='#2b2b2b';ctx.fillRect(-9,-2,18,4);
-      for(let i=-7;i<=7;i+=4)ctx.fillRect(i,-2,1.5,6);
+      ctx.save();ctx.translate(b.x+swing*0.4,b.y-b.r-10);ctx.rotate(.5+swing*0.05);
+      drawTailComb(1);
       ctx.restore();
     }
   }
@@ -2666,8 +2683,7 @@ function drawKingcarIdle(){
 function drawKingcarCombs(){
   for(const c of kingcarCombs){
     ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.rot);
-    ctx.fillStyle='#2b2b2b';ctx.fillRect(-10,-2,20,4);
-    for(let i=-8;i<=8;i+=4)ctx.fillRect(i,-2,1.5,7);
+    drawTailComb(1.1);
     ctx.restore();
   }
 }
