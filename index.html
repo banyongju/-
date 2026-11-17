@@ -316,7 +316,7 @@ function mk(i){
     r:i===19?46:i===0?32:i===2?36:i===3?38:26,hp:i===19?1000:i===10?200:i===14?75:i===20?300:i===21?240:300,maxHp:i===19?1000:i===10?200:i===14?75:i===20?300:i===21?240:300,c:COLORS[i],t,len:c.len,dmg:c.dmg,cap:c.cap,spin:c.spin*(Math.random()<.5?-1:1),
     ang:Math.random()*6.283,flash:0,alive:true,name:NAMES[i],skill:SKILLS[i],g:0,boost:0,img:i===0?faceImg:i===2?faceImg2:i===3?faceImg3:i===4?moingImg:i===5?cukuImg:i===6?wonkaImg:i===7?camImg:i===8?biaImg:i===9?fireImg:i===10?neraImg:i===11?mintImg:i===12?daeseokImg:i===13?barrelImg:i===14?ppeunImg:i===15?boseungImg:i===16?bakeImg:i===17?flowerImg:i===18?sethImg:i===19?songImg:i===20?ppeunImg:i===21?banyongImg:i===22?kingcarImg:null,shadowImg:i===3?bullImg:null,treasure:i===0,freeform:i===17,animFrames:i===17?flowerFrames:null,show:null,seq:i===2?['lor','jam','sky','buff','shield']:null,si:0,ult:i===0?15:i===4?3:i===5?5:i===3?4:i===6?9:i===7?3:i===2?10:i===8?5:i===9?5:i===10?8:i===11?8:i===12?15:i===13?BARREL_ULT_USES:i===15?BOSEUNG_ULT_USES:i===17?3:10,dmgMul:i===9?.5:i===14?.5:i===20?.5:i===21?.7:i===19?1.4:1};
 }
-const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이',dash:'돌진',heal:'회복',shiny:'빛나',lor:'Load and Shoot',jam:'Fire! J-a-a-am!',sky:'To the sky!',buff:'Hold position!',shield:'Ready, routine Echo:',moing:'허기진 성욕',wonka:'초콜릿 무기',dk:'강화 손바닥 (적 벽 연속 넉백)',cuku:'패시브 벽 중첩 / 잔상 돌진',seq:'스킬 2종',fire:'화염방사기 입김+화상 / 불덩이 8방 / 필살기',nera:'대검 패시브 / 회전베기+강습 / 윤회',mint:'도끼 패시브 / 올라타기(확률) / 필살기: 야수화',daeseok:'전따봉 찌르기/휘두르기/돌리기 / 필살기: 전원 공중 내리꽂기',barrel:'평화의 수호자',ppeun:'고기: 공격력 / 야채: 체력재생 / 버섯: 이동속도 / 생선: 주변 광역피해 / 두부: 최대체력 / 이쁜이(희귀): 전체 효과 2배↑',boseung:'카타나 평타(3초 미공격시 납도, 이후 첫 타는 발도 베기) / 스킬: 순간이동 베기 + 참격 연쇄 폭발 / 필살기: 각성(공격력↑ 쿨감↓) → 재사용시 글리치 베기',bake:'베이크 매그넘 평타: 열선 레이져+쿠키 난사(즉발/차징 랜덤) / 패시브: 미공격 시간↑→베이크 스택↑(무기 빨개짐, 스택 높을수록 스킬 데미지 강화, 평타는 영향 없음) / 스킬: 랜덤 주기로 입구 2회 여닫기 후 50% 즉시 풀 블래스트(관통 화상 레이져), 50% 1회 더 여닫고 풀 익스플로전(대폭발) / 필살기 없음',flower:'자로나!',seth:'사방에 책 투척 → 펼쳐지며 단어 난사',song:'쓰레받이(원형 휩쓸기/내려찍기)·빗자루(찌르기/휑베기) 중 2패턴 랜덤 연계',banyong:'주기적으로 반용주 공을 필드에 포물선으로 투척(적 지정X) → 착지 시 랜덤 공격방식의 반용주 소환 (돌진/원거리/폭탄 중 1) / 5% 확률로 개씹반용주로 강화 소환'};
+const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이',dash:'돌진',heal:'회복',shiny:'빛나',lor:'Load and Shoot',jam:'Fire! J-a-a-am!',sky:'To the sky!',buff:'Hold position!',shield:'Ready, routine Echo:',moing:'허기진 성욕',wonka:'초콜릿 무기',dk:'강화 손바닥 (적 벽 연속 넉백)',cuku:'패시브 벽 중첩 / 잔상 돌진',seq:'스킬 2종',fire:'화염방사기 입김+화상 / 불덩이 8방 / 필살기',nera:'대검 패시브 / 회전베기+강습 / 윤회',mint:'도끼 패시브 / 올라타기(확률) / 필살기: 야수화',daeseok:'전따봉 찌르기/휘두르기/돌리기 / 필살기: 전원 공중 내리꽂기',barrel:'평화의 수호자',ppeun:'고기: 공격력 / 야채: 체력재생 / 버섯: 이동속도 / 생선: 주변 광역피해 / 두부: 최대체력 / 이쁜이(희귀): 전체 효과 2배↑',boseung:'카타나 평타(3초 미공격시 납도, 이후 첫 타는 발도 베기) / 스킬: 순간이동 베기 + 참격 연쇄 폭발 / 필살기: 각성(공격력↑ 쿨감↓) → 재사용시 글리치 베기',bake:'베이크 매그넘 평타: 열선 레이져+쿠키 난사(즉발/차징 랜덤) / 패시브: 미공격 시간↑→베이크 스택↑(무기 빨개짐, 스택 높을수록 스킬 데미지 강화, 평타는 영향 없음) / 스킬: 랜덤 주기로 입구 2회 여닫기 후 50% 즉시 풀 블래스트(관통 화상 레이져), 50% 1회 더 여닫고 풀 익스플로전(대폭발) / 필살기 없음',flower:'자로나!',seth:'사방에 책 투척 → 펼쳐지며 단어 난사',song:'쓰레받이(원형 휩쓸기/내려찍기)·빗자루(찌르기/휑베기) 중 2패턴 랜덤 연계',banyong:'주기적으로 반용주 공을 필드에 포물선으로 투척(적 지정X) → 착지 시 랜덤 공격방식의 반용주 소환 (돌진/원거리/폭탄 중 1) / 5% 확률로 개씹반용주로 강화 소환',kingcar:'평소엔 자유롭게 이동 / 3초마다 잠깐 멈춰서 머리를 빗어 충전을 쌓거나(1 이상이어야 던지기 가능) 꼬리빗을 부메랑처럼 던짐(나갈 때·돌아올 때 각 4번씩 점점 빠르게 레이저 발사, 충전 2부터 가중치↑ but 적 숫자만큼 분산)'};
 const FLOWER_CD=1.5;
 const SETH_CD=4.5;
 const SETH_WORDS=['나타마토아완전화려해졌어한때는칙칙했지만','오때론난망가져갈지모르지','우리아버지성도지방도태돼셨어','크큭선이보인다'];
@@ -2604,33 +2604,61 @@ let banyongThrows=[],banyongBullets=[],banyongPetIdSeq=100000;
 let kingcarCombs=[];
 // 킹카봇: 리젠트 머리를 빗으로 빗으며 제자리에서 충전을 쌓다가(3초 쿨타임), 충전이 다 차면 가만히 선 채로
 // 빗을 부메랑처럼 던진다. 빗은 2개뿐이라 던질 때마다 번갈아 사용한다(연출용).
+const KC_CHARGE_MAX=5,KC_SHOT_TIMES=[0.06,0.16,0.24,0.30]; // 각 구간(나갈때/돌아올때)당 레이저 4번, 간격이 점점 짧아짐(점점 빠르게)
 function kingcarStep(b,dt){
-  if(b.combCd===undefined){b.combCd=3;b.combIdx=0;b.combBusy=false;b.g=0;}
-  b.vx=0;b.vy=0; // 가만히 제자리에 서있는 캐릭터
+  if(b.combCd===undefined){b.combCd=3;b.combIdx=0;b.combBusy=false;b.combCharge=0;b.combFreezeT=0;b.g=0;}
+  // 기본적으로는 다른 공캐릭터들처럼 자유롭게 움직이다가, 3초마다 아주 잠깐 멈춰서 충전하거나 공격한다
+  if(b.combFreezeT>0){
+    b.vx=0;b.vy=0;
+    b.combFreezeT=Math.max(0,b.combFreezeT-dt);
+  }
   if(!b.combBusy){
     b.combCd=Math.max(0,b.combCd-dt);
     b.g=Math.min(1,1-b.combCd/3); // 충전이 쌓이는 걸 공용 게이지 바로 보여줌
     if(b.combCd<=0){
-      // 베이크처럼: 3초마다 그냥 머리를 빗기만 할지, 꼬리빗을 부메랑처럼 던질지 랜덤하게 결정
-      if(Math.random()<.5){
+      b.combFreezeT=0.3;b.vx=0;b.vy=0; // 결정의 순간엔 잠깐 멈춰서 빗질하거나 던진다
+      // 충전이 1 미만이면 던질 수 없으므로 무조건 빗질만. 1 이상부터는 베이크처럼 50:50 랜덤
+      if(b.combCharge<1||Math.random()<.5){
         b.combCd=3;b.g=0;
+        b.combCharge=Math.min(KC_CHARGE_MAX,(b.combCharge||0)+1);
         burst(b.x,b.y-b.r-10,'#cfd3da',8,120);
       }else{
         const T=nearest(b);
         const a=T?Math.atan2(T.y-b.y,T.x-b.x):Math.random()*6.283,sp=520;
-        kingcarCombs.push({x:b.x,y:b.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,team:b.team,ownerId:b.id,phase:'out',t:0,dmg:14,hitOut:false,hitBack:false,idx:b.combIdx,rot:0});
+        kingcarCombs.push({x:b.x,y:b.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,team:b.team,ownerId:b.id,ownerR:b.r,phase:'out',t:0,phaseT:0,shotIdx:0,laserFlashT:0,idx:b.combIdx,rot:0});
         b.combIdx=1-b.combIdx;
         b.combBusy=true;b.g=1;
       }
     }
   }
 }
+function kingcarFireLaser(c){
+  // 빗 근처(현재 위치 기준) 가장 가까운 적을 감지해서 레이저를 쏨
+  let T=null,bd=1e9;
+  for(const o of balls){if(!o.alive||o.team===c.team||air(o))continue;const d=Math.hypot(o.x-c.x,o.y-c.y);if(d<bd){bd=d;T=o;}}
+  if(!T)return;
+  const owner=balls.find(o=>o.id===c.ownerId);
+  const charge=owner?(owner.combCharge||0):0;
+  // 충전 1: 고정 데미지 2. 충전 2부터는 가중치(레이저 총 위력)가 커지는 대신, 현재 살아있는 적 숫자만큼 나뉜다.
+  // -> 다수형 소환 캐릭터 상대로는 여러 적에게 나눠 맞기 쉬워 약해지고, 혼자 다이다이 까는 상대에게는 가중치가 고스란히 집중되어 사실상 데미지가 2배가 된다.
+  const enemyCount=Math.max(1,balls.filter(o=>o.alive&&o.team!==c.team&&!air(o)).length);
+  const weight=charge>=2?charge*5:2;
+  const dmg=weight/enemyCount;
+  hurt(T,dmg);
+  burst(T.x,T.y,'#8fe3ff',8,160);
+  c.laserTx=T.x;c.laserTy=T.y;c.laserFlashT=0.12;
+}
 function kingcarCombsStep(dt){
   for(const c of kingcarCombs){
-    c.t+=dt;c.rot+=dt*20;
+    c.t+=dt;c.rot+=dt*20;c.phaseT=(c.phaseT||0)+dt;
+    c.laserFlashT=Math.max(0,(c.laserFlashT||0)-dt);
+    if(c.shotIdx<KC_SHOT_TIMES.length&&c.phaseT>=KC_SHOT_TIMES[c.shotIdx]){
+      c.shotIdx++;
+      kingcarFireLaser(c);
+    }
     if(c.phase==='out'){
       c.x+=c.vx*dt;c.y+=c.vy*dt;
-      if(c.t>0.45)c.phase='back';
+      if(c.t>0.45){c.phase='back';c.phaseT=0;c.shotIdx=0;}
     }else{
       const owner=balls.find(o=>o.id===c.ownerId);
       if(owner&&owner.alive){
@@ -2640,20 +2668,6 @@ function kingcarCombsStep(dt){
         if(d<owner.r+10){c.dead=true;owner.combBusy=false;owner.combCd=3;owner.g=0;}
       }else{
         c.dead=true;
-      }
-    }
-    if(!c.dead){
-      const hitFlag=c.phase==='out'?'hitOut':'hitBack';
-      if(!c[hitFlag]){
-        for(const o of balls){
-          if(!o.alive||o.team===c.team||air(o))continue;
-          if(Math.hypot(o.x-c.x,o.y-c.y)<o.r+10){
-            hurt(o,c.dmg);c[hitFlag]=true;
-            burst(c.x,c.y,'#ffe9a8',10,180);
-            const ka=Math.atan2(o.y-c.y,o.x-c.x);o.vx+=Math.cos(ka)*180;o.vy+=Math.sin(ka)*180;
-            break;
-          }
-        }
       }
     }
   }
@@ -2673,17 +2687,22 @@ function drawTailComb(scale){
 function drawKingcarIdle(){
   for(const b of balls){
     if(b.skill==='kingcar'&&b.alive&&!b.combBusy){
-      const t=performance.now()/1000,swing=Math.sin(t*6)*8;
-      ctx.save();ctx.translate(b.x+swing*0.4,b.y-b.r-10);ctx.rotate(.5+swing*0.05);
-      drawTailComb(1);
+      const t=performance.now()/1000,swing=Math.sin(t*6)*8,sc=b.r/15; // 빗 크기를 캐릭터 크기에 맞춰 크게
+      ctx.save();ctx.translate(b.x+swing*0.4,b.y-b.r-14*sc);ctx.rotate(.5+swing*0.05);
+      drawTailComb(sc);
       ctx.restore();
     }
   }
 }
 function drawKingcarCombs(){
   for(const c of kingcarCombs){
+    if(c.laserFlashT>0&&c.laserTx!==undefined){
+      ctx.save();ctx.strokeStyle='#8fe3ff';ctx.lineWidth=4;ctx.globalAlpha=c.laserFlashT/.12;
+      ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.lineTo(c.laserTx,c.laserTy);ctx.stroke();ctx.restore();
+    }
+    const sc=(c.ownerR||26)/15;
     ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.rot);
-    drawTailComb(1.1);
+    drawTailComb(sc);
     ctx.restore();
   }
 }
