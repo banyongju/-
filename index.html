@@ -2688,8 +2688,10 @@ function drawTailComb(scale){
 function drawKingcarIdle(){
   for(const b of balls){
     if(b.skill==='kingcar'&&b.alive&&!b.combBusy){
-      const t=performance.now()/1000,swing=Math.sin(t*6)*8,sc=b.r/15; // 빗 크기를 캐릭터 크기에 맞춰 크게
-      ctx.save();ctx.translate(b.x+swing*0.4,b.y-b.r-14*sc);ctx.rotate(.5+swing*0.05);
+      // 머리(리젠트)를 실제로 빗질하는 것처럼, 빗살이 머리 쪽을 향한 채 위아래로 왕복하며 빗질한다
+      const t=performance.now()/1000,sc=b.r/15,bob=Math.sin(t*5),wobble=Math.sin(t*5)*0.12;
+      const cx=b.x+Math.sin(t*2.5)*3,cy=b.y-b.r-9*sc-6*sc*bob;
+      ctx.save();ctx.translate(cx,cy);ctx.rotate(-Math.PI/2+wobble);
       drawTailComb(sc);
       ctx.restore();
     }
@@ -2698,7 +2700,12 @@ function drawKingcarIdle(){
 function drawKingcarCombs(){
   for(const c of kingcarCombs){
     if(c.laserFlashT>0&&c.laserTx!==undefined){
-      ctx.save();ctx.strokeStyle='#8fe3ff';ctx.lineWidth=4;ctx.globalAlpha=c.laserFlashT/.12;
+      const a=c.laserFlashT/.12;
+      ctx.save();ctx.globalAlpha=a*.35;ctx.strokeStyle='#bdf3ff';ctx.lineWidth=11;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.lineTo(c.laserTx,c.laserTy);ctx.stroke();ctx.restore();
+      ctx.save();ctx.globalAlpha=a;ctx.strokeStyle='#8fe3ff';ctx.lineWidth=6;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.lineTo(c.laserTx,c.laserTy);ctx.stroke();ctx.restore();
+      ctx.save();ctx.globalAlpha=a;ctx.strokeStyle='#ffffff';ctx.lineWidth=2.4;ctx.lineCap='round';
       ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.lineTo(c.laserTx,c.laserTy);ctx.stroke();ctx.restore();
     }
     const sc=(c.ownerR||26)/15;
