@@ -2626,9 +2626,9 @@ function kingcarStep(b,dt){
       }else{
         const T=nearest(b);
         const a=T?Math.atan2(T.y-b.y,T.x-b.x):Math.random()*6.283,sp=520;
-        kingcarCombs.push({x:b.x,y:b.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,team:b.team,ownerId:b.id,ownerR:b.r,phase:'out',t:0,phaseT:0,shotIdx:0,laserFlashT:0,idx:b.combIdx,rot:0});
+        kingcarCombs.push({x:b.x,y:b.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,team:b.team,ownerId:b.id,ownerR:b.r,charge:b.combCharge||0,phase:'out',t:0,phaseT:0,shotIdx:0,laserFlashT:0,idx:b.combIdx,rot:0});
         b.combIdx=1-b.combIdx;
-        b.combBusy=true;b.g=1;
+        b.combBusy=true;b.g=1;b.combCharge=0; // 빗을 날리면 충전을 전부 소모
       }
     }
   }
@@ -2638,8 +2638,7 @@ function kingcarFireLaser(c){
   let T=null,bd=1e9;
   for(const o of balls){if(!o.alive||o.team===c.team||air(o))continue;const d=Math.hypot(o.x-c.x,o.y-c.y);if(d<bd){bd=d;T=o;}}
   if(!T)return;
-  const owner=balls.find(o=>o.id===c.ownerId);
-  const charge=owner?(owner.combCharge||0):0;
+  const charge=c.charge||0; // 던지는 순간의 충전량을 그대로 사용(던지면 충전은 바로 소모되므로)
   // 충전 1: 고정 데미지 2. 충전 2부터는 가중치(레이저 총 위력)가 커지는 대신, 현재 살아있는 적 숫자만큼 나뉜다.
   // -> 다수형 소환 캐릭터 상대로는 여러 적에게 나눠 맞기 쉬워 약해지고, 혼자 다이다이 까는 상대에게는 가중치가 고스란히 집중되어 사실상 데미지가 2배가 된다.
   const enemyCount=Math.max(1,balls.filter(o=>o.alive&&o.team!==c.team&&!air(o)).length);
@@ -2712,6 +2711,24 @@ function drawKingcarCombs(){
     ctx.save();ctx.translate(c.x,c.y);ctx.rotate(c.rot);
     drawTailComb(sc);
     ctx.restore();
+  }
+}
+function drawKingcarCharge(){
+  // 충전이 쌓일 때마다 캐릭터 밑에 동그란 점(스택)이 하나씩 차오른다
+  for(const b of balls){
+    if(b.skill!=='kingcar'||!b.alive)continue;
+    const n=KC_CHARGE_MAX,charge=Math.min(n,b.combCharge||0);
+    const rr=3.4,gap=3.4,totalW=n*rr*2+(n-1)*gap,x0=b.x-totalW/2+rr,y=b.y+b.r+12;
+    for(let i=0;i<n;i++){
+      const cx=x0+i*(rr*2+gap);
+      ctx.save();
+      ctx.beginPath();ctx.arc(cx,y,rr,0,6.283);
+      if(i<charge){ctx.fillStyle='#ffd84a';ctx.shadowColor='#ffd84a';ctx.shadowBlur=7;}
+      else{ctx.fillStyle='rgba(0,0,0,.28)';}
+      ctx.fill();ctx.shadowBlur=0;
+      ctx.lineWidth=1;ctx.strokeStyle='rgba(0,0,0,.4)';ctx.stroke();
+      ctx.restore();
+    }
   }
 }
 // 이름 있는 펫 스타일(사진 있는 애들만 실제로 등장함)
@@ -5396,7 +5413,7 @@ function draw(){
     ctx.fillStyle='#fff';ctx.fillText(Math.ceil(b.hp),b.x,ny);
     if(z>0)ctx.restore();
   }
-  drawShows();drawClaws();drawCukuFx();drawClap();drawWonka();drawCam();drawBia();drawBiaApo();drawFireFx();drawFireTrail();drawFireballs();drawNeraFx();drawNeraReinc();drawMintFx();drawDaeseokFx();drawBarrelFx();drawBarrelUltFx();drawBpel();drawPpeunBuffFx();drawPpeunProj();drawPpeunFx();drawBoseungFx();drawBoseungUltFx();drawBakeFx();drawBakeUlt2();drawSong();drawItems();drawBanyongThrows();drawBanyongPets();drawBanyongBullets();drawKingcarIdle();drawKingcarCombs();drawFinalText();drawShatterFx();drawYellowMarks();drawGreenThrows();drawBlueFlowersAndChain();drawOrangeAttack();
+  drawShows();drawClaws();drawCukuFx();drawClap();drawWonka();drawCam();drawBia();drawBiaApo();drawFireFx();drawFireTrail();drawFireballs();drawNeraFx();drawNeraReinc();drawMintFx();drawDaeseokFx();drawBarrelFx();drawBarrelUltFx();drawBpel();drawPpeunBuffFx();drawPpeunProj();drawPpeunFx();drawBoseungFx();drawBoseungUltFx();drawBakeFx();drawBakeUlt2();drawSong();drawItems();drawBanyongThrows();drawBanyongPets();drawBanyongBullets();drawKingcarIdle();drawKingcarCombs();drawKingcarCharge();drawFinalText();drawShatterFx();drawYellowMarks();drawGreenThrows();drawBlueFlowersAndChain();drawOrangeAttack();
   for(const q of proj){ctx.save();ctx.translate(q.x,q.y);ctx.rotate(q.rot);if(q.cookie){ctx.fillStyle='#d9a356';ctx.beginPath();ctx.arc(0,0,8,0,6.283);ctx.fill();ctx.strokeStyle='#8a5a28';ctx.lineWidth=1.2;ctx.stroke();ctx.fillStyle='#5a3418';for(const[cx,cy]of[[-3,-2],[3,-1],[0,3],[-2,2.5],[3,2]]){ctx.beginPath();ctx.arc(cx,cy,1.1,0,6.283);ctx.fill();}ctx.restore();continue;}if(q.spark){ctx.shadowColor=q.col;ctx.shadowBlur=12;ctx.fillStyle=q.col;star(0,0,8);ctx.fillStyle='#fff';star(0,0,3.5);ctx.restore();continue;}if(q.fire){const fk=.85+.15*Math.sin(performance.now()/40+q.x);ctx.shadowColor='#ff6a00';ctx.shadowBlur=22;ctx.globalAlpha=.6;ctx.fillStyle='#ff6a00';ctx.beginPath();ctx.arc(0,0,13*fk,0,6.283);ctx.fill();ctx.globalAlpha=1;ctx.fillStyle='#ffcf4d';ctx.beginPath();ctx.arc(0,0,8*fk,0,6.283);ctx.fill();ctx.restore();continue;}if(q.glove){ctx.shadowColor='#ff8a3a';ctx.shadowBlur=10;ctx.fillStyle='#ff8a3a';ctx.beginPath();ctx.arc(0,0,9,0,6.283);ctx.fill();ctx.fillStyle='#ffd0a8';ctx.beginPath();ctx.arc(3,0,4,0,6.283);ctx.fill();ctx.restore();continue;}if(q.knife){if(aquaKnifeImg&&aquaKnifeImg.complete){const s=1.3,iw=aquaKnifeImg.naturalWidth*s,ih=aquaKnifeImg.naturalHeight*s;ctx.drawImage(aquaKnifeImg,-iw/2,-ih/2,iw,ih);}else{ctx.fillStyle='#e0f4ff';ctx.fillRect(-9,-2,18,4);}ctx.restore();continue;}if(q.word){ctx.rotate(-q.rot);ctx.font='700 14px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.6)';ctx.fillStyle='#c9a8ff';const chs=[...q.txt],lh=17,oy=-((chs.length-1)*lh)/2;for(let ci=0;ci<chs.length;ci++){if(q.vertical){const cy=oy+ci*lh;ctx.strokeText(chs[ci],0,cy);ctx.fillText(chs[ci],0,cy);}else{const cx=oy+ci*lh;ctx.strokeText(chs[ci],cx,0);ctx.fillText(chs[ci],cx,0);}}ctx.restore();continue;}ctx.scale(1.7,1.7);ctx.fillStyle='#fff';ctx.strokeStyle='#222';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(0,-9);ctx.lineTo(9,7);ctx.lineTo(-9,7);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#1d3b2a';ctx.fillRect(-9,3,18,4);ctx.restore();}
   for(const p of parts){ctx.globalAlpha=Math.max(0,p.life*2);ctx.fillStyle=p.col;ctx.fillRect(p.x-2,p.y-2,4,4)}
   for(const f of fl){
