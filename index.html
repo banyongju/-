@@ -2756,7 +2756,7 @@ function banyongStep(b,dt){
         const dx=o.x-b.x,dy=o.y-b.y,dist=Math.hypot(dx,dy);
         if(dist>560)continue;
         let diff=Math.atan2(dy,dx)-b.laserAng;diff=Math.abs(Math.atan2(Math.sin(diff),Math.cos(diff)));
-        if(diff<0.4){hurt(o,16);burst(o.x,o.y,'#ff2d2d',10,180);hitAny=true;}
+        if(diff<0.4){hurt(o,12);burst(o.x,o.y,'#ff2d2d',10,180);hitAny=true;}
       }
       if(hitAny)b.beamCd=.18;
     }
@@ -2815,7 +2815,7 @@ function banyongPetsStep(dt){
     if(p.banyongPet&&p.style==='napjug'&&!p.alive&&!p.exploded){
       p.exploded=true;
       const mul2=p.trans?3:1;
-      for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd3=Math.hypot(o.x-p.x,o.y-p.y);if(dd3<75){hurt(o,24*mul2);const ka=Math.atan2(o.y-p.y,o.x-p.x);o.vx+=Math.cos(ka)*300;o.vy+=Math.sin(ka)*300;}}
+      for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd3=Math.hypot(o.x-p.x,o.y-p.y);if(dd3<75){hurt(o,18*mul2);const ka=Math.atan2(o.y-p.y,o.x-p.x);o.vx+=Math.cos(ka)*300;o.vy+=Math.sin(ka)*300;}}
       burst(p.x,p.y,p.trans?'#ff2d2d':'#ffb020',28,330);shk=Math.max(shk,p.trans?.3:.2);
     }
   }
@@ -2847,7 +2847,7 @@ function banyongPetsStep(dt){
         const d=dirs[Math.floor(Math.random()*4)];
         p.vx=d[0]*(p.trans?300:210);p.vy=d[1]*(p.trans?300:210);
       }
-      if(target&&bd<target.r+p.r+4&&p.atkCd<=0){p.atkCd=.5;hurt(target,8*mul);burst(target.x,target.y,'#7ec8ff',10,200);}
+      if(target&&bd<target.r+p.r+4&&p.atkCd<=0){p.atkCd=.5;hurt(target,6*mul);burst(target.x,target.y,'#7ec8ff',10,200);}
     }else if(grp==='newsummon'){
       // NEW용주: 기존 반용주 본체처럼 주기적으로 자기 자신도 투척체를 던져서 소환수를 소환함 (무한증식 방지용 noSpawn)
       // 소환을 3번 하고 나면 더 이상 던지지 않고 스스로 폭발한다
@@ -2860,7 +2860,7 @@ function banyongPetsStep(dt){
         p.summonCount=(p.summonCount||0)+1;
         if(p.summonCount>=3){
           p.exploded=true;
-          for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd2=Math.hypot(o.x-p.x,o.y-p.y);if(dd2<70){hurt(o,20*mul);const ka=Math.atan2(o.y-p.y,o.x-p.x);o.vx+=Math.cos(ka)*280;o.vy+=Math.sin(ka)*280;}}
+          for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd2=Math.hypot(o.x-p.x,o.y-p.y);if(dd2<70){hurt(o,15*mul);const ka=Math.atan2(o.y-p.y,o.x-p.x);o.vx+=Math.cos(ka)*280;o.vy+=Math.sin(ka)*280;}}
           burst(p.x,p.y,'#ffd84a',26,300);shk=Math.max(shk,.25);
           p.alive=false;
         }
@@ -2871,7 +2871,7 @@ function banyongPetsStep(dt){
       if(target&&p.atkCd<=0){
         p.atkCd=.9;
         p.tearBeamT=.18;p.tearTx=target.x;p.tearTy=target.y;
-        hurt(target,5*mul);
+        hurt(target,3.75*mul);
         burst(target.x,target.y,'#7ec8ff',10,200);
       }
       p.tearBeamT=Math.max(0,(p.tearBeamT||0)-dt);
@@ -2886,7 +2886,7 @@ function banyongPetsStep(dt){
         p.flash=(Math.floor(p.fuseBlinkT*22)%2===0)?0.08:0;
         if(p.contactT<=0){
           p.exploded=true;
-          for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd2=Math.hypot(o.x-p.x,o.y-p.y);if(dd2<75){hurt(o,24*mul);const ka=Math.atan2(o.y-p.y,o.x-p.x);o.vx+=Math.cos(ka)*300;o.vy+=Math.sin(ka)*300;}}
+          for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd2=Math.hypot(o.x-p.x,o.y-p.y);if(dd2<75){hurt(o,18*mul);const ka=Math.atan2(o.y-p.y,o.x-p.x);o.vx+=Math.cos(ka)*300;o.vy+=Math.sin(ka)*300;}}
           burst(p.x,p.y,p.trans?'#ff2d2d':'#ffb020',28,330);shk=Math.max(shk,p.trans?.3:.2);
           p.alive=false;
         }
@@ -2910,7 +2910,7 @@ function banyongPetsStep(dt){
           p.contactT=0.18;p.vx=0;p.vy=0;p.fuseBlinkT=0;p.r=p.napjugR0*1.9;
         }else if(p.fuseT<=0){
           p.exploded=true;
-          for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd2=Math.hypot(o.x-p.x,o.y-p.y);if(dd2<75){hurt(o,24*mul);const ka=Math.atan2(o.y-p.y,o.x-p.x);o.vx+=Math.cos(ka)*300;o.vy+=Math.sin(ka)*300;}}
+          for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd2=Math.hypot(o.x-p.x,o.y-p.y);if(dd2<75){hurt(o,18*mul);const ka=Math.atan2(o.y-p.y,o.x-p.x);o.vx+=Math.cos(ka)*300;o.vy+=Math.sin(ka)*300;}}
           burst(p.x,p.y,p.trans?'#ff2d2d':'#ffb020',28,330);shk=Math.max(shk,p.trans?.3:.2);
           p.alive=false;
         }
@@ -2931,7 +2931,7 @@ function banyongPetsStep(dt){
       }
       if(p.atkCd<=0){
         p.atkCd=.9;
-        for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd2=Math.hypot(o.x-p.x,o.y-p.y);if(dd2<pullRange+o.r){hurt(o,10*mul);}}
+        for(const o of balls){if(!o.alive||o.team===p.team||air(o))continue;const dd2=Math.hypot(o.x-p.x,o.y-p.y);if(dd2<pullRange+o.r){hurt(o,7.5*mul);}}
         burst(p.x,p.y,'#c77dff',14,220);
       }
     }
