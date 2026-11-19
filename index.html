@@ -4897,7 +4897,10 @@ function flowerStep(b,dt){
       const dt2=(now-cs.t1)/1000,u=Math.min(1,dt2/.22);
       b.x=cs.sx+(cs.ex-cs.sx)*u;b.y=cs.sy+(cs.ey-cs.sy)*u;b.vx=b.vy=0;
       b.ghostT=.15;
-      (b.ftrail=b.ftrail||[]).push({x:b.x,y:b.y,t:now,img:cs.poseImg});
+      if(!b.ftrailLastT||now-b.ftrailLastT>=35){ // 연쇄 자로나가 무한히 길어질 수 있게 되면서 잔상(ftrail)이 끝없이 쌓여 매 프레임 무겁게 그려지면 화면이 버벅이다 깜빡이는 것처럼 보임 - 잔상 생성 빈도를 제한
+        b.ftrailLastT=now;
+        (b.ftrail=b.ftrail||[]).push({x:b.x,y:b.y,t:now,img:cs.poseImg});
+      }
       for(const o of balls){
         if(!o.alive||o.team===b.team||cs.hit[o.id])continue;
         if(Math.hypot(o.x-b.x,o.y-b.y)<b.r*.75+o.r){
@@ -5466,7 +5469,8 @@ function draw(){
           if(al<=0)continue;
           const dimg=g.img||b.img;
           const iw2=dimg.naturalWidth||58,ih2=dimg.naturalHeight||96,fsc2=(b.r*4.2)/114,dh2=ih2*fsc2,dw2=iw2*fsc2;
-          ctx.save();ctx.globalAlpha=al*.55;ctx.globalCompositeOperation='lighter';ctx.filter='brightness(1.6) saturate(2) hue-rotate(180deg)';
+          ctx.save();ctx.globalAlpha=al*.55;ctx.globalCompositeOperation='lighter';
+          // ctx.filter(밝기/채도/색조 보정)는 캔버스 렌더링 비용이 매우 커서, 연쇄 자로나가 무한히 길어지며 잔상이 오래 지속되면 버벅임/깜빡임의 원인이 됨 - lighter 합성만으로도 잔상 느낌은 충분해 filter는 제거
           if(flip){ctx.translate(g.x,0);ctx.scale(-1,1);ctx.translate(-g.x,0);}
           ctx.drawImage(dimg,g.x-dw2/2,g.y-dh2/2,dw2,dh2);
           ctx.restore();
