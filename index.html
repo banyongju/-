@@ -3008,6 +3008,11 @@ function banyongPetsStep(dt){
     }else if(grp==='rage'){
       // 분노용주(미니용주 버전): 평소엔 그냥 일반 공처럼 튕겨다니다가, 피해를 입거나(hurt() 참고)
       // 시간이 지나면 폭주해서 비트 클로저를 휘두른다. 폭주 중 체력 방어/즉사 폭발 로직도 hurt()에서 본체와 동일하게 처리.
+      if(!p.rageInit){
+        p.rageInit=true;
+        const ra=Math.random()*6.283,rs=160+Math.random()*80;
+        p.vx=Math.cos(ra)*rs;p.vy=Math.sin(ra)*rs;
+      }
       rageStep(p,dt);
     }
   }
