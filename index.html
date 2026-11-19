@@ -995,9 +995,7 @@ function hurt(b,d){
   if(!b.dummy&&isRageUnit(b)&&b.raging){
     if(b.hp-d<0){
       // 즉사급(0 밑으로 내려가는) 피해를 맞으면 폭주가 끝나며 그대로 폭발해 죽는다
-      b.raging=false;b.hp=0;b.alive=false;b.flash=.15;
-      fl.push({x:b.x,y:b.y-b.r,life:.8,t:'-'+(+d.toFixed(1)),col:'#ff5a4a'});
-      burst(b.x,b.y,'#ff3b2f',40,340);burst(b.x,b.y,'#2b2b2b',22,260);shk=Math.max(shk,.6);sfx('ko');
+      rageDie(b,d);
       return;
     }else{
       // 폭주 중엔 체력이 0 밑으로 내려가지 않는다(최소 1 유지)
@@ -2751,20 +2749,30 @@ function drawKingcarCharge(){
   }
 }
 // 분노용주: 평소엔 그냥 떠다니는 공이다가, 피해를 입거나(위 hurt() 참고) 일정 시간이 지나면 폭주 상태에 돌입해
-// 몸이 빨개지고 비트 클로저(검)를 휘두르며 주변을 벤다. 폭주 중엔 체력이 0 밑으로 안 내려가지만,
-// 즉사급 피해를 맞으면 폭주가 끝나며 그대로 폭발해 죽는다(hurt()에서 처리).
+// 몸이 점점 더 빨개지며(10초에 걸쳐 완전히 새빨개짐) 비트 클로저(검)를 휘두르며 주변을 벤다. 폭주 중엔 체력이
+// 0 밑으로 안 내려가지만, 즉사급 피해를 맞으면 그 자리에서 바로 폭발해 죽거나(hurt()에서 처리), 완전히 새빨개진
+// 뒤로 5초가 더 지나면(폭주 시작으로부터 총 15초) 제풀에 터져 죽는다.
 const RAGE_AUTO_T=8; // 피해를 안 입어도 이 시간이 지나면 자동으로 폭주
+const RAGE_REDDEN_T=10; // 폭주 시작 후 이 시간에 걸쳐 점점 새빨개짐
+const RAGE_DEATH_T=RAGE_REDDEN_T+5; // 완전히 새빨개진 뒤 5초(총 15초) 지나면 자폭
 function rageEnter(b){
   if(b.raging)return;
-  b.raging=true;b.rageSwingCd=0.5;b.rageSwingT=0;
+  b.raging=true;b.rageSwingCd=0.5;b.rageSwingT=0;b.rageElapsed=0;
   fl.push({x:b.x,y:b.y-b.r-16,o:b,life:1.2,t:'폭주!!',col:'#ff3b2f'});
   burst(b.x,b.y,'#ff3b2f',30,280);burst(b.x,b.y,'#2b2b2b',14,200);shk=Math.max(shk,.4);sfx('ult');
+}
+function rageDie(b,d){
+  b.raging=false;b.hp=0;b.alive=false;b.flash=.15;
+  if(d!==undefined)fl.push({x:b.x,y:b.y-b.r,life:.8,t:'-'+(+d.toFixed(1)),col:'#ff5a4a'});
+  burst(b.x,b.y,'#ff3b2f',40,340);burst(b.x,b.y,'#2b2b2b',22,260);shk=Math.max(shk,.6);sfx('ko');
 }
 function rageStep(b,dt){
   if(b.rageSpawnT===undefined)b.rageSpawnT=0;
   b.rageSpawnT+=dt;
   if(!b.raging&&b.rageSpawnT>RAGE_AUTO_T)rageEnter(b);
   if(!b.raging)return;
+  b.rageElapsed=(b.rageElapsed||0)+dt;
+  if(b.rageElapsed>=RAGE_DEATH_T){rageDie(b);return;}
   b.rageSwingCd=(b.rageSwingCd===undefined?0.5:b.rageSwingCd)-dt;
   if(b.rageSwingT>0)b.rageSwingT=Math.max(0,b.rageSwingT-dt);
   if(b.rageSwingCd<=0){
@@ -2786,8 +2794,9 @@ function isRageUnit(b){return b.skill==='rage'||(b.banyongPet&&b.style==='rage')
 function drawRage(){
   for(const b of balls){
     if(!isRageUnit(b)||!b.alive||!b.raging)continue;
-    // 몸이 빨갛게: 반투명 붉은 오버레이
-    ctx.save();ctx.globalAlpha=.4;ctx.fillStyle='#ff2d2d';
+    // 몸이 점점 빨갛게: 폭주 시작 후 10초에 걸쳐 오버레이 농도가 점점 짙어짐
+    const redP=Math.min(1,(b.rageElapsed||0)/RAGE_REDDEN_T);
+    ctx.save();ctx.globalAlpha=.08+redP*0.42;ctx.fillStyle='#ff2d2d';
     ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,6.283);ctx.fill();ctx.restore();
     // 비트 클로저(검)를 휘두르는 연출
     const swinging=b.rageSwingT>0,swingP=swinging?1-b.rageSwingT/0.35:0;
