@@ -4815,48 +4815,6 @@ function bakeStep(b,dt){
     }
   }
 }
-function flowerSummonNext(b){ // 여섯꽃 캐스케이드: 아쿠아 → 세스 → 옐로우 → 그린 → 블루 → 오렌지, 한 번 호출될 때마다 다음 한 단계만 소환
-  (b.aquas=b.aquas||[]);
-  if(b.aquas.length<1){
-    b.aquas.push({ang:Math.random()*6.283,r:200,spd:1.6,throwT:.6+Math.random()*.4});
-    fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 아쿠아!',col:'#9fe6ff'});
-  }else{
-    (b.seths=b.seths||[]);
-    if(b.seths.length<1){
-      const aAng=(b.aquas[0]&&b.aquas[0].ang)||0;
-      b.seths.push({ang:aAng+1.0472,r:200,spd:1.6,throwT:1+Math.random()*.5});
-      fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 세스!',col:'#c9a8ff'});
-    }else{
-      (b.yellows=b.yellows||[]);
-      if(b.yellows.length<1){
-        const sAng=(b.seths[0]&&b.seths[0].ang)||0;
-        b.yellows.push({ang:sAng+1.0472,r:200,spd:1.6,phase:'idle',cd:1+Math.random()*.5});
-        fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 옐로우!',col:'#ffd93b'});
-      }else{
-        (b.greens=b.greens||[]);
-        if(b.greens.length<1){
-          const yAng=(b.yellows[0]&&b.yellows[0].ang)||0;
-          b.greens.push({ang:yAng+1.0472,r:200,spd:1.6,phase:'idle',atkT:1+Math.random()*.5});
-          fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 그린!',col:'#7ee787'});
-        }else{
-          (b.blues=b.blues||[]);
-          if(b.blues.length<1){
-            const gAng=(b.greens[0]&&b.greens[0].ang)||0;
-            b.blues.push({ang:gAng+1.0472,r:200,spd:1.6,spawnT:1.5+Math.random()*.5});
-            fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 블루!',col:'#6aa8ff'});
-          }else{
-            (b.oranges=b.oranges||[]);
-            if(b.oranges.length<1){
-              const blAng=(b.blues[0]&&b.blues[0].ang)||0;
-              b.oranges.push({ang:blAng+1.0472,r:200,spd:1.6});
-              fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 오렌지!',col:'#ff8a3a'});
-            }
-          }
-        }
-      }
-    }
-  }
-}
 function flowerStep(b,dt){
   if(!b.alive)return;
   const now=performance.now();
@@ -4890,54 +4848,73 @@ function flowerStep(b,dt){
           b.cnt=(b.cnt||0)+1;const ult=b.cnt%b.ult===0;cs.ult=ult;
           fl.push({x:b.x,y:b.y-b.r-18,life:.9,t:ult?'필살기!! 꽃의 힘!':'자로나!',col:ult?'#ff6b6b':'#5fc8ff'});
           burst(b.x,b.y,ult?'#ff6b6b':'#5fc8ff',ult?26:14,ult?320:220);if(ult)shk=.3;
-          if(ult)flowerSummonNext(b);
+          if(ult){
+            (b.aquas=b.aquas||[]);
+            if(b.aquas.length<1){
+              b.aquas.push({ang:Math.random()*6.283,r:200,spd:1.6,throwT:.6+Math.random()*.4});
+              fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 아쿠아!',col:'#9fe6ff'});
+            }else{
+              (b.seths=b.seths||[]);
+              if(b.seths.length<1){
+                const aAng=(b.aquas[0]&&b.aquas[0].ang)||0;
+                b.seths.push({ang:aAng+1.0472,r:200,spd:1.6,throwT:1+Math.random()*.5});
+                fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 세스!',col:'#c9a8ff'});
+              }else{
+                (b.yellows=b.yellows||[]);
+                if(b.yellows.length<1){
+                  const sAng=(b.seths[0]&&b.seths[0].ang)||0;
+                  b.yellows.push({ang:sAng+1.0472,r:200,spd:1.6,phase:'idle',cd:1+Math.random()*.5});
+                  fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 옐로우!',col:'#ffd93b'});
+                }else{
+  (b.greens=b.greens||[]);
+                  if(b.greens.length<1){
+                    const yAng=(b.yellows[0]&&b.yellows[0].ang)||0;
+                    b.greens.push({ang:yAng+1.0472,r:200,spd:1.6,phase:'idle',atkT:1+Math.random()*.5});
+                    fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 그린!',col:'#7ee787'});
+                  }else{
+                    (b.blues=b.blues||[]);
+                    if(b.blues.length<1){
+                      const gAng=(b.greens[0]&&b.greens[0].ang)||0;
+                      b.blues.push({ang:gAng+1.0472,r:200,spd:1.6,spawnT:1.5+Math.random()*.5});
+                      fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 블루!',col:'#6aa8ff'});
+                    }else{
+                      (b.oranges=b.oranges||[]);
+                      if(b.oranges.length<1){
+                        const blAng=(b.blues[0]&&b.blues[0].ang)||0;
+                        b.oranges.push({ang:blAng+1.0472,r:200,spd:1.6});
+                        fl.push({x:b.x,y:b.y-b.r-40,life:1.2,t:'여섯꽃 - 오렌지!',col:'#ff8a3a'});
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }else{const a0=Math.random()*6.283;b.vx=Math.cos(a0)*235;b.vy=Math.sin(a0)*235;b.fcs=null;b.ft=.3;}
       }
     }else if(cs.phase==='dash'){
       const dt2=(now-cs.t1)/1000,u=Math.min(1,dt2/.22);
       b.x=cs.sx+(cs.ex-cs.sx)*u;b.y=cs.sy+(cs.ey-cs.sy)*u;b.vx=b.vy=0;
       b.ghostT=.15;
-      if(!b.ftrailLastT||now-b.ftrailLastT>=35){ // 연쇄 자로나가 무한히 길어질 수 있게 되면서 잔상(ftrail)이 끝없이 쌓여 매 프레임 무겁게 그려지면 화면이 버벅이다 깜빡이는 것처럼 보임 - 잔상 생성 빈도를 제한
-        b.ftrailLastT=now;
-        (b.ftrail=b.ftrail||[]).push({x:b.x,y:b.y,t:now,img:cs.poseImg});
-      }
+      (b.ftrail=b.ftrail||[]).push({x:b.x,y:b.y,t:now,img:cs.poseImg});
       for(const o of balls){
         if(!o.alive||o.team===b.team||cs.hit[o.id])continue;
         if(Math.hypot(o.x-b.x,o.y-b.y)<b.r*.75+o.r){
           cs.hit[o.id]=1;hurt(o,10);
-          if(!o.alive)cs.killed=true; // 이 타격으로 적을 실제로 죽였으면, 체인이 끝날 때 멈추는 신호
           const d2=Math.hypot(o.x-b.x,o.y-b.y)||1;
           o.vx+=(o.x-b.x)/d2*420;o.vy+=(o.y-b.y)/d2*420;o.stun=Math.max(o.stun||0,.3);
-          burst(o.x,o.y,'#5fc8ff',12,220); // 연쇄 자로나가 무한히 길어질 수 있어 매 타격마다 화면 흔들림(shk)을 걸면 화면이 끊임없이 깜빡여 보이므로, 타격 이펙트는 남기되 화면 흔들림은 주지 않음
+          burst(o.x,o.y,'#5fc8ff',12,220);shk=Math.max(shk,.25);
         }
       }
       if(u>=1){
         let nxt=null,bestD=Infinity;
-        if(!cs.killed){
-          for(const o of balls){
-            if(!o.alive||o.team===b.team||cs.hit[o.id])continue;
-            const d=Math.hypot(o.x-b.x,o.y-b.y);
-            if(d<bestD){bestD=d;nxt=o;}
-          }
-          if(!nxt){
-            // 적이 2명 이상 남아있을 때만 "연쇄"가 성립 - 전부 한 번씩 쳤는데 아직 누구도 안 죽었으면
-            // 기록을 초기화해서 다시 처음부터, 둘 중 하나가 죽을 때까지 계속 이어짐. 적이 1명뿐이면 그냥 거기서 끝.
-            const enemyCount=balls.filter(o=>o.alive&&o.team!==b.team).length;
-            if(enemyCount>=2){
-              cs.hit={};
-              for(const o of balls){
-                if(!o.alive||o.team===b.team)continue;
-                const d=Math.hypot(o.x-b.x,o.y-b.y);
-                if(d<bestD){bestD=d;nxt=o;}
-              }
-            }
-          }
+        for(const o of balls){
+          if(!o.alive||o.team===b.team||cs.hit[o.id])continue;
+          const d=Math.hypot(o.x-b.x,o.y-b.y);
+          if(d<bestD){bestD=d;nxt=o;}
         }
         cs.bounces=(cs.bounces||0)+1;
-        if(nxt&&cs.bounces%6===0){ // 연쇄 자로나가 6번 터질 때마다 여섯꽃(아쿠아/세스/...)이 한 단계씩 나옴
-          flowerSummonNext(b);
-        }
-        if(nxt){ // 적이 2명 이상이고 아직 아무도 안 죽었으면 연쇄 자로나가 계속 이어짐(최대 횟수 제한 없음), 한 명이라도 죽으면 그 즉시 종료
+        if(nxt&&cs.bounces<8){
           const dx=nxt.x-b.x,dy=nxt.y-b.y,dd=Math.hypot(dx,dy)||1,ux=dx/dd,uy=dy/dd;
           cs.sx=b.x;cs.sy=b.y;
           cs.ex=Math.max(b.r,Math.min(W-b.r,nxt.x+ux*(nxt.r+b.r+60)));
@@ -5469,8 +5446,7 @@ function draw(){
           if(al<=0)continue;
           const dimg=g.img||b.img;
           const iw2=dimg.naturalWidth||58,ih2=dimg.naturalHeight||96,fsc2=(b.r*4.2)/114,dh2=ih2*fsc2,dw2=iw2*fsc2;
-          ctx.save();ctx.globalAlpha=al*.55;ctx.globalCompositeOperation='lighter';
-          // ctx.filter(밝기/채도/색조 보정)는 캔버스 렌더링 비용이 매우 커서, 연쇄 자로나가 무한히 길어지며 잔상이 오래 지속되면 버벅임/깜빡임의 원인이 됨 - lighter 합성만으로도 잔상 느낌은 충분해 filter는 제거
+          ctx.save();ctx.globalAlpha=al*.55;ctx.globalCompositeOperation='lighter';ctx.filter='brightness(1.6) saturate(2) hue-rotate(180deg)';
           if(flip){ctx.translate(g.x,0);ctx.scale(-1,1);ctx.translate(-g.x,0);}
           ctx.drawImage(dimg,g.x-dw2/2,g.y-dh2/2,dw2,dh2);
           ctx.restore();
@@ -5551,6 +5527,7 @@ function draw(){
     ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.6)';ctx.strokeText(f.t,f.x,f.y);
     ctx.fillStyle=f.col;ctx.fillText(f.t,f.x,f.y);
   }
+  ctx.globalAlpha=1;
   if(!started){ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(0,0,W,H);ctx.fillStyle='#fff';ctx.font='700 24px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('화면을 터치하면 시작',W/2,H/2);}
 }
 let last=performance.now();
