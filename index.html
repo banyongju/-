@@ -4896,25 +4896,44 @@ function flowerStep(b,dt){
       const dt2=(now-cs.t1)/1000,u=Math.min(1,dt2/.22);
       b.x=cs.sx+(cs.ex-cs.sx)*u;b.y=cs.sy+(cs.ey-cs.sy)*u;b.vx=b.vy=0;
       b.ghostT=.15;
-      (b.ftrail=b.ftrail||[]).push({x:b.x,y:b.y,t:now,img:cs.poseImg});
+      if(!b.ftrailLastT||now-b.ftrailLastT>=35){ // 잔상을 매 스텝(초당 ~120회)이 아니라 35ms 간격으로만 쌓아서, 체인이 길어져도 그리기 부담이 과도하게 커지지 않게 함
+        b.ftrailLastT=now;
+        (b.ftrail=b.ftrail||[]).push({x:b.x,y:b.y,t:now,img:cs.poseImg});
+      }
       for(const o of balls){
         if(!o.alive||o.team===b.team||cs.hit[o.id])continue;
         if(Math.hypot(o.x-b.x,o.y-b.y)<b.r*.75+o.r){
           cs.hit[o.id]=1;hurt(o,10);
+          if(!o.alive)cs.killed=true; // 이 타격으로 적을 실제로 죽였으면 체인을 끝낼 신호
           const d2=Math.hypot(o.x-b.x,o.y-b.y)||1;
           o.vx+=(o.x-b.x)/d2*420;o.vy+=(o.y-b.y)/d2*420;o.stun=Math.max(o.stun||0,.3);
-          burst(o.x,o.y,'#5fc8ff',12,220);shk=Math.max(shk,.25);
+          burst(o.x,o.y,'#5fc8ff',12,220); // 화면 흔들림(shk)은 매 타격마다 걸면 체인이 길어질 때 끊임없이 흔들려 깜빡여 보이므로 걸지 않음
         }
       }
       if(u>=1){
         let nxt=null,bestD=Infinity;
-        for(const o of balls){
-          if(!o.alive||o.team===b.team||cs.hit[o.id])continue;
-          const d=Math.hypot(o.x-b.x,o.y-b.y);
-          if(d<bestD){bestD=d;nxt=o;}
+        if(!cs.killed){
+          for(const o of balls){
+            if(!o.alive||o.team===b.team||cs.hit[o.id])continue;
+            const d=Math.hypot(o.x-b.x,o.y-b.y);
+            if(d<bestD){bestD=d;nxt=o;}
+          }
+          if(!nxt){
+            // 적이 2명 이상 남아있을 때만 "연쇄"가 성립 - 전부 한 번씩 쳤는데 아직 아무도 안 죽었으면
+            // 기록을 초기화해서 다시 처음부터, 둘 중 하나가 죽을 때까지 계속 이어짐. 적이 1명뿐이면 거기서 끝.
+            const enemyCount=balls.filter(o=>o.alive&&o.team!==b.team).length;
+            if(enemyCount>=2){
+              cs.hit={};
+              for(const o of balls){
+                if(!o.alive||o.team===b.team)continue;
+                const d=Math.hypot(o.x-b.x,o.y-b.y);
+                if(d<bestD){bestD=d;nxt=o;}
+              }
+            }
+          }
         }
         cs.bounces=(cs.bounces||0)+1;
-        if(nxt&&cs.bounces<8){
+        if(nxt){ // 적이 2명 이상이고 아직 아무도 안 죽었으면 연쇄 자로나가 계속 이어짐(최대 횟수 제한 없음), 한 명이라도 죽으면 그 즉시 종료
           const dx=nxt.x-b.x,dy=nxt.y-b.y,dd=Math.hypot(dx,dy)||1,ux=dx/dd,uy=dy/dd;
           cs.sx=b.x;cs.sy=b.y;
           cs.ex=Math.max(b.r,Math.min(W-b.r,nxt.x+ux*(nxt.r+b.r+60)));
@@ -5446,7 +5465,8 @@ function draw(){
           if(al<=0)continue;
           const dimg=g.img||b.img;
           const iw2=dimg.naturalWidth||58,ih2=dimg.naturalHeight||96,fsc2=(b.r*4.2)/114,dh2=ih2*fsc2,dw2=iw2*fsc2;
-          ctx.save();ctx.globalAlpha=al*.55;ctx.globalCompositeOperation='lighter';ctx.filter='brightness(1.6) saturate(2) hue-rotate(180deg)';
+          ctx.save();ctx.globalAlpha=al*.55;ctx.globalCompositeOperation='lighter';
+          // ctx.filter(밝기/채도/색조 보정)는 캔버스 렌더링 비용이 커서 체인이 길어지면 버벅임의 원인이 될 수 있어 제거 - lighter 합성만으로도 잔상 느낌은 충분함
           if(flip){ctx.translate(g.x,0);ctx.scale(-1,1);ctx.translate(-g.x,0);}
           ctx.drawImage(dimg,g.x-dw2/2,g.y-dh2/2,dw2,dh2);
           ctx.restore();
