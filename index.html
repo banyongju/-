@@ -4896,10 +4896,7 @@ function flowerStep(b,dt){
       const dt2=(now-cs.t1)/1000,u=Math.min(1,dt2/.22);
       b.x=cs.sx+(cs.ex-cs.sx)*u;b.y=cs.sy+(cs.ey-cs.sy)*u;b.vx=b.vy=0;
       b.ghostT=.15;
-      if(!b.ftrailLastT||now-b.ftrailLastT>=35){ // 잔상을 매 스텝(초당 ~120회)이 아니라 35ms 간격으로만 쌓아서, 체인이 길어져도 그리기 부담이 과도하게 커지지 않게 함
-        b.ftrailLastT=now;
-        (b.ftrail=b.ftrail||[]).push({x:b.x,y:b.y,t:now,img:cs.poseImg});
-      }
+      (b.ftrail=b.ftrail||[]).push({x:b.x,y:b.y,t:now,img:cs.poseImg}); // 잔상을 다시 매 스텝마다 쌓이게(쓰로틀 제거) - 한 번에 하나씩 다시 추가해보며 깜빡임 원인을 가려보는 중
       for(const o of balls){
         if(!o.alive||o.team===b.team||cs.hit[o.id])continue;
         if(Math.hypot(o.x-b.x,o.y-b.y)<b.r*.75+o.r){
