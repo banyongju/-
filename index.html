@@ -800,7 +800,7 @@ function updUI(){
     if(b.seq){const nk=b.seq[b.si%b.seq.length],nt='다음: '+(nk==='buff'?(((b.bv||0)+1)%2===1?'Hold position! Check, fire! (공속↑)':'Hold position! Check, fire! (데미지↑)'):SK[nk])+(b.buffLeft>0?' · 데미지×1.5 '+b.buffLeft+'회':'')+(b.asLeft>0?' · 공속↑ '+b.asLeft+'회':'')+(b.shield>0?' · 보호막 '+Math.ceil(b.shield):'');if(e.skt!==nt){e.sk.textContent=nt;e.skt=nt}}
   }
 }
-const selEl=document.getElementById('sel'),ROSTER=[0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,21,22,23],IMGS={0:faceImg,2:faceImg2,3:faceImg3,4:moingImg,5:cukuImg,6:wonkaImg,7:camImg,8:biaImg,9:fireImg,10:neraImg,11:mintImg,12:daeseokImg,13:barrelImg,14:ppeunImg,15:boseungImg,16:bakeImg,17:flowerImg,18:sethImg,20:ppeunImg,21:banyongImg,22:kingcarImg,23:rageImg};
+const selEl=document.getElementById('sel'),ROSTER=[0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,21,22],IMGS={0:faceImg,2:faceImg2,3:faceImg3,4:moingImg,5:cukuImg,6:wonkaImg,7:camImg,8:biaImg,9:fireImg,10:neraImg,11:mintImg,12:daeseokImg,13:barrelImg,14:ppeunImg,15:boseungImg,16:bakeImg,17:flowerImg,18:sethImg,20:ppeunImg,21:banyongImg,22:kingcarImg,23:rageImg};
 let pick=[0,2],msg='';
 let raidPick=[0,2,4],raidMode=false;
 function renderSel(){
