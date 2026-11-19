@@ -4914,7 +4914,7 @@ function flowerStep(b,dt){
           if(d<bestD){bestD=d;nxt=o;}
         }
         cs.bounces=(cs.bounces||0)+1;
-        if(nxt&&cs.bounces<8){
+        if(nxt){ // 적이 남아있는 한 연쇄 자로나가 무한으로 이어짐(최대 횟수 제한 없음)
           const dx=nxt.x-b.x,dy=nxt.y-b.y,dd=Math.hypot(dx,dy)||1,ux=dx/dd,uy=dy/dd;
           cs.sx=b.x;cs.sy=b.y;
           cs.ex=Math.max(b.r,Math.min(W-b.r,nxt.x+ux*(nxt.r+b.r+60)));
