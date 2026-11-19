@@ -4905,7 +4905,7 @@ function flowerStep(b,dt){
           if(!o.alive)cs.killed=true; // 이 타격으로 적을 실제로 죽였으면, 체인이 끝날 때 멈추는 신호
           const d2=Math.hypot(o.x-b.x,o.y-b.y)||1;
           o.vx+=(o.x-b.x)/d2*420;o.vy+=(o.y-b.y)/d2*420;o.stun=Math.max(o.stun||0,.3);
-          burst(o.x,o.y,'#5fc8ff',12,220);shk=Math.max(shk,.25);
+          burst(o.x,o.y,'#5fc8ff',12,220); // 연쇄 자로나가 무한히 길어질 수 있어 매 타격마다 화면 흔들림(shk)을 걸면 화면이 끊임없이 깜빡여 보이므로, 타격 이펙트는 남기되 화면 흔들림은 주지 않음
         }
       }
       if(u>=1){
