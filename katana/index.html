@@ -92,7 +92,7 @@ button:hover{background:#fff}.btns{display:flex;gap:10px;flex-wrap:wrap}.nb{back
 <div class="keys">
   <div><b>LMB</b>클릭 베기 · 꾹 눌러 방향 베기</div>
   <div><b>RMB</b>찌르기 · 차징 중엔 시점</div>
-  <div><b>F</b>스킬</div>
+  <div><b>F</b>스킬 · <b>R</b>메뉴</div>
   <div><b>WASD</b>이동 · <b>Space</b>점프 · <b>Shift</b>달리기</div>
 </div>
 <div id="msg"></div>
@@ -813,7 +813,7 @@ function releaseSkew(finish){if(!skew)return;const e=skew.e;e.skewered=false;ske
     sfx('hit');hitStop=.08;shake=.12;damage(e,75,dir,{type:'slash',c:{x:-1,y:.15},p:.8})}}
 
 /* ---------- input ---------- */
-addEventListener('keydown',e=>{if(e.code==='KeyF'&&!e.repeat&&playing&&!paused&&!over&&!replay){if(SW().dash)fireDash();else if(SW().wire)fireWave();else if(SW().pins){if(pinAim)confirmPinAim();else startPinAim()}else if(SW().storm)thunderStorm();else toggleSkill()}keys[e.code]=true;if(e.code==='Space')e.preventDefault()});
+addEventListener('keydown',e=>{if(e.code==='KeyR'&&!e.repeat&&playing&&!paused&&!over&&!replay){if(locked&&document.exitPointerLock)document.exitPointerLock();else{paused=true;charge=null;blocking=false;lookHold=false;showOv('pause')}return}if(e.code==='KeyF'&&!e.repeat&&playing&&!paused&&!over&&!replay){if(SW().dash)fireDash();else if(SW().wire)fireWave();else if(SW().pins){if(pinAim)confirmPinAim();else startPinAim()}else if(SW().storm)thunderStorm();else toggleSkill()}keys[e.code]=true;if(e.code==='Space')e.preventDefault()});
 addEventListener('keyup',e=>{keys[e.code]=false});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 cv.addEventListener('mousedown',e=>{if(!playing||paused||over||replay)return;if(!locked&&!fallback){grabMouse();return}
