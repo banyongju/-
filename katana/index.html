@@ -342,7 +342,7 @@ const SWORDS=[
   {id:'base',name:'카타나',price:0,col:0xeef2f6,em:0x222831,desc:'기본 칼'},
   {id:'dual',name:'이도류',price:2000,col:0xeef2f6,em:0x222831,desc:'칼 2개 · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 크게 베기(차징 50% 이상): 십자 베기 · 스킬(F): X자 참격 날리기, 쿨 3초',dual:true,spd:2,wire:true},
   {id:'triple',name:'삼도류',price:3000,col:0xeef2f6,em:0x222831,desc:'칼 3개(하나는 입에) · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 크게 베기(차징 50% 이상): 십자 베기 · 스킬(F): 빠르게 돌진한 뒤 지나간 길에 참격을 퍼부음, 쿨 4초',dual:true,triple:true,spd:2,dash:true},
-  {id:'thunder',name:'번개칼',price:4000,col:0xbfeaff,em:0x2a7fff,desc:'벨 때마다 주변 적 4마리에게 연쇄 번개',chain:22,chainN:4,chainR:6},
+  {id:'thunder',name:'번개칼',price:4000,col:0xbfeaff,em:0x2a7fff,desc:'벨 때마다 주변 무작위 적 4마리도 같은 피해 · 필살기(F, 게이지 100%): 뇌신강림 — 3초간 하늘에서 번개가 주변 적에게 내리꽂힘',chain:22,chainN:4,chainR:8,storm:true},
   {id:'needleking',name:'바느질의 왕의 칫솔',special:true,how:'cond',cond:'땀수 100 유지',col:0xffd84a,em:0x6a5000,desc:'패시브: 땀수가 오를 때마다 참수도 같이 오름 · 클릭: 찌르기 · 0.5초 이상 꾹 눌러야 베기 · 우클릭: 시침핀 날리기 · 필살기(F, 게이지 100%): 바닥에 원이 생기고, 원하는 곳에 찍으면(클릭 또는 F) 시침핀이 그 원 안에 쏟아짐 · 우클릭으로 취소',model:'wand',ttamStreak:true,stabClick:true,pins:true}];
 let myeok=0,swordId='base',unlocked=new Set();try{myeok=parseInt(localStorage.getItem('katana-myeok'))||0;swordId=localStorage.getItem('katana-sword')||'base';unlocked=new Set(JSON.parse(localStorage.getItem('katana-unlocked')||'[]'))}catch(e){}
 let money=0,owned=new Set(['base']);try{money=parseInt(localStorage.getItem('katana-money'))||0;if(!localStorage.getItem('katana-merged')){money+=myeok*10;localStorage.setItem('katana-money',money);localStorage.setItem('katana-merged','1')}owned=new Set(JSON.parse(localStorage.getItem('katana-owned')||'["base"]'))}catch(e){}
@@ -558,11 +558,23 @@ function bolt(a,b){const pts=[a.clone()],n=10;for(let i=1;i<n;i++){const p=a.clo
   for(const [w,c,o] of [[1,0xffffff,1],[1,0x7fd8ff,.6]]){const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints(o<1?pts.map(p=>p.clone().add(V(rand(-.05,.05),rand(-.05,.05),rand(-.05,.05)))):pts),new THREE.LineBasicMaterial({color:c,transparent:true,opacity:o,blending:THREE.AdditiveBlending,depthWrite:false}));l.frustumCulled=false;scene.add(l);bolts.push({l,t:0,o})}
   spark(b,6)}
 function updateBolts(dt){for(let i=bolts.length-1;i>=0;i--){const x=bolts[i];x.t+=dt;x.l.material.opacity=x.o*Math.max(0,1-x.t/.22)*(Math.random()<.5?1:.4);if(x.t>.22){scene.remove(x.l);x.l.geometry.dispose();x.l.material.dispose();bolts.splice(i,1)}}}
-function chainZap(src){const w=SW();if(!w.chain)return;const N=w.chainN||1,hit=new Set([src]);let cur=src,dmg=w.chain;
-  for(let k=0;k<N;k++){let best=null,bd=w.chainR||4;for(const o of enemies){if(hit.has(o)||!o.alive)continue;const d=o.g.position.distanceTo(cur.g.position);if(d<bd){bd=d;best=o}}
-    if(!best)break;hit.add(best);const a=cur.g.position.clone().add(V(0,1.2,0)),b=best.g.position.clone().add(V(0,1.2,0));bolt(a,b);
-    damage(best,dmg,b.clone().sub(a).setY(0).normalize(),{type:'blade'});best.stun=Math.max(best.stun,.25);cur=best;dmg*=.85}
-  if(hit.size>1)sfx('clang')}
+function chainZap(src,dmg){const w=SW();if(!w.chain)return;const N=w.chainN||1;
+  const near=enemies.filter(o=>o!==src&&o.alive&&o.g.position.distanceTo(src.g.position)<(w.chainR||8));
+  for(let i=near.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[near[i],near[j]]=[near[j],near[i]]}
+  const a=src.g.position.clone().add(V(0,1.2,0));let any=false;
+  for(const o of near.slice(0,N)){const b=o.g.position.clone().add(V(0,1.2,0));bolt(a,b);damage(o,dmg||w.chain,b.clone().sub(a).setY(0).normalize(),{type:'blade'});o.stun=Math.max(o.stun,.25);any=true}
+  if(any)sfx('clang')}
+let storm=null;
+function thunderStorm(){if(skill<100||storm)return;skill=0;storm={t:0,next:0};$('#flash').style.opacity=.6;thunderSfx()}
+function thunderSfx(){if(!AC)return;try{const t=AC.currentTime,n=Math.floor(AC.sampleRate*1.2),b=AC.createBuffer(1,n,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);
+  const s=AC.createBufferSource();s.buffer=b;const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=500;const g=AC.createGain();g.gain.value=.9;s.connect(f);f.connect(g);g.connect(AC.destination);s.start(t)}catch(e){}}
+function updateStorm(dt){if(!storm)return;storm.t+=dt;storm.next-=dt;
+  while(storm.next<=0&&storm.t<3.2){storm.next+=.12;const tg=enemies.filter(e=>e.alive&&e.g.position.distanceTo(P.pos)<16);
+    let x,z,e=null;if(tg.length){e=pick(tg);x=e.g.position.x;z=e.g.position.z}else{const a=rand(0,6.28),r=rand(3,12);x=P.pos.x+Math.cos(a)*r;z=P.pos.z+Math.sin(a)*r}
+    const top=V(x+rand(-2,2),26,z+rand(-2,2)),bot=e?e.g.position.clone().add(V(0,1.3,0)):V(x,0,z);bolt(top,bot);bolt(top.clone().add(V(rand(-1,1),0,rand(-1,1))),bot);spark(bot,10);decal(x,z,rand(.3,.6));
+    if(e){damage(e,45,V(rand(-1,1),0,rand(-1,1)).normalize(),{type:'blade'});e.stun=Math.max(e.stun,.6)}
+    if(Math.random()<.35){$('#flash').style.opacity=.25;thunderSfx()}shake=Math.max(shake,.06)}
+  if(storm.t>=3.2)storm=null}
 function addSkill(n){if(skillOn)return;skill=Math.min(100,skill+n)}
 let bq=[],preDeb=null,lastGhost=null;
 let wire=null,wireCD=0;const WIRE_CD=3;
@@ -714,7 +726,7 @@ function stabContact(e,m,lp,dirW){
   if(sw.lock&&lockOk(sw.lock)&&sw.lock.m===m)lp=sw.lock.l.clone();
   const zone=zoneOf(m,lp),hit=surfHit(m,lp);addWound(e,hit,dirW,0,'stab');
   const B=camBasis();blood(hit.point,18,B.f.clone().multiplyScalar(-1));sfx('hit');hitStop=.08;shake=.08;trails.push({stab:true,t:0,w:10,ox:aimD.x,oy:aimD.y});
-  addSkill(10);chainZap(e);const pt=m.userData.part,pull=B.f.clone().multiplyScalar(-1).add(V(0,.35,0)).normalize();
+  addSkill(10);chainZap(e,40);const pt=m.userData.part,pull=B.f.clone().multiplyScalar(-1).add(V(0,.35,0)).normalize();
   if(zone==='neck'||pt==='head'){const head=e.body.find(x=>x.userData.part==='head');
     if(e.alive){e.ttamDone=true;kill(e,{type:'stab',dir:B.f});addTtam()}else if(!e.ttamDone){e.ttamDone=true;addTtam()}
     if(head)sever(e,head,pull,.25);return}
@@ -733,7 +745,7 @@ function bladeSweep(){
         D.add(c.m);const dirW=cur[i].clone().sub(prev[i]);if(dirW.lengthSq()<1e-6)dirW.copy(cur[BN-1]).sub(cur[0]);dirW.normalize();
         if(stab){sw.stabE=c.e;stabContact(c.e,c.m,lp,dirW);sw.fin=true;return}
         const g=i<BN?0:1,r=bladeContact(c.e,c.m,lp,dirW,g?cur[cur.length-1].clone().sub(cur[BN]):cur[BN-1].clone().sub(cur[0]),g);
-        addSkill(4);if(!sw.anyHit){sw.anyHit=true;chainZap(c.e);sfx('hit');hitStop=.05+sw.p*.05;shake=.05+sw.p*.08}
+        addSkill(4);if(!sw.anyHit){sw.anyHit=true;chainZap(c.e,sw.dmg*(partMul[c.m.userData.part]||1));sfx('hit');hitStop=.05+sw.p*.05;shake=.05+sw.p*.08}
       }}}}
 function lockDirQ(L,from){if(!lockOk(L))return null;L.e.g.updateMatrixWorld(true);if(L.e.upper.parent===scene)L.e.upper.updateMatrixWorld(true);
   cam.updateMatrixWorld(true);const w=L.m.localToWorld(L.l.clone()),c=cam.worldToLocal(w).sub(from);return{q:qDir(c.x,c.y,c.z),dist:c.length()}}
@@ -801,7 +813,7 @@ function releaseSkew(finish){if(!skew)return;const e=skew.e;e.skewered=false;ske
     sfx('hit');hitStop=.08;shake=.12;damage(e,75,dir,{type:'slash',c:{x:-1,y:.15},p:.8})}}
 
 /* ---------- input ---------- */
-addEventListener('keydown',e=>{if(e.code==='KeyF'&&!e.repeat&&playing&&!paused&&!over&&!replay){if(SW().dash)fireDash();else if(SW().wire)fireWave();else if(SW().pins){if(pinAim)confirmPinAim();else startPinAim()}else toggleSkill()}keys[e.code]=true;if(e.code==='Space')e.preventDefault()});
+addEventListener('keydown',e=>{if(e.code==='KeyF'&&!e.repeat&&playing&&!paused&&!over&&!replay){if(SW().dash)fireDash();else if(SW().wire)fireWave();else if(SW().pins){if(pinAim)confirmPinAim();else startPinAim()}else if(SW().storm)thunderStorm();else toggleSkill()}keys[e.code]=true;if(e.code==='Space')e.preventDefault()});
 addEventListener('keyup',e=>{keys[e.code]=false});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 cv.addEventListener('mousedown',e=>{if(!playing||paused||over||replay)return;if(!locked&&!fallback){grabMouse();return}
@@ -840,7 +852,7 @@ bindGo(true);
 function reset(){
   for(const e of enemies){scene.remove(e.g);if(e.upper.parent===scene)scene.remove(e.upper);for(const m of e.detached)scene.remove(m)}
   enemies=[];debris=[];drips=[];charge=null;sw=null;skew=null;
-  applySword();$('#mval').textContent=myeok;$('#money').innerHTML=coinHTML(money);bigCD=0;skill=0;skillOn=false;wire=null;wireCD=0;for(const w of waves)scene.remove(w.g);waves.length=0;dash=null;for(const p of pins)scene.remove(p.g);pins.length=0;stuck.length=0;for(const g of groundPins)scene.remove(g);groundPins.length=0;for(const a of ascend)scene.remove(a.g);ascend.length=0;rain=null;pinAim=false;aimRing.visible=false;bq=[];pend=[];stopKills=[];founts=[];stopFounts=[];for(const p of pools)scene.remove(p.d);pools=[];preDeb=null;replay=null;rec=[];recTr=[];for(const q of ghosts){scene.remove(q.g)}ghosts.length=0;ttam=0;ttamT=0;streak=0;streakT=0;Object.assign(P,{hp:100,vy:0,yaw:0,pitch:0,ground:true});P.pos.set(0,0,0);
+  applySword();$('#mval').textContent=myeok;$('#money').innerHTML=coinHTML(money);bigCD=0;skill=0;skillOn=false;wire=null;wireCD=0;for(const w of waves)scene.remove(w.g);waves.length=0;dash=null;for(const p of pins)scene.remove(p.g);pins.length=0;stuck.length=0;for(const g of groundPins)scene.remove(g);groundPins.length=0;for(const a of ascend)scene.remove(a.g);ascend.length=0;rain=null;storm=null;pinAim=false;aimRing.visible=false;bq=[];pend=[];stopKills=[];founts=[];stopFounts=[];for(const p of pools)scene.remove(p.d);pools=[];preDeb=null;replay=null;rec=[];recTr=[];for(const q of ghosts){scene.remove(q.g)}ghosts.length=0;ttam=0;ttamT=0;streak=0;streakT=0;Object.assign(P,{hp:100,vy:0,yaw:0,pitch:0,ground:true});P.pos.set(0,0,0);
   kills=0;surv=0;spawnT=.5;over=false;hud()}
 function spawn(){for(let t=0;t<10;t++){const a=rand(0,6.28),r=rand(20,30),x=clamp(P.pos.x+Math.cos(a)*r,-BOUND+2,BOUND-2),z=clamp(P.pos.z+Math.sin(a)*r,-BOUND+2,BOUND-2);
   if(obstacles.every(o=>Math.hypot(o.x-x,o.z-z)>o.r+1)){makeEnemy(x,z);return}}}
@@ -992,10 +1004,10 @@ function loop(now){requestAnimationFrame(loop);
     shake=Math.max(0,shake-dt*.8);surv+=dt;if(Math.floor(surv)!==Math.floor(surv-dt))hud();
     if(streak>0){streakT-=dt;if(streakT<=0){streak=0;streakT=0;msg('참수 콤보 끊김','#aab4c8')}}
     if(ttam>0){ttamT-=dt;if(ttamT<=0){ttam=0;ttamT=0}}$('#tarc').setAttribute('stroke-dasharray',(2*Math.PI*33*ttamT/3).toFixed(1)+' 999');if(SW().wire||SW().dash){$('#skn').textContent=SW().dash?'돌진 참격':'참격';const r=1-wireCD/(SW().dash?4:WIRE_CD);$('#skb').style.width=(r*100)+'%';$('#skp').textContent=wireCD>0?wireCD.toFixed(1)+'초':'준비';$('#skill').classList.toggle('full',wireCD<=0&&!wire&&!dash)}
-    else{$('#skn').textContent=SW().pins?'바늘비':'스킬';$('#skb').style.width=skill+'%';$('#skp').textContent=Math.floor(skill)+'%';$('#skill').classList.toggle('full',skill>=100&&!skillOn)}$('#skill').classList.toggle('on',skillOn);$('#skillfx').style.opacity=skillOn?1:0;$('#tnum').textContent=ttam;$('#gauge2').classList.toggle('on',ttam>0);$('#tlab').textContent=ttam?'땀수 · 피해 +'+Math.round((dmgP()-1)*100)+'%':'땀수';
+    else{$('#skn').textContent=SW().pins?'바늘비':SW().storm?'뇌신강림':'스킬';$('#skb').style.width=skill+'%';$('#skp').textContent=Math.floor(skill)+'%';$('#skill').classList.toggle('full',skill>=100&&!skillOn)}$('#skill').classList.toggle('on',skillOn);$('#skillfx').style.opacity=skillOn?1:0;$('#tnum').textContent=ttam;$('#gauge2').classList.toggle('on',ttam>0);$('#tlab').textContent=ttam?'땀수 · 피해 +'+Math.round((dmgP()-1)*100)+'%':'땀수';
     {const C=2*Math.PI*33;$('#garc').setAttribute('stroke-dasharray',(C*streakT/5).toFixed(1)+' '+C);$('#gnum').textContent=streak;$('#gauge').classList.toggle('on',streak>0);$('#glab').textContent=streak?'참수 · 공속 +'+Math.round((spdMul()-1)*100)+'%':'참수'}bigCD=Math.max(0,bigCD-dt);
     if(skillOn){skill-=dt*5;if(skill<=0){skill=0;endSkill()}}
-    const wdt=dt*(skillOn?.03:1);updateGhosts(dt);updatePend(dt);updatePools(dt);updateWire(dt);updateWaves(dt);updateDash(dt);updatePins(dt);updatePinAim(dt);updateBolts(dt);updateRain(dt);updateSparkles(dt);updatePlayer(dt);updateEnemies(wdt);updateLock(dt);updateBlood(wdt);updateSword(dt);recordFrame(dt);
+    const wdt=dt*(skillOn?.03:1);updateGhosts(dt);updatePend(dt);updatePools(dt);updateWire(dt);updateWaves(dt);updateDash(dt);updatePins(dt);updatePinAim(dt);updateBolts(dt);updateStorm(dt);updateRain(dt);updateSparkles(dt);updatePlayer(dt);updateEnemies(wdt);updateLock(dt);updateBlood(wdt);updateSword(dt);recordFrame(dt);
     if(skew){skew.t+=dt;if(skew.t>8)releaseSkew(false)}
     const h=$('#hurt');h.style.opacity=Math.max(0,parseFloat(h.style.opacity||0)-dt*2.5);
     if(msgT>0){msgT-=dt;if(msgT<=0)msgEl.style.opacity=0}
