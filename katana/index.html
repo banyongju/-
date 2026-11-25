@@ -92,7 +92,7 @@ button:hover{background:#fff}.btns{display:flex;gap:10px;flex-wrap:wrap}.nb{back
 <div class="keys">
   <div><b>LMB</b>클릭 베기 · 꾹 눌러 방향 베기</div>
   <div><b>RMB</b>찌르기 · 차징 중엔 시점</div>
-  <div><b>E</b>스킬 · <b>F</b>메뉴 · <b>R</b>상점</div>
+  <div><b>F</b>스킬 · <b>T</b>메뉴 · <b>R</b>상점</div>
   <div><b>WASD</b>이동 · <b>Space</b>점프 · <b>Shift</b>달리기</div>
 </div>
 <div id="msg"></div>
@@ -340,15 +340,15 @@ const keys={};
 let charge=null,sw=null,skew=null,debris=[],kills=0,wave=0,queue=0,surv=0,spawnT=0,qi=0;
 const SWORDS=[
   {id:'base',name:'카타나',price:0,col:0xeef2f6,em:0x222831,desc:'기본 칼'},
-  {id:'dual',name:'이도류',price:2000,col:0xeef2f6,em:0x222831,desc:'칼 2개 · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 크게 베기(차징 50% 이상): 십자 베기 · 스킬(E): X자 참격 날리기, 쿨 3초',dual:true,spd:2,wire:true},
-  {id:'triple',name:'삼도류',price:3000,col:0xeef2f6,em:0x222831,desc:'칼 3개(하나는 입에) · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 크게 베기(차징 50% 이상): 십자 베기 · 스킬(E): 빠르게 돌진한 뒤 지나간 길에 참격을 퍼부음, 쿨 4초',dual:true,triple:true,spd:2,dash:true},
-  {id:'thunder',name:'번개칼',price:4000,col:0xbfeaff,em:0x2a7fff,desc:'벨 때마다 주변 무작위 적 4마리도 같은 피해 · 필살기(E, 게이지 100%): 뇌신강림 — 3초간 하늘에서 번개가 주변 적에게 내리꽂힘',chain:22,chainN:4,chainR:8,storm:true},
-  {id:'fire',name:'화염검',price:1500,col:0xff7a2a,em:0x8a2000,desc:'벤 적에게 불이 붙어 3초간 타오름 · 필살기(E): 화염 폭발 — 주변 6m 적에게 큰 피해와 화상',burn:true,nova:'fire',skn:'화염 폭발'},
-  {id:'frost',name:'빙결검',price:2500,col:0x9fe8ff,em:0x1a5a8a,desc:'벤 적을 느리게 하고 3번 맞히면 얼려버림 · 필살기(E): 절대영도 — 주변 10m 적 전부 3초간 빙결',frost:true,nova:'frost',skn:'절대영도'},
-  {id:'vamp',name:'흡혈검',price:3500,col:0x9a0f2a,em:0x4a0010,desc:'준 피해의 10%만큼 체력 회복 · 필살기(E): 피의 축제 — 6초간 피해 2배, 흡혈 30%',leech:.1,nova:'feast',skn:'피의 축제'},
-  {id:'giant',name:'거인의 대검',price:5000,col:0xb8b8c0,em:0x222228,desc:'칼이 1.5배 크고 판정 +1.5m · 피해 1.6배 · 공속 0.7배 · 넉백 강함 · 필살기(E): 대지 강타 — 주변 8m 적을 날려버림',reach:1.5,dmg:1.6,spd:.7,knock:2.2,big:1.5,nova:'quake',skn:'대지 강타'},
-  {id:'shadow',name:'그림자검',price:7000,col:0x3a2a5a,em:0x7a3cff,desc:'이동 +30% · 30% 확률 치명타(피해 2.5배) · 필살기(E): 그림자 습격 — 조준한 적 뒤로 순간이동해 목을 벰',move:1.3,crit:.3,nova:'shadow',skn:'그림자 습격'},
-  {id:'needleking',name:'바느질의 왕의 칫솔',special:true,how:'cond',cond:'땀수 100 유지',col:0xffd84a,em:0x6a5000,desc:'패시브: 땀수가 오를 때마다 참수도 같이 오름 · 클릭: 찌르기 · 0.5초 이상 꾹 눌러야 베기 · 우클릭: 시침핀 날리기 · 필살기(E, 게이지 100%): 바닥에 원이 생기고, 원하는 곳에 찍으면(클릭 또는 E) 시침핀이 그 원 안에 쏟아짐 · 우클릭으로 취소',model:'wand',ttamStreak:true,stabClick:true,pins:true}];
+  {id:'dual',name:'이도류',price:2000,col:0xeef2f6,em:0x222831,desc:'칼 2개 · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 크게 베기(차징 50% 이상): 십자 베기 · 스킬(F): X자 참격 날리기, 쿨 3초',dual:true,spd:2,wire:true},
+  {id:'triple',name:'삼도류',price:3000,col:0xeef2f6,em:0x222831,desc:'칼 3개(하나는 입에) · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 크게 베기(차징 50% 이상): 십자 베기 · 스킬(F): 빠르게 돌진한 뒤 지나간 길에 참격을 퍼부음, 쿨 4초',dual:true,triple:true,spd:2,dash:true},
+  {id:'thunder',name:'번개칼',price:4000,col:0xbfeaff,em:0x2a7fff,desc:'벨 때마다 주변 무작위 적 4마리도 같은 피해 · 필살기(F, 게이지 100%): 뇌신강림 — 3초간 하늘에서 번개가 주변 적에게 내리꽂힘',chain:22,chainN:4,chainR:8,storm:true},
+  {id:'fire',name:'화염검',price:1500,col:0xff7a2a,em:0x8a2000,desc:'벤 적에게 불이 붙어 3초간 타오름 · 필살기(F): 화염 폭발 — 주변 6m 적에게 큰 피해와 화상',burn:true,nova:'fire',skn:'화염 폭발'},
+  {id:'frost',name:'빙결검',price:2500,col:0x9fe8ff,em:0x1a5a8a,desc:'벤 적을 느리게 하고 3번 맞히면 얼려버림 · 필살기(F): 절대영도 — 주변 10m 적 전부 3초간 빙결',frost:true,nova:'frost',skn:'절대영도'},
+  {id:'vamp',name:'흡혈검',price:3500,col:0x9a0f2a,em:0x4a0010,desc:'준 피해의 10%만큼 체력 회복 · 필살기(F): 피의 축제 — 6초간 피해 2배, 흡혈 30%',leech:.1,nova:'feast',skn:'피의 축제'},
+  {id:'giant',name:'거인의 대검',price:5000,col:0xb8b8c0,em:0x222228,desc:'칼이 1.5배 크고 판정 +1.5m · 피해 1.6배 · 공속 0.7배 · 넉백 강함 · 필살기(F): 대지 강타 — 주변 8m 적을 날려버림',reach:1.5,dmg:1.6,spd:.7,knock:2.2,big:1.5,nova:'quake',skn:'대지 강타'},
+  {id:'shadow',name:'그림자검',price:7000,col:0x3a2a5a,em:0x7a3cff,desc:'이동 +30% · 30% 확률 치명타(피해 2.5배) · 필살기(F): 그림자 습격 — 조준한 적 뒤로 순간이동해 목을 벰',move:1.3,crit:.3,nova:'shadow',skn:'그림자 습격'},
+  {id:'needleking',name:'바느질의 왕의 칫솔',special:true,how:'cond',cond:'땀수 100 유지',col:0xffd84a,em:0x6a5000,desc:'패시브: 땀수가 오를 때마다 참수도 같이 오름 · 클릭: 찌르기 · 0.5초 이상 꾹 눌러야 베기 · 우클릭: 시침핀 날리기 · 필살기(F, 게이지 100%): 바닥에 원이 생기고, 원하는 곳에 찍으면(클릭 또는 F) 시침핀이 그 원 안에 쏟아짐 · 우클릭으로 취소',model:'wand',ttamStreak:true,stabClick:true,pins:true}];
 let myeok=0,swordId='base',unlocked=new Set();try{myeok=parseInt(localStorage.getItem('katana-myeok'))||0;swordId=localStorage.getItem('katana-sword')||'base';unlocked=new Set(JSON.parse(localStorage.getItem('katana-unlocked')||'[]'))}catch(e){}
 let money=0,owned=new Set(['base']);try{money=parseInt(localStorage.getItem('katana-money'))||0;if(!localStorage.getItem('katana-merged')){money+=myeok*10;localStorage.setItem('katana-money',money);localStorage.setItem('katana-merged','1')}owned=new Set(JSON.parse(localStorage.getItem('katana-owned')||'["base"]'))}catch(e){}
 const isOwn=w=>w.special?unlocked.has(w.id):(w.price===0||owned.has(w.id));
@@ -840,10 +840,10 @@ function releaseSkew(finish){if(!skew)return;const e=skew.e;e.skewered=false;ske
 function pauseGame(){if(locked&&document.exitPointerLock)document.exitPointerLock();else{paused=true;charge=null;blocking=false;lookHold=false;showOv('pause')}}
 function resumeGame(){if(!$('#swsel').classList.contains('hide'))$('#swsel').classList.add('hide');if(fallback)resume();else grabMouse()}
 addEventListener('keydown',e=>{if(e.repeat)return;const shopOpen=!$('#swsel').classList.contains('hide');
-  if(e.code==='KeyF'&&playing&&!over){if(paused){resumeGame();return}if(!replay){pauseGame();return}}
+  if(e.code==='KeyT'&&playing&&!over){if(paused){resumeGame();return}if(!replay){pauseGame();return}}
   if(e.code==='KeyR'&&playing&&!over){if(paused){if(shopOpen)resumeGame();else openSel();return}if(!replay){pauseGame();openSel();return}}
 },true);
-addEventListener('keydown',e=>{if(e.code==='KeyE'&&!e.repeat&&playing&&!paused&&!over&&!replay){if(SW().dash)fireDash();else if(SW().wire)fireWave();else if(SW().pins){if(pinAim)confirmPinAim();else startPinAim()}else if(SW().storm)thunderStorm();else if(SW().nova)novaSkill(SW().nova);else toggleSkill()}keys[e.code]=true;if(e.code==='Space')e.preventDefault()});
+addEventListener('keydown',e=>{if(e.code==='KeyF'&&!e.repeat&&playing&&!paused&&!over&&!replay){if(SW().dash)fireDash();else if(SW().wire)fireWave();else if(SW().pins){if(pinAim)confirmPinAim();else startPinAim()}else if(SW().storm)thunderStorm();else if(SW().nova)novaSkill(SW().nova);else toggleSkill()}keys[e.code]=true;if(e.code==='Space')e.preventDefault()});
 addEventListener('keyup',e=>{keys[e.code]=false});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 cv.addEventListener('mousedown',e=>{if(!playing||paused||over||replay)return;if(!locked&&!fallback){grabMouse();return}
