@@ -325,8 +325,8 @@ const keys={};
 let charge=null,sw=null,skew=null,debris=[],kills=0,wave=0,queue=0,surv=0,spawnT=0,qi=0;
 const SWORDS=[
   {id:'base',name:'카타나',price:0,col:0xeef2f6,em:0x222831,desc:'기본 칼'},
-  {id:'dual',name:'이도류',price:2000,col:0xeef2f6,em:0x222831,desc:'칼 2개 · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 꾹 눌러 베기: 십자 베기 · 스킬(F): X자 참격 날리기, 쿨 3초',dual:true,spd:2,wire:true},
-  {id:'triple',name:'삼도류',price:3000,col:0xeef2f6,em:0x222831,desc:'칼 3개(하나는 입에) · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 꾹 눌러 베기: 십자 베기 · 스킬(F): 빠르게 돌진한 뒤 지나간 길에 참격을 퍼부음, 쿨 4초',dual:true,triple:true,spd:2,dash:true},
+  {id:'dual',name:'이도류',price:2000,col:0xeef2f6,em:0x222831,desc:'칼 2개 · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 크게 베기(차징 50% 이상): 십자 베기 · 스킬(F): X자 참격 날리기, 쿨 3초',dual:true,spd:2,wire:true},
+  {id:'triple',name:'삼도류',price:3000,col:0xeef2f6,em:0x222831,desc:'칼 3개(하나는 입에) · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 크게 베기(차징 50% 이상): 십자 베기 · 스킬(F): 빠르게 돌진한 뒤 지나간 길에 참격을 퍼부음, 쿨 4초',dual:true,triple:true,spd:2,dash:true},
   {id:'needleking',name:'바느질의 왕의 칫솔',special:true,how:'cond',cond:'땀수 100 유지',col:0xffd84a,em:0x6a5000,desc:'패시브: 땀수가 오를 때마다 참수도 같이 오름 · 클릭: 찌르기 · 0.5초 이상 꾹 눌러야 베기 · 우클릭: 시침핀 날리기 · 필살기(F, 게이지 100%): 바닥에 원이 생기고, 원하는 곳에 찍으면(클릭 또는 F) 시침핀이 그 원 안에 쏟아짐 · 우클릭으로 취소',model:'wand',ttamStreak:true,stabClick:true,pins:true}];
 let myeok=0,swordId='base',unlocked=new Set();try{myeok=parseInt(localStorage.getItem('katana-myeok'))||0;swordId=localStorage.getItem('katana-sword')||'base';unlocked=new Set(JSON.parse(localStorage.getItem('katana-unlocked')||'[]'))}catch(e){}
 let money=0,owned=new Set(['base']);try{money=parseInt(localStorage.getItem('katana-money'))||0;if(!localStorage.getItem('katana-merged')){money+=myeok*10;localStorage.setItem('katana-money',money);localStorage.setItem('katana-merged','1')}owned=new Set(JSON.parse(localStorage.getItem('katana-owned')||'["base"]'))}catch(e){}
@@ -470,7 +470,7 @@ const canAct=()=>!sw||sw.t>sw.dur*.55;
 const qDirs=[{x:-.75,y:-.66},{x:.92,y:.38},{x:.75,y:-.66},{x:-.92,y:.38}];
 function quick(){const c=qDirs[qi++%qDirs.length];startSlash(c,.45,true)}
 function startSlash(c,p,isQuick){twinkle(12);
-  sw={type:'slash',t:0,c,p,dur:isQuick?.36:.34+p*.2,a:.95+p*.75,reach:isQuick?3:2.6+p*1.5,dmg:isQuick?45:28+p*85,span:isQuick?360:(p>.55?1e5:230+p*320),hit:false,lock:lock&&{e:lock.e,m:lock.m,l:lock.l},done:new Set(),hitE:new Set(),prev:null,lunge:0,joints:[],resolved:false,quick:!!isQuick};
+  sw={type:'slash',t:0,c,p,dur:isQuick?.36:.34+p*.2,a:.95+p*.75,reach:isQuick?3:2.6+p*1.5,dmg:isQuick?45:28+p*85,span:isQuick?360:(p>.55?1e5:230+p*320),hit:false,lock:lock&&{e:lock.e,m:lock.m,l:lock.l},done:new Set(),hitE:new Set(),prev:null,lunge:0,joints:[],resolved:false,quick:!!isQuick||p<.5};
   {const ld=lockDirQ(sw.lock,V(.1,-.26,-.42));sw.lunge=ld?clamp(ld.dist-2.2,0,2.2):(isQuick?0:p*1.1)}
   sw.dur/=spdMul();sfx('swing',p);if(!isQuick&&!streakT)msg(p>=.5?'크게 베기!':'가볍게 베기',p>=.5?'#ffd2d2':'#fff')}
 function startStab(){twinkle(10);sw={type:'stab',t:0,dur:.46,hit:false,lock:lock&&{e:lock.e,m:lock.m,l:lock.l},done:new Set(),hitE:new Set(),prev:null,p:0};{const ld=lockDirQ(sw.lock,V(.05,-.17,-.5));sw.lunge=0}sw.dur/=spdMul();sfx('stab')}
