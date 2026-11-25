@@ -317,7 +317,7 @@ const sparks=[];for(let i=0;i<60;i++){const m=new THREE.Mesh(sparkG,sparkM);m.vi
 function spark(p,n){for(let i=0;i<n;i++){const q=sparks[si++%sparks.length];q.on=true;q.m.visible=true;q.m.position.copy(p);q.v.set(rand(-4,4),rand(-1,4),rand(-4,4))}}
 const setRot=(m,v)=>{if(!m.userData.cut)m.rotation.x=v};
 function sever(e,m,dir,p){
-  if(m.userData.cut)return;m.userData.cut=true;if(m.userData.part==='head'&&e.alive)addStreak();m.rotation.x=m.rotation.x;
+  if(m.userData.cut)return;m.userData.cut=true;if(m.userData.part==='head'&&e.alive){addStreak();if(SW().neckHeal){P.hp=Math.min(100,P.hp+SW().neckHeal);hud()}}m.rotation.x=m.rotation.x;
   e.body=e.body.filter(x=>x!==m);m.userData.cap.visible=true;m.userData.stump.visible=true;markCut(m.userData.cap);markCut(m.userData.stump);
   {const pt=m.userData.part,st=m.userData.stump;stumpFountain(st,pt==='head'?V(0,1,0):pt==='arm'?V(Math.sign(st.position.x),0,0):V(0,-1,0),pt==='head'?8:5.5);stumpFountain(m.userData.cap,V(0,1,0),3)}
   m.updateMatrixWorld(true);scene.attach(m);
@@ -343,15 +343,15 @@ const SWORDS=[
   {id:'dual',name:'이도류',price:2000,col:0xeef2f6,em:0x222831,desc:'칼 2개 · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 크게 베기(차징 50% 이상): 십자 베기 · 스킬(F): X자 참격 날리기, 쿨 3초',dual:true,spd:2,wire:true},
   {id:'triple',name:'삼도류',price:3000,col:0xeef2f6,em:0x222831,desc:'칼 3개(하나는 입에) · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 크게 베기(차징 50% 이상): 십자 베기 · 스킬(F): 빠르게 돌진한 뒤 지나간 길에 참격을 퍼부음, 쿨 4초',dual:true,triple:true,spd:2,dash:true},
   {id:'thunder',name:'번개칼',price:4000,col:0xbfeaff,em:0x2a7fff,desc:'벨 때마다 주변 무작위 적 4마리도 같은 피해 · 필살기(F, 게이지 100%): 뇌신강림 — 3초간 하늘에서 번개가 주변 적에게 내리꽂힘',chain:22,chainN:4,chainR:8,storm:true,skillRate:.7},
-  {id:'fire',name:'화염검',price:1500,col:0xff7a2a,em:0x8a2000,desc:'벤 적에게 불이 붙어 3초간 타오름 · 필살기(F): 화염 방사 — 2초간 앞으로 불을 뿜어 9m 안 적을 태움',burn:true,nova:'flame',skn:'화염 방사'},
-  {id:'frost',name:'빙결검',price:2500,col:0x9fe8ff,em:0x1a5a8a,desc:'벤 적을 느리게 하고 3번 맞히면 얼려버림 · 필살기(F): 빙하 가시 — 앞으로 16m 얼음 가시가 일직선으로 솟아 닿은 적을 얼림',frost:true,skillRate:1.3,nova:'ice',skn:'빙하 가시'},
+  {id:'samurai',name:'무사의 검',price:1500,col:0xf0f2f6,em:0x2a2a30,desc:'참수할 때마다 체력 +10 · 필살기(F): 반격 자세 — 2.5초간 나를 때리려는 적의 목을 자동으로 벰',neckHeal:10,skillRate:1.1,nova:'counter',skn:'반격 자세'},
+  {id:'saw',name:'톱날검',price:2500,col:0xc9ced6,em:0x2a1010,desc:'톱날이라 벤 적이 3초간 피를 흘리며 계속 피해 · 필살기(F): 회전 베기 — 2초간 빙글빙글 돌며 주변 4m를 계속 벰',bleedHit:true,skillRate:.9,nova:'whirl',skn:'회전 베기'},
   {id:'vamp',name:'흡혈검',price:3500,col:0x9a0f2a,em:0x4a0010,desc:'준 피해의 10%만큼 체력 회복 · 필살기(F): 피 빨기 — 3초간 주변 10m 모든 적의 피를 빨아 피해 주고 체력 회복',leech:.1,skillRate:.8,nova:'drain',skn:'피 빨기'},
   {id:'giant',name:'거인의 대검',price:5000,col:0xb8b8c0,em:0x222228,desc:'칼이 1.5배 크고 판정 +1.5m · 피해 1.6배 · 공속 0.5배 · 넉백 강함 · 필살기(F): 거인 낙하 — 높이 뛰어올라 앞으로 내리찍어 충격파로 날려버림',reach:1.5,dmg:1.6,spd:.5,knock:2.2,big:1.5,nova:'slam',skn:'거인 낙하'},
   {id:'shadow',name:'그림자검',price:7000,col:0x3a2a5a,em:0x7a3cff,desc:'이동 +30% · 30% 확률 치명타(피해 2.5배) · 필살기(F, 게이지 3배 빠름): 그림자 습격 — 조준한 적 뒤로 순간이동해 목을 벰',move:1.3,crit:.3,skillRate:3,nova:'shadow',skn:'그림자 습격'},
   {id:'nodachi',name:'노다치',price:4500,col:0xf2f4f8,em:0x2a2a3a,len:1.45,desc:'아주 긴 칼(판정 +1.2m) · 피해 1.4배 · 공속 0.75배 · 필살기(F): 발도 일섬 — 9m를 순식간에 지나가며 길 위 적들의 목을 한꺼번에 벰',reach:1.2,dmg:1.4,spd:.75,skillRate:.8,nova:'iaido',skn:'발도 일섬'},
   {id:'waki',name:'와키자시',price:1200,col:0xe8ecf2,em:0x222831,len:.65,desc:'짧은 칼 · 공속 1.8배 · 필살기(F): 난도질 — 1.6초간 쉴 새 없이 연속 베기',reach:-.8,spd:1.8,skillRate:1.3,nova:'flurry',skn:'난도질'},
-  {id:'poison',name:'독검',price:2800,col:0x8aff6a,em:0x1a5a10,desc:'벤 적을 4초간 중독(초당 4 피해) · 필살기(F): 독안개 — 6초간 내 주변 12m 적을 녹이고 느리게 함',poison:true,skillRate:.8,nova:'acid',skn:'독안개'},
-  {id:'windblade',name:'풍검',price:3800,col:0xcff6ea,em:0x1a6a5a,desc:'이동 +25% · 필살기(F): 폭풍 베기 — 앞쪽 12m 적을 전부 바람으로 날려버림',move:1.25,skillRate:1.2,nova:'force',skn:'폭풍 베기'},
+  {id:'cleaver',name:'참마도',price:3200,col:0xb8bcc4,em:0x111111,big:1.25,desc:'두껍고 무거운 칼 · 피해 1.7배 · 공속 0.6배 · 넉백 강함 · 필살기(F): 연속 내려찍기 — 앞으로 세 번 땅을 내려찍어 기절시킴',dmg:1.7,spd:.6,knock:2.2,skillRate:1,nova:'quake3',skn:'연속 내려찍기'},
+  {id:'master',name:'검성의 검',price:6500,col:0xffffff,em:0x3a3a5a,desc:'15% 치명타 · 필살기(F): 천검 — 앞쪽 적 최대 6명에게 순식간에 차례로 날아가 목을 벰',crit:.15,skillRate:.7,nova:'chain',skn:'천검'},
   {id:'dagger',name:'암살 단검',price:1500,model:'dagger',col:0xeef2f6,em:0x222831,desc:'짧지만 매우 빠름(공속 2.5배) · 25% 치명타 · 필살기(F): 연막 — 3초간 적이 날 못 봐서 공격 안 함, 이동 1.6배',reach:-1.4,spd:2.5,crit:.25,skillRate:1.5,nova:'smoke',skn:'연막'},
   {id:'saber',name:'광선검',price:6000,model:'saber',col:0x6ff0ff,em:0x00aacc,desc:'공속 1.4배 · 피해 1.2배 · 필살기(F): 포스 밀치기 — 앞쪽 12m 적을 전부 멀리 밀쳐냄',spd:1.4,dmg:1.2,reach:-.4,skillRate:1.2,nova:'force',skn:'포스 밀치기'},
   {id:'needleking',name:'바느질의 왕의 칫솔',special:true,how:'cond',cond:'땀수 100 유지',col:0xffd84a,em:0x6a5000,desc:'패시브: 땀수가 오를 때마다 참수도 같이 오름 · 클릭: 찌르기 · 0.5초 이상 꾹 눌러야 베기 · 우클릭: 시침핀 날리기 · 필살기(F, 게이지 100%): 바닥에 원이 생기고, 원하는 곳에 찍으면(클릭 또는 F) 시침핀이 그 원 안에 쏟아짐 · 우클릭으로 취소',model:'wand',ttamStreak:true,stabClick:true,pins:true}];
@@ -600,7 +600,7 @@ function fireP(p,n){for(let i=0;i<n;i++){const m=new THREE.Mesh(fpG,fpM.clone())
 function ringFx(p,col,R,dur){const m=new THREE.Mesh(new THREE.RingGeometry(.8,1,48),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.9,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(p.x,.06,p.z);scene.add(m);rings.push({m,R,dur,t:0})}
 function updateFx2(dt){if(feastT>0)feastT-=dt;for(let i=rings.length-1;i>=0;i--){const r=rings[i];r.t+=dt;const u=r.t/r.dur;r.m.scale.setScalar(.2+r.R*u);r.m.material.opacity=.9*(1-u);if(u>=1){scene.remove(r.m);rings.splice(i,1)}}
   for(let i=fps.length-1;i>=0;i--){const f=fps[i];f.t+=dt;f.m.position.addScaledVector(f.v,dt);f.m.material.opacity=1-f.t/.5;if(f.t>.5){scene.remove(f.m);fps.splice(i,1)}}}
-function novaSkill(kind){if(skill<100)return;if(['spearThrow','quake3','whirl','smoke','axeBoom','homerun','panShield','acid','force','fear','iaido','flurry'].includes(kind)){skill=0;novaSkill2(kind);return}const near=R=>enemies.filter(e=>e.alive&&e.g.position.distanceTo(P.pos)<R);
+function novaSkill(kind){if(skill<100)return;if(['spearThrow','quake3','whirl','smoke','axeBoom','homerun','panShield','acid','force','fear','iaido','flurry','counter','chain'].includes(kind)){skill=0;novaSkill2(kind);return}const near=R=>enemies.filter(e=>e.alive&&e.g.position.distanceTo(P.pos)<R);
   if(kind==='shadow'){let tgt=lock&&lock.e.alive?lock.e:null;if(!tgt){let bd=Math.min(innerWidth,innerHeight)*.35;cam.updateMatrixWorld();for(const e of enemies){if(!e.alive)continue;const o=screenOf(e);if(o.dist<.5||o.dist>14)continue;const r=Math.hypot(o.x,o.y);if(r<bd){bd=r;tgt=e}}}
     if(!tgt)return;skill=0;spawnGhost();const to=V(tgt.g.position.x-P.pos.x,0,tgt.g.position.z-P.pos.z).normalize();P.pos.copy(tgt.g.position).addScaledVector(to,1.3);P.pos.y=0;P.yaw=Math.atan2(to.x,to.z);P.pitch=-.1;
     updatePlayer(0);const head=tgt.body.find(x=>x.userData.part==='head');sw=null;startSlash({x:1,y:-.05},1,false);sw.lunge=0;if(head)sw.lock={e:tgt,m:head,l:V(0,head.geometry.boundingBox.min.y+.03,0)};$('#flash').style.opacity=.35;sfx('swing',1);return}
@@ -623,9 +623,15 @@ function novaSkill2(kind){const c=P.pos.clone(),f=V(-Math.sin(P.yaw),0,-Math.cos
   else if(kind==='force'){ringFx(c,0x6ff0ff,4,.3);for(const e of enemies){if(!e.alive)continue;const to=e.g.position.clone().sub(c).setY(0),L=to.length();if(L<12&&to.normalize().dot(f)>.55){damage(e,25,to,{type:'blade'});if(e.alive){e.kv.copy(to).multiplyScalar(20);e.stun=1.2}}}$('#flash').style.opacity=.2}
   else if(kind==='fear'){fearT=5;ringFx(c,0x9adf6a,10,.6)}
   else if(kind==='iaido'){iaido={from:c.clone(),f,t:0,dur:.16,dist:9};lastGhost=null}
-  else if(kind==='flurry'){flurry={t:0,next:0,i:0}}}
+  else if(kind==='flurry'){flurry={t:0,next:0,i:0}}
+  else if(kind==='counter'){counterT=2.5;ringFx(c,0xffffff,2,.3)}
+  else if(kind==='chain'){const tg=enemies.filter(e=>e.alive&&!e.skewered&&e.g.position.distanceTo(c)<16&&e.g.position.clone().sub(c).setY(0).normalize().dot(f)>.2).sort((a,b)=>a.g.position.distanceTo(c)-b.g.position.distanceTo(c)).slice(0,6);if(!tg.length){skill=100;return}chainS={tg,i:0,t:0};lastGhost=null}}
+let counterT=0,chainS=null;
 let iaido=null,flurry=null;
-function updateSkills3(dt){
+function updateSkills3(dt){if(counterT>0)counterT-=dt;
+  if(chainS){chainS.t-=dt;if(chainS.t<=0){chainS.t=.17;const e=chainS.tg[chainS.i++];if(e&&e.alive){spawnGhost();const to=V(e.g.position.x-P.pos.x,0,e.g.position.z-P.pos.z);const L=to.length()||1;to.divideScalar(L);P.pos.copy(e.g.position).addScaledVector(to,1.2);P.pos.y=0;P.yaw=Math.atan2(to.x,to.z);
+      addTrail({ox:0,oy:0,d:{x:Math.cos(chainS.i),y:Math.sin(chainS.i)*.4},w:14,t:0,len:Math.max(innerWidth,innerHeight)*.6});if(planeCut(e,e.g.position.clone().add(V(0,e.legs===0?.85:1.62,0)),V(0,1,0),to))sfx('hit');hitStop=.04}
+      if(chainS.i>=chainS.tg.length)chainS=null}}
   if(iaido){iaido.t+=dt;const u=Math.min(1,iaido.t/iaido.dur),w=iaido.from.clone().addScaledVector(iaido.f,iaido.dist*u);P.pos.x=clamp(w.x,-BOUND,BOUND);P.pos.z=clamp(w.z,-BOUND,BOUND);if(!lastGhost||lastGhost.distanceTo(P.pos)>.8){spawnGhost();lastGhost=P.pos.clone()}
     if(u>=1){const A=iaido.from,B=P.pos.clone(),AB=B.clone().sub(A),L2=Math.max(.01,AB.lengthSq());addTrail({ox:0,oy:0,d:{x:1,y:0},w:20,t:0,len:Math.max(innerWidth,innerHeight)});$('#flash').style.opacity=.4;hitStop=.1;
       for(const e of enemies){if(e.skewered||(!e.alive&&e.deadT>17))continue;const t=clamp(e.g.position.clone().sub(A).dot(AB)/L2,0,1);if(e.g.position.distanceTo(A.clone().addScaledVector(AB,t))<1.8){const ny=e.legs===0?.85:1.62;if(planeCut(e,e.g.position.clone().add(V(0,ny,0)),V(0,1,0),iaido.f))sfx('hit')}}iaido=null}}
@@ -887,7 +893,7 @@ function stabHit(){
   if(e.hp<=0){kill(e,{type:'stab',dir:B.f});return}
   skew={e,dist:Math.max(1.5,best.o.dist),t:0};e.skewered=true;msg('꿰뚫었다! 꾹 + 아래로 당겨 끌고오기','#ffd2d2')}
 function damage(e,dmg,dir,how){dmg*=dmgP();const W=SW();if(feastT>0)dmg*=2;if(W.crit&&Math.random()<W.crit){dmg*=2.5;spark(e.g.position.clone().add(V(0,1.6,0)),8)}
-  if(powerT>0)dmg*=3;if(W.clangHit)sfx('clang');if(W.slowHit)e.slowT=Math.max(e.slowT||0,W.slowHit);if(W.poison)e.poisonT=4;
+  if(powerT>0)dmg*=3;if(W.clangHit)sfx('clang');if(W.slowHit)e.slowT=Math.max(e.slowT||0,W.slowHit);if(W.poison)e.poisonT=4;if(W.bleedHit)e.cutT=3;
   if(W.burn)e.burnT=3;if(W.frost){e.slowT=2;e.frost=(e.frost||0)+1;if(e.frost>=3){e.frozenT=2;e.frost=0}}if(W.leech||feastT>0){P.hp=Math.min(100,P.hp+dmg*(feastT>0?.3:W.leech));}
   e.hp-=dmg;e.flash=.14;const c=e.g.position.clone();c.y+=1.2;blood(c,10+Math.floor(dmg/6),dir);
   if(e.hp<=0){kill(e,Object.assign({dir},how));return}
@@ -955,7 +961,7 @@ bindGo(true);
 function reset(){
   for(const e of enemies){scene.remove(e.g);if(e.upper.parent===scene)scene.remove(e.upper);for(const m of e.detached)scene.remove(m)}
   enemies=[];debris=[];drips=[];charge=null;sw=null;skew=null;
-  applySword();$('#mval').textContent=myeok;$('#money').innerHTML=coinHTML(money);bigCD=0;skill=0;skillOn=false;wire=null;wireCD=0;for(const w of waves)scene.remove(w.g);waves.length=0;dash=null;for(const p of pins)scene.remove(p.g);pins.length=0;stuck.length=0;for(const g of groundPins)scene.remove(g);groundPins.length=0;for(const a of ascend)scene.remove(a.g);ascend.length=0;rain=null;storm=null;feastT=0;flame=null;ice=null;drain=null;slam=null;powerT=shieldT=stealthT=fearT=acidT=0;iaido=null;flurry=null;whirl=null;quakes.length=0;for(const p of projs)scene.remove(p.m);projs.length=0;pinAim=false;aimRing.visible=false;bq=[];pend=[];stopKills=[];founts=[];stopFounts=[];for(const p of pools)scene.remove(p.d);pools=[];preDeb=null;replay=null;rec=[];recTr=[];for(const q of ghosts){scene.remove(q.g)}ghosts.length=0;ttam=0;ttamT=0;streak=0;streakT=0;Object.assign(P,{hp:100,vy:0,yaw:0,pitch:0,ground:true});P.pos.set(0,0,0);
+  applySword();$('#mval').textContent=myeok;$('#money').innerHTML=coinHTML(money);bigCD=0;skill=0;skillOn=false;wire=null;wireCD=0;for(const w of waves)scene.remove(w.g);waves.length=0;dash=null;for(const p of pins)scene.remove(p.g);pins.length=0;stuck.length=0;for(const g of groundPins)scene.remove(g);groundPins.length=0;for(const a of ascend)scene.remove(a.g);ascend.length=0;rain=null;storm=null;feastT=0;flame=null;ice=null;drain=null;slam=null;powerT=shieldT=stealthT=fearT=acidT=0;iaido=null;flurry=null;counterT=0;chainS=null;whirl=null;quakes.length=0;for(const p of projs)scene.remove(p.m);projs.length=0;pinAim=false;aimRing.visible=false;bq=[];pend=[];stopKills=[];founts=[];stopFounts=[];for(const p of pools)scene.remove(p.d);pools=[];preDeb=null;replay=null;rec=[];recTr=[];for(const q of ghosts){scene.remove(q.g)}ghosts.length=0;ttam=0;ttamT=0;streak=0;streakT=0;Object.assign(P,{hp:100,vy:0,yaw:0,pitch:0,ground:true});P.pos.set(0,0,0);
   kills=0;surv=0;spawnT=.5;over=false;hud()}
 function spawn(){for(let t=0;t<10;t++){const a=rand(0,6.28),r=rand(20,30),x=clamp(P.pos.x+Math.cos(a)*r,-BOUND+2,BOUND-2),z=clamp(P.pos.z+Math.sin(a)*r,-BOUND+2,BOUND-2);
   if(obstacles.every(o=>Math.hypot(o.x-x,o.z-z)>o.r+1)){makeEnemy(x,z);return}}}
@@ -979,6 +985,7 @@ function enemyHit(e){
   const toE=V(e.g.position.x-P.pos.x,0,e.g.position.z-P.pos.z).normalize(),f=V(-Math.sin(P.yaw),0,-Math.cos(P.yaw));
   const dmg=18*e.dmgMul*(1+Math.min(1,surv/120)*.6);
   if(blocking&&f.dot(toE)>.3){spark(cam.localToWorld(V(-.05,-.1,-.6)),12);sfx('clang');e.stun=.45;e.kv.copy(toE).multiplyScalar(3);P.hp-=dmg*.15;shake=.03}
+  else if(counterT>0){const head=e.body.find(x=>x.userData.part==='head');sfx('clang');spark(cam.localToWorld(V(0,-.1,-.6)),12);hitStop=.08;$('#flash').style.opacity=.25;if(head){planeCut(e,e.g.position.clone().add(V(0,e.legs===0?.85:1.62,0)),V(0,1,0),toE)}else damage(e,60,toE,{type:'blade'})}
   else if(shieldT>0){sfx('clang');spark(cam.localToWorld(V(0,-.1,-.6)),10);e.kv.copy(toE).multiplyScalar(8);e.stun=1}
   else{P.hp-=dmg*(SW().hurtMul||1);$('#hurt').style.opacity=1;shake=.06}
   hud();if(P.hp<=0)gameOver()}
@@ -987,6 +994,7 @@ function updateEnemies(dt){
     if(e.flash>0){e.flash-=dt;for(const m of e.mats)m.emissive.setHex(e.flash>0?0x770000:0)}
     if(e.alive){if(e.burnT>0){e.burnT-=dt;e.burnTick=(e.burnTick||0)-dt;if(e.burnTick<=0){e.burnTick=.5;e.hp-=5;fireP(e.g.position.clone().add(V(rand(-.3,.3),rand(.5,1.9),rand(-.3,.3))),4);if(e.hp<=0){kill(e,{type:'blade',dir:V(0,1,0)});continue}}}
       if(e.poisonT>0){e.poisonT-=dt;e.poTick=(e.poTick||0)-dt;if(e.poTick<=0){e.poTick=.5;dot(e,2);if(!e.alive)continue}}
+      if(e.cutT>0){e.cutT-=dt;e.cuTick=(e.cuTick||0)-dt;if(e.cuTick<=0){e.cuTick=.4;dot(e,2);blood(e.g.position.clone().add(V(0,1.1,0)),3);if(!e.alive)continue}}
       if(e.slowT>0)e.slowT-=dt;if(e.frozenT>0)e.frozenT-=dt;
       if(e.flash<=0)for(const m of e.mats)m.emissive.setHex(e.frozenT>0?0x2a6aa0:e.burnT>0?0x5a1a00:e.poisonT>0?0x1a4a08:e.slowT>0?0x0a2a44:0)}
     updateFace(e,performance.now()/1000);
