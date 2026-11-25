@@ -874,7 +874,7 @@ function updateEnemies(dt){
   for(const b of debris){if(skillOn||b.e.deadT>18)continue;if(b.hold>0){b.hold-=dt;continue}b.v.y-=18*dt;b.o.position.addScaledVector(b.v,dt);b.o.rotation.x+=b.av.x*dt;b.o.rotation.y+=b.av.y*dt;b.o.rotation.z+=b.av.z*dt;
     const fl0=b.floor||.3;if(b.o.position.y<fl0){b.o.position.y=fl0;b.v.y*=-.25;b.v.x*=.55;b.v.z*=.55;b.av.multiplyScalar(.55)}}
   debris=debris.filter(b=>b.e.deadT<=20);
-  spawnT-=dt;if(spawnT<=0){if(enemies.filter(e=>e.alive).length<Math.min(45,24+Math.floor(surv/15))){spawn();spawn();if(Math.random()<.6)spawn();if(Math.random()<.3)spawn()}spawnT=rand(.1,.25)}}
+  spawnT-=dt;if(spawnT<=0){const lv=Math.floor(surv/30);if(enemies.filter(e=>e.alive).length<Math.min(60,16+lv*3)){spawn();if(Math.random()<Math.min(.95,.6+lv*.08))spawn();if(Math.random()<Math.min(.9,.25+lv*.08))spawn()}spawnT=rand(.15,.35)/(1+lv*.15)}}
 function updateBlood(dt){for(const q of sparks){if(!q.on)continue;q.v.y-=12*dt;q.m.position.addScaledVector(q.v,dt);if(q.m.position.y<.02||q.v.y<-6){q.on=false;q.m.visible=false}}for(const d of drips){d.t=Math.min(1,d.t+dt/1.8);d.m.scale.x=d.full*(1-(1-d.t)**2)}drips=drips.filter(d=>d.t<1);for(const q of parts){if(!q.on)continue;q.v.y-=14*dt;q.m.position.addScaledVector(q.v,dt);
   if(q.m.position.y<.03){q.on=false;q.m.visible=false;if(Math.random()<.2)decal(q.m.position.x,q.m.position.z,rand(.08,.25))}}}
 function updateSword(dt){
