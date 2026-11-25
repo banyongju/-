@@ -325,8 +325,8 @@ const keys={};
 let charge=null,sw=null,skew=null,debris=[],kills=0,wave=0,queue=0,surv=0,spawnT=0,qi=0;
 const SWORDS=[
   {id:'base',name:'카타나',price:0,col:0xeef2f6,em:0x222831,desc:'기본 칼'},
-  {id:'dual',name:'이도류',price:2000,col:0xeef2f6,em:0x222831,desc:'칼 2개 · 공격 속도 2배 · 클릭: 양쪽으로 같이 베기 · 꾹 눌러 베기: 십자 베기 · 스킬(F): X자 참격 날리기, 쿨 3초',dual:true,spd:2,wire:true},
-  {id:'triple',name:'삼도류',price:3000,col:0xeef2f6,em:0x222831,desc:'칼 3개(하나는 입에) · 공격 속도 2배 · 클릭: 양쪽으로 같이 베기 · 꾹 눌러 베기: 십자 베기 · 스킬(F): 빠르게 돌진한 뒤 지나간 길에 참격을 퍼부음, 쿨 4초',dual:true,triple:true,spd:2,dash:true},
+  {id:'dual',name:'이도류',price:2000,col:0xeef2f6,em:0x222831,desc:'칼 2개 · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 꾹 눌러 베기: 십자 베기 · 스킬(F): X자 참격 날리기, 쿨 3초',dual:true,spd:2,wire:true},
+  {id:'triple',name:'삼도류',price:3000,col:0xeef2f6,em:0x222831,desc:'칼 3개(하나는 입에) · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 꾹 눌러 베기: 십자 베기 · 스킬(F): 빠르게 돌진한 뒤 지나간 길에 참격을 퍼부음, 쿨 4초',dual:true,triple:true,spd:2,dash:true},
   {id:'needleking',name:'바느질의 왕의 칫솔',special:true,how:'cond',cond:'땀수 100 유지',col:0xffd84a,em:0x6a5000,desc:'패시브: 땀수가 오를 때마다 참수도 같이 오름 · 클릭: 찌르기 · 0.5초 이상 꾹 눌러야 베기 · 우클릭: 시침핀 날리기 · 필살기(F, 게이지 100%): 바닥에 원이 생기고, 원하는 곳에 찍으면(클릭 또는 F) 시침핀이 그 원 안에 쏟아짐 · 우클릭으로 취소',model:'wand',ttamStreak:true,stabClick:true,pins:true}];
 let myeok=0,swordId='base',unlocked=new Set();try{myeok=parseInt(localStorage.getItem('katana-myeok'))||0;swordId=localStorage.getItem('katana-sword')||'base';unlocked=new Set(JSON.parse(localStorage.getItem('katana-unlocked')||'[]'))}catch(e){}
 let money=0,owned=new Set(['base']);try{money=parseInt(localStorage.getItem('katana-money'))||0;if(!localStorage.getItem('katana-merged')){money+=myeok*10;localStorage.setItem('katana-money',money);localStorage.setItem('katana-merged','1')}owned=new Set(JSON.parse(localStorage.getItem('katana-owned')||'["base"]'))}catch(e){}
@@ -895,8 +895,8 @@ function updateSword(dt){
         if(k<.18){const u=ease(k/.18);q2=qI2.clone().slerp(s2.q,u);p2=pI2.clone().lerp(s2.p.clone().add(V(-.2,0,0)),u)}
         else if(k<.5){const u=1-(1-(k-.18)/.32)**2,m=slashPose(c2,sw.a-2*sw.a*u,-.22+.44*u,qb);q2=m.q;p2=m.p.add(V(-.2,0,0))}
         else{const u=ease((k-.5)/.5);q2=e2.q.clone().slerp(qI2,u);p2=e2.p.clone().add(V(-.2,0,0)).lerp(pI2,u)}
-        sw.h2={p:p2,q:q2}}else sw.h2=null;
-      if(!sw.hit&&k>=.3){sw.hit=true;const L=sw.p>.55?Math.max(innerWidth,innerHeight)*.6:200+sw.p*300;addTrail({ox:aimD.x,oy:aimD.y,d:{x:sw.c.x,y:-sw.c.y},w:6+sw.p*16,t:0,len:L});if(SW().dual)addTrail({ox:aimD.x,oy:aimD.y,d:sw.quick?{x:-sw.c.x,y:-sw.c.y}:{x:-sw.c.y,y:-sw.c.x},w:6+sw.p*16,t:0,len:L})}
+        sw.h2={p:p2,q:q2}}else if(SW().dual){sw.h2={p:p.clone().add(V(-.36,.02,0)),q:q.clone()}}else sw.h2=null;
+      if(!sw.hit&&k>=.3){sw.hit=true;const L=sw.p>.55?Math.max(innerWidth,innerHeight)*.6:200+sw.p*300;addTrail({ox:aimD.x,oy:aimD.y,d:{x:sw.c.x,y:-sw.c.y},w:6+sw.p*16,t:0,len:L});if(SW().dual)addTrail(sw.quick?{ox:aimD.x-70,oy:aimD.y+10,d:{x:sw.c.x,y:-sw.c.y},w:6+sw.p*16,t:0,len:L}:{ox:aimD.x,oy:aimD.y,d:{x:-sw.c.y,y:-sw.c.x},w:6+sw.p*16,t:0,len:L})}
       hand.position.copy(p);hand.quaternion.copy(q);syncHand2();
       if(k>=.17&&k<=.52)bladeSweep();else{sw.prev=null;if(k>.52&&!sw.resolved){sw.resolved=true;resolveJoints()}}}
     else{const back=V(.14,-.25,-.28),out=V(.05,-.17,-.9);const ld=lockDirQ(sw.lock,V(.05,-.17,-.5)),qs=ld?ld.q:qStab;
