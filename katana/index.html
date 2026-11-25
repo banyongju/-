@@ -15,10 +15,10 @@
 :root{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 html,body{margin:0;height:100%;overflow:hidden;background:#0b1220;color:#fff;font:15px/1.5 'Noto Sans KR',system-ui,sans-serif;user-select:none;-webkit-user-select:none}
-#c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:crosshair}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:none}
 #trail,#aim{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
 #slow{position:fixed;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center,transparent 40%,rgba(20,50,110,.55) 100%);box-shadow:inset 0 0 0 2px rgba(160,200,255,.25)}
-#gauge{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);text-align:center;pointer-events:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}#gauge svg{display:block}#glab{font-weight:700;font-size:12px;margin-top:-2px;text-shadow:0 1px 2px #000;white-space:nowrap}#gauge.on #gnum{fill:#ffd36a}
+.gauges{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:18px;pointer-events:none}#gauge,#gauge2{text-align:center;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}#gauge svg,#gauge2 svg{display:block;margin:0 auto}#gauge2.on #tnum{fill:#9fd0ff}#tlab,#glab{font-weight:700;font-size:12px;margin-top:-2px;text-shadow:0 1px 2px #000;white-space:nowrap}#gauge.on #gnum{fill:#ffd36a}
 #hurt{position:fixed;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center,transparent 45%,rgba(170,0,0,.75) 100%)}
 .top{position:fixed;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px;pointer-events:none;flex-wrap:wrap;justify-content:center}
 .pill{background:rgba(20,26,38,.78);border:1.5px solid rgba(255,255,255,.35);border-radius:999px;padding:5px 14px;font-weight:700;display:flex;align-items:center;gap:8px;white-space:nowrap}
@@ -65,7 +65,7 @@ button:hover{background:#fff}.btns{display:flex;gap:10px;flex-wrap:wrap}.nb{back
   <div><b>WASD</b>이동 · <b>Space</b>점프 · <b>Shift</b>달리기</div>
 </div>
 <div id="msg"></div>
-<div id="gauge"><svg viewBox="0 0 80 80" width="80" height="80"><circle cx="40" cy="40" r="33" fill="rgba(14,20,34,.72)" stroke="rgba(255,255,255,.22)" stroke-width="6"/><circle id="garc" cx="40" cy="40" r="33" fill="none" stroke="#ffb347" stroke-width="6" stroke-linecap="round" stroke-dasharray="0 999" transform="rotate(-90 40 40)"/><text id="gnum" x="40" y="47" text-anchor="middle" font-family="Black Han Sans" font-size="24" fill="#fff">0</text></svg><div id="glab">참수</div></div>
+<div class="gauges"><div id="gauge"><svg viewBox="0 0 80 80" width="80" height="80"><circle cx="40" cy="40" r="33" fill="rgba(14,20,34,.72)" stroke="rgba(255,255,255,.22)" stroke-width="6"/><circle id="garc" cx="40" cy="40" r="33" fill="none" stroke="#ffb347" stroke-width="6" stroke-linecap="round" stroke-dasharray="0 999" transform="rotate(-90 40 40)"/><text id="gnum" x="40" y="47" text-anchor="middle" font-family="Black Han Sans" font-size="24" fill="#fff">0</text></svg><div id="glab">참수</div></div><div id="gauge2"><svg viewBox="0 0 80 80" width="80" height="80"><circle cx="40" cy="40" r="33" fill="rgba(14,20,34,.72)" stroke="rgba(255,255,255,.22)" stroke-width="6"/><circle id="tarc" cx="40" cy="40" r="33" fill="none" stroke="#6fb8ff" stroke-width="6" stroke-linecap="round" stroke-dasharray="0 999" transform="rotate(-90 40 40)"/><text id="tnum" x="40" y="47" text-anchor="middle" font-family="Black Han Sans" font-size="24" fill="#fff">0</text></svg><div id="tlab">땀수</div></div></div>
 <div id="ov"><div class="card" id="card">
   <h1>카타나<span>1인칭 칼싸움 프로토타입</span></h1>
   <ul>
@@ -279,7 +279,7 @@ function loseLimb(e,m,where){const pt=m.userData.part,first=!m.userData.lost;m.u
 const P={pos:V(),vy:0,yaw:0,pitch:0,hp:100,ground:true};
 const keys={};
 let charge=null,sw=null,skew=null,debris=[],kills=0,wave=0,queue=0,surv=0,spawnT=0,qi=0;
-let streak=0,streakT=0,timeS=1,lookHold=false,bigCD=0,blocking=false,blockT0=0,blockW=0;
+let ttamT=0,ttam=0,streak=0,streakT=0,timeS=1,lookHold=false,bigCD=0,blocking=false,blockT0=0,blockW=0;
 let playing=false,paused=false,over=false,locked=false,fallback=false,hitStop=0,shake=0,walkT=0,moving=false;
 const SENS=.0022;
 const trails=[];
@@ -377,6 +377,8 @@ function bladeContact(e,m,lp,dirW,bladeV){const s0=sw;
   if(zone){const sp=jointScreen(m,lp);s0.joints.push({e,m,lp,zone,dir,isLock,score:sp?Math.hypot(sp.x-aimD.x,sp.y-aimD.y):1e9});return 'joint'}
   if(e.alive&&!s0.hitE.has(e)){s0.hitE.add(e);damage(e,s0.dmg*(partMul[m.userData.part]||1),dir,{type:'blade',c:s0.c,p:s0.p})}
   return 'flesh'}
+const dmgP=()=>1+ttam*.01;
+function addTtam(){ttam++;ttamT=5;msg('땀수 x'+ttam,'#9fd0ff',1)}
 const spdMul=()=>1+Math.min(streak,8)*.12;
 function addStreak(){streak++;streakT=3;msg('참수 x'+streak,'#ffd36a',1)}
 function resolveJoints(){const s0=sw,J=s0.joints;if(!J.length)return;
@@ -400,15 +402,15 @@ function stabContact(e,m,lp,dirW){
   if(sw.lock&&lockOk(sw.lock)&&sw.lock.m===m)lp=sw.lock.l.clone();
   const zone=zoneOf(m,lp),hit=surfHit(m,lp);addWound(e,hit,dirW,0,'stab');
   const B=camBasis();blood(hit.point,18,B.f.clone().multiplyScalar(-1));sfx('hit');hitStop=.08;shake=.08;trails.push({stab:true,t:0,w:10,ox:aimD.x,oy:aimD.y});
-  if(!e.alive)return;
-  if(zone==='neck'&&(e.neckHits=(e.neckHits||0)+1)>=2){kill(e,{type:'stab',dir:B.f});return}
-  e.hp-=40;e.flash=.15;if(e.hp<=0){kill(e,{type:'stab',dir:B.f});return}
+  if(!e.alive){if(zone==='neck'&&!e.ttamDone){e.ttamDone=true;addTtam()}return}
+  if(zone==='neck'){e.ttamDone=true;kill(e,{type:'stab',dir:B.f});addTtam();return}
+  e.hp-=40*dmgP();e.flash=.15;if(e.hp<=0){kill(e,{type:'stab',dir:B.f});return}
   const o=screenOf(e);skew={e,dist:clamp(o.dist,1.4,2.2),t:0};e.skewered=true;msg('꿰뚫었다! 꾹 + 아래로 당겨 끌고오기','#ffd2d2')}
 function bladeSweep(){
   const cur=bladePts(),prev=sw.prev;sw.prev=cur;if(!prev||sw.fin)return;
   const C=bladeCands();if(!C.length)return;const stab=sw.type==='stab';
   for(let st=1;st<=4;st++){const t=st/4;
-    for(let i=stab?BN-8:0;i<BN;i++){_t.lerpVectors(prev[i],cur[i],t);
+    for(let i=0;i<BN;i++){_t.lerpVectors(prev[i],cur[i],t);
       for(const c of C){if(sw.done.has(c.m)||c.e.skewered||!c.e.body.includes(c.m))continue;
         const lp=_t.clone().applyMatrix4(c.inv);if(!c.bb.containsPoint(lp))continue;
         if(stab&&sw.done.size&&c.e!==sw.stabE)continue;
@@ -462,7 +464,7 @@ function stabHit(){
   const e=best.e;{const h=(LK&&LK.e===e&&castLimb(LK.m,O.x,O.y))||castBody(e,O.x,O.y)||castBody(e,best.o.x,best.o.y);if(h)addWound(e,h,B.u,0,'stab')}e.hp-=40;blood(best.o.wp,18,B.f.clone().multiplyScalar(-1));e.flash=.15;
   if(e.hp<=0){kill(e,{type:'stab',dir:B.f});return}
   skew={e,dist:Math.max(1.5,best.o.dist),t:0};e.skewered=true;msg('꿰뚫었다! 꾹 + 아래로 당겨 끌고오기','#ffd2d2')}
-function damage(e,dmg,dir,how){e.hp-=dmg;e.flash=.14;const c=e.g.position.clone();c.y+=1.2;blood(c,10+Math.floor(dmg/6),dir);
+function damage(e,dmg,dir,how){dmg*=dmgP();e.hp-=dmg;e.flash=.14;const c=e.g.position.clone();c.y+=1.2;blood(c,10+Math.floor(dmg/6),dir);
   if(e.hp<=0){kill(e,Object.assign({dir},how));return}
   e.stun=.4;e.kv.copy(dir).setY(0).multiplyScalar(4+dmg/20)}
 function kill(e,how){
@@ -520,7 +522,7 @@ bindGo(true);
 function reset(){
   for(const e of enemies){scene.remove(e.g);if(e.upper.parent===scene)scene.remove(e.upper);for(const m of e.detached)scene.remove(m)}
   enemies=[];debris=[];drips=[];charge=null;sw=null;skew=null;
-  bigCD=0;streak=0;streakT=0;Object.assign(P,{hp:100,vy:0,yaw:0,pitch:0,ground:true});P.pos.set(0,0,0);
+  bigCD=0;ttam=0;ttamT=0;streak=0;streakT=0;Object.assign(P,{hp:100,vy:0,yaw:0,pitch:0,ground:true});P.pos.set(0,0,0);
   kills=0;surv=0;spawnT=.5;over=false;hud()}
 function spawn(){for(let t=0;t<10;t++){const a=rand(0,6.28),r=rand(20,30),x=clamp(P.pos.x+Math.cos(a)*r,-BOUND+2,BOUND-2),z=clamp(P.pos.z+Math.sin(a)*r,-BOUND+2,BOUND-2);
   if(obstacles.every(o=>Math.hypot(o.x-x,o.z-z)>o.r+1)){makeEnemy(x,z);return}}}
@@ -619,7 +621,7 @@ function drawAim(){
   const cx=innerWidth/2+aimD.x,cy=innerHeight/2+aimD.y,S=.6,R0=22;let s='';
   if(lock&&!skew){const z=10,g=4,br=(sx,sy)=>`<path d="M${cx+sx*z} ${cy+sy*(z-g)}V${cy+sy*z}H${cx+sx*(z-g)}" fill="none" stroke="#ff5a5a" stroke-width="2" stroke-linecap="round"/>`;
     s+=br(-1,-1)+br(1,-1)+br(-1,1)+br(1,1)+`<circle cx="${innerWidth/2}" cy="${innerHeight/2}" r="1.6" fill="rgba(255,255,255,.55)"/>`;
-    if(!charge)s+=`<text x="${cx}" y="${cy+26}" text-anchor="middle" font-family="Noto Sans KR" font-weight="700" font-size="11" fill="#ffb3b3" stroke="#000" stroke-width="2.4" paint-order="stroke">${lock.n}</text>`}
+    s+=`<text x="${cx}" y="${cy+(charge&&!charge.skew?R0+24:26)}" text-anchor="middle" font-family="Noto Sans KR" font-weight="700" font-size="11" fill="#ffb3b3" stroke="#000" stroke-width="2.4" paint-order="stroke">${lock.n}</text>`}
   const T=(y,t,col)=>`<text x="${cx}" y="${y}" text-anchor="middle" font-family="Noto Sans KR" font-weight="700" font-size="12" fill="${col||'#fff'}" stroke="#000" stroke-width="2.6" paint-order="stroke">${t}</text>`;
   const line=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9"/><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#1d2633" stroke-width="1.4" stroke-linecap="round"/>`;
   if(charge&&!charge.skew){const v={x:charge.v.x*S,y:charge.v.y*S},k=classify(charge.v);
@@ -664,6 +666,7 @@ function loop(now){requestAnimationFrame(loop);
     if(hitStop>0){hitStop-=dt;dt*=.12}
     shake=Math.max(0,shake-dt*.8);surv+=dt;if(Math.floor(surv)!==Math.floor(surv-dt))hud();
     if(streak>0){streakT-=dt;if(streakT<=0){streak=0;streakT=0;msg('참수 콤보 끊김','#aab4c8')}}
+    if(ttam>0){ttamT-=dt;if(ttamT<=0){ttam=0;ttamT=0}}$('#tarc').setAttribute('stroke-dasharray',(2*Math.PI*33*ttamT/5).toFixed(1)+' 999');$('#tnum').textContent=ttam;$('#gauge2').classList.toggle('on',ttam>0);$('#tlab').textContent=ttam?'땀수 · 피해 +'+Math.round((dmgP()-1)*100)+'%':'땀수';
     {const C=2*Math.PI*33;$('#garc').setAttribute('stroke-dasharray',(C*streakT/3).toFixed(1)+' '+C);$('#gnum').textContent=streak;$('#gauge').classList.toggle('on',streak>0);$('#glab').textContent=streak?'참수 · 공속 +'+Math.round((spdMul()-1)*100)+'%':'참수'}bigCD=Math.max(0,bigCD-dt);
     updatePlayer(dt);updateEnemies(dt);updateLock(dt);updateBlood(dt);updateSword(dt);
     if(skew){skew.t+=dt;if(skew.t>8)releaseSkew(false)}
