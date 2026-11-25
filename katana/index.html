@@ -343,11 +343,11 @@ const SWORDS=[
   {id:'dual',name:'이도류',price:2000,col:0xeef2f6,em:0x222831,desc:'칼 2개 · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 크게 베기(차징 50% 이상): 십자 베기 · 스킬(F): X자 참격 날리기, 쿨 3초',dual:true,spd:2,wire:true},
   {id:'triple',name:'삼도류',price:3000,col:0xeef2f6,em:0x222831,desc:'칼 3개(하나는 입에) · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 크게 베기(차징 50% 이상): 십자 베기 · 스킬(F): 빠르게 돌진한 뒤 지나간 길에 참격을 퍼부음, 쿨 4초',dual:true,triple:true,spd:2,dash:true},
   {id:'thunder',name:'번개칼',price:4000,col:0xbfeaff,em:0x2a7fff,desc:'벨 때마다 주변 무작위 적 4마리도 같은 피해 · 필살기(F, 게이지 100%): 뇌신강림 — 3초간 하늘에서 번개가 주변 적에게 내리꽂힘',chain:22,chainN:4,chainR:8,storm:true},
-  {id:'coin',name:'동전칼',price:1000,col:0xd08a54,em:0x4a2208,desc:'쌀먹 · 처치 보상 +50%',coinMul:1.5},
-  {id:'hunter',name:'사냥꾼의 칼',price:2500,col:0x9fe08a,em:0x1d4a10,desc:'쌀먹 · 참수 보상 3배',neckMul:3},
-  {id:'harvest',name:'수확낫',price:5000,col:0xd9c27a,em:0x4a3a08,desc:'쌀먹 · 처치마다 25% 확률로 은화 1개 추가',silverChance:.25},
-  {id:'golden',name:'황금검',price:10000,col:0xffd24a,em:0x7a5200,desc:'쌀먹 · 모든 보상 2배 · 처치하면 금화가 튐',coinMul:2,coinFx:true},
-  {id:'greed',name:'백금 탐욕검',price:50000,col:0xe6f4ff,em:0x3a6a9a,desc:'쌀먹 · 모든 보상 3배 + 참수 콤보 1당 보상 +20% · 대신 받는 피해 1.5배',coinMul:3,comboCoin:.2,hurtMul:1.5,coinFx:true},
+  {id:'fire',name:'화염검',price:1500,col:0xff7a2a,em:0x8a2000,desc:'벤 적에게 불이 붙어 3초간 타오름 · 필살기(F): 화염 폭발 — 주변 6m 적에게 큰 피해와 화상',burn:true,nova:'fire',skn:'화염 폭발'},
+  {id:'frost',name:'빙결검',price:2500,col:0x9fe8ff,em:0x1a5a8a,desc:'벤 적을 느리게 하고 3번 맞히면 얼려버림 · 필살기(F): 절대영도 — 주변 10m 적 전부 3초간 빙결',frost:true,nova:'frost',skn:'절대영도'},
+  {id:'vamp',name:'흡혈검',price:3500,col:0x9a0f2a,em:0x4a0010,desc:'준 피해의 10%만큼 체력 회복 · 필살기(F): 피의 축제 — 6초간 피해 2배, 흡혈 30%',leech:.1,nova:'feast',skn:'피의 축제'},
+  {id:'giant',name:'거인의 대검',price:5000,col:0xb8b8c0,em:0x222228,desc:'칼이 1.5배 크고 판정 +1.5m · 피해 1.6배 · 공속 0.7배 · 넉백 강함 · 필살기(F): 대지 강타 — 주변 8m 적을 날려버림',reach:1.5,dmg:1.6,spd:.7,knock:2.2,big:1.5,nova:'quake',skn:'대지 강타'},
+  {id:'shadow',name:'그림자검',price:7000,col:0x3a2a5a,em:0x7a3cff,desc:'이동 +30% · 30% 확률 치명타(피해 2.5배) · 필살기(F): 그림자 습격 — 조준한 적 뒤로 순간이동해 목을 벰',move:1.3,crit:.3,nova:'shadow',skn:'그림자 습격'},
   {id:'needleking',name:'바느질의 왕의 칫솔',special:true,how:'cond',cond:'땀수 100 유지',col:0xffd84a,em:0x6a5000,desc:'패시브: 땀수가 오를 때마다 참수도 같이 오름 · 클릭: 찌르기 · 0.5초 이상 꾹 눌러야 베기 · 우클릭: 시침핀 날리기 · 필살기(F, 게이지 100%): 바닥에 원이 생기고, 원하는 곳에 찍으면(클릭 또는 F) 시침핀이 그 원 안에 쏟아짐 · 우클릭으로 취소',model:'wand',ttamStreak:true,stabClick:true,pins:true}];
 let myeok=0,swordId='base',unlocked=new Set();try{myeok=parseInt(localStorage.getItem('katana-myeok'))||0;swordId=localStorage.getItem('katana-sword')||'base';unlocked=new Set(JSON.parse(localStorage.getItem('katana-unlocked')||'[]'))}catch(e){}
 let money=0,owned=new Set(['base']);try{money=parseInt(localStorage.getItem('katana-money'))||0;if(!localStorage.getItem('katana-merged')){money+=myeok*10;localStorage.setItem('katana-money',money);localStorage.setItem('katana-merged','1')}owned=new Set(JSON.parse(localStorage.getItem('katana-owned')||'["base"]'))}catch(e){}
@@ -435,7 +435,7 @@ function updatePins(dt){if(pinCD>0)pinCD-=dt;if(!pins.length)return;const meshes
         else if(zone==='neck'&&p.rain&&!e.ttamDone){e.ttamDone=true;addTtam()}}
       continue}
     p.g.position.add(step);p.g.lookAt(p.g.position.clone().sub(p.v));if(p.g.position.y<=.02){p.g.position.y=rand(.02,.06);if(p.bm){p.g.remove(p.bm);spark(p.g.position.clone(),3)}stuck.push(p.g);groundPins.push(p.g);if(groundPins.length>500){const o=groundPins.shift();if(o.parent===scene)scene.remove(o)}pins.splice(i,1)}else if(p.t>6){scene.remove(p.g);pins.splice(i,1)}}}
-function applySword(){const w=SW();if(!isOwn(w)){swordId='base'}const v=SW();bladeMat.color.setHex(v.col);bladeMat.emissive.setHex(v.em);const isW=v.model==='wand';wand.visible=isW;if(!wandLight.parent)wand.children[1].add(wandLight);for(const c of kat.children)c.visible=!isW}
+function applySword(){const w=SW();if(!isOwn(w)){swordId='base'}const v=SW();bladeMat.color.setHex(v.col);bladeMat.emissive.setHex(v.em);const isW=v.model==='wand';wand.visible=isW;kat.scale.setScalar(v.big||1);if(!wandLight.parent)wand.children[1].add(wandLight);for(const c of kat.children)c.visible=!isW}
 function gainMyeok(){myeok++;try{localStorage.setItem('katana-myeok',myeok)}catch(e){}$('#mval').textContent=myeok}
 let ssFilter='all',lastGot=null;
 const hex=c=>'#'+c.toString(16).padStart(6,'0');
@@ -573,7 +573,20 @@ function chainZap(src,dmg){const w=SW();if(!w.chain)return;const N=w.chainN||1;
   const a=src.g.position.clone().add(V(0,1.2,0));let any=false;
   for(const o of near.slice(0,N)){const b=o.g.position.clone().add(V(0,1.2,0));bolt(a,b);damage(o,dmg||w.chain,b.clone().sub(a).setY(0).normalize(),{type:'blade'});o.stun=Math.max(o.stun,.25);any=true}
   if(any)sfx('clang')}
-let storm=null;
+let storm=null,feastT=0;const rings=[];const fpM=new THREE.MeshBasicMaterial({color:0xff8a2a,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}),fpG=new THREE.OctahedronGeometry(.05,0);const fps=[];
+function fireP(p,n){for(let i=0;i<n;i++){const m=new THREE.Mesh(fpG,fpM.clone());m.position.copy(p);scene.add(m);fps.push({m,v:V(rand(-.4,.4),rand(1,2.5),rand(-.4,.4)),t:0})}}
+function ringFx(p,col,R,dur){const m=new THREE.Mesh(new THREE.RingGeometry(.8,1,48),new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.9,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false}));m.rotation.x=-Math.PI/2;m.position.set(p.x,.06,p.z);scene.add(m);rings.push({m,R,dur,t:0})}
+function updateFx2(dt){if(feastT>0)feastT-=dt;for(let i=rings.length-1;i>=0;i--){const r=rings[i];r.t+=dt;const u=r.t/r.dur;r.m.scale.setScalar(.2+r.R*u);r.m.material.opacity=.9*(1-u);if(u>=1){scene.remove(r.m);rings.splice(i,1)}}
+  for(let i=fps.length-1;i>=0;i--){const f=fps[i];f.t+=dt;f.m.position.addScaledVector(f.v,dt);f.m.material.opacity=1-f.t/.5;if(f.t>.5){scene.remove(f.m);fps.splice(i,1)}}}
+function novaSkill(kind){if(skill<100)return;const near=R=>enemies.filter(e=>e.alive&&e.g.position.distanceTo(P.pos)<R);
+  if(kind==='shadow'){let tgt=lock&&lock.e.alive?lock.e:null;if(!tgt){let bd=Math.min(innerWidth,innerHeight)*.35;cam.updateMatrixWorld();for(const e of enemies){if(!e.alive)continue;const o=screenOf(e);if(o.dist<.5||o.dist>14)continue;const r=Math.hypot(o.x,o.y);if(r<bd){bd=r;tgt=e}}}
+    if(!tgt)return;skill=0;spawnGhost();const to=V(tgt.g.position.x-P.pos.x,0,tgt.g.position.z-P.pos.z).normalize();P.pos.copy(tgt.g.position).addScaledVector(to,1.3);P.pos.y=0;P.yaw=Math.atan2(to.x,to.z);P.pitch=-.1;
+    updatePlayer(0);const head=tgt.body.find(x=>x.userData.part==='head');sw=null;startSlash({x:1,y:-.05},1,false);sw.lunge=0;if(head)sw.lock={e:tgt,m:head,l:V(0,head.geometry.boundingBox.min.y+.03,0)};$('#flash').style.opacity=.35;sfx('swing',1);return}
+  skill=0;const c=P.pos.clone();$('#flash').style.opacity=.3;sfx('clang');thunderSfx();
+  if(kind==='fire'){ringFx(c,0xff6a1a,6,.5);for(let i=0;i<40;i++)fireP(c.clone().add(V(rand(-5,5),rand(0,1.5),rand(-5,5))),2);for(const e of near(6.5)){damage(e,60,e.g.position.clone().sub(c).setY(0).normalize(),{type:'blade'});if(e.alive)e.burnT=4}}
+  else if(kind==='frost'){ringFx(c,0x9fe8ff,10,.6);for(const e of near(10.5)){e.frozenT=3;e.slowT=4}}
+  else if(kind==='feast'){feastT=6;ringFx(c,0xff2244,4,.5)}
+  else if(kind==='quake'){ringFx(c,0xd9b27a,8,.45);shake=.4;for(const e of near(8.5)){const d=e.g.position.clone().sub(c).setY(0).normalize();damage(e,50,d,{type:'blade'});if(e.alive){e.kv.copy(d).multiplyScalar(14);e.stun=1}}}}
 function thunderStorm(){if(skill<100||storm)return;skill=0;storm={t:0,next:0};$('#flash').style.opacity=.6;thunderSfx()}
 function thunderSfx(){if(!AC)return;try{const t=AC.currentTime,n=Math.floor(AC.sampleRate*1.2),b=AC.createBuffer(1,n,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,2);
   const s=AC.createBufferSource();s.buffer=b;const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=500;const g=AC.createGain();g.gain.value=.9;s.connect(f);f.connect(g);g.connect(AC.destination);s.start(t)}catch(e){}}
@@ -801,9 +814,11 @@ function stabHit(){
   const e=best.e;{const h=(LK&&LK.e===e&&castLimb(LK.m,O.x,O.y))||castBody(e,O.x,O.y)||castBody(e,best.o.x,best.o.y);if(h)addWound(e,h,B.u,0,'stab')}e.hp-=40;blood(best.o.wp,18,B.f.clone().multiplyScalar(-1));e.flash=.15;
   if(e.hp<=0){kill(e,{type:'stab',dir:B.f});return}
   skew={e,dist:Math.max(1.5,best.o.dist),t:0};e.skewered=true;msg('꿰뚫었다! 꾹 + 아래로 당겨 끌고오기','#ffd2d2')}
-function damage(e,dmg,dir,how){dmg*=dmgP();e.hp-=dmg;e.flash=.14;const c=e.g.position.clone();c.y+=1.2;blood(c,10+Math.floor(dmg/6),dir);
+function damage(e,dmg,dir,how){dmg*=dmgP();const W=SW();if(feastT>0)dmg*=2;if(W.crit&&Math.random()<W.crit){dmg*=2.5;spark(e.g.position.clone().add(V(0,1.6,0)),8)}
+  if(W.burn)e.burnT=3;if(W.frost){e.slowT=2;e.frost=(e.frost||0)+1;if(e.frost>=3){e.frozenT=2;e.frost=0}}if(W.leech||feastT>0){P.hp=Math.min(100,P.hp+dmg*(feastT>0?.3:W.leech));}
+  e.hp-=dmg;e.flash=.14;const c=e.g.position.clone();c.y+=1.2;blood(c,10+Math.floor(dmg/6),dir);
   if(e.hp<=0){kill(e,Object.assign({dir},how));return}
-  e.stun=.4;e.kv.copy(dir).setY(0).multiplyScalar(4+dmg/20)}
+  e.stun=.4;e.kv.copy(dir).setY(0).multiplyScalar((4+dmg/20)*(W.knock||1))}
 function kill(e,how){
   if(!e.alive)return;e.alive=false;e.skewered=false;e.deadT=0;e.fall=0;e.g.position.y=0;e.g.rotation.z=0;kills++;hud();gainMyeok();{const w=SW();let r=(how.type==='neck'?20*(w.neckMul||1):how.split?15:how.type==='stab'?12:8)*(w.coinMul||1)*(1+(w.comboCoin||0)*streak);if(w.silverChance&&Math.random()<w.silverChance)r+=100;gainMoney(Math.round(r));if(w.coinFx)coinBurst(e.g.position.clone().add(V(0,1.4,0)))}onKillRewards(how);if(SW().heal){P.hp=Math.min(100,P.hp+SW().heal);hud()}if(skillOn)stopKills.push(e);
   const c=e.g.position.clone();c.y+=1.2;blood(c,45,how.dir);
@@ -823,7 +838,7 @@ function releaseSkew(finish){if(!skew)return;const e=skew.e;e.skewered=false;ske
 
 /* ---------- input ---------- */
 addEventListener('keydown',e=>{if(e.code==='KeyR'&&!e.repeat&&playing&&paused&&!over){if(!$('#swsel').classList.contains('hide'))$('#swsel').classList.add('hide');if(fallback)resume();else grabMouse();return}
-  if(e.code==='KeyR'&&!e.repeat&&playing&&!paused&&!over&&!replay){if(locked&&document.exitPointerLock)document.exitPointerLock();else{paused=true;charge=null;blocking=false;lookHold=false;showOv('pause')}return}if(e.code==='KeyF'&&!e.repeat&&playing&&!paused&&!over&&!replay){if(SW().dash)fireDash();else if(SW().wire)fireWave();else if(SW().pins){if(pinAim)confirmPinAim();else startPinAim()}else if(SW().storm)thunderStorm();else toggleSkill()}keys[e.code]=true;if(e.code==='Space')e.preventDefault()});
+  if(e.code==='KeyR'&&!e.repeat&&playing&&!paused&&!over&&!replay){if(locked&&document.exitPointerLock)document.exitPointerLock();else{paused=true;charge=null;blocking=false;lookHold=false;showOv('pause')}return}if(e.code==='KeyF'&&!e.repeat&&playing&&!paused&&!over&&!replay){if(SW().dash)fireDash();else if(SW().wire)fireWave();else if(SW().pins){if(pinAim)confirmPinAim();else startPinAim()}else if(SW().storm)thunderStorm();else if(SW().nova)novaSkill(SW().nova);else toggleSkill()}keys[e.code]=true;if(e.code==='Space')e.preventDefault()});
 addEventListener('keyup',e=>{keys[e.code]=false});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 cv.addEventListener('mousedown',e=>{if(!playing||paused||over||replay)return;if(!locked&&!fallback){grabMouse();return}
@@ -862,7 +877,7 @@ bindGo(true);
 function reset(){
   for(const e of enemies){scene.remove(e.g);if(e.upper.parent===scene)scene.remove(e.upper);for(const m of e.detached)scene.remove(m)}
   enemies=[];debris=[];drips=[];charge=null;sw=null;skew=null;
-  applySword();$('#mval').textContent=myeok;$('#money').innerHTML=coinHTML(money);bigCD=0;skill=0;skillOn=false;wire=null;wireCD=0;for(const w of waves)scene.remove(w.g);waves.length=0;dash=null;for(const p of pins)scene.remove(p.g);pins.length=0;stuck.length=0;for(const g of groundPins)scene.remove(g);groundPins.length=0;for(const a of ascend)scene.remove(a.g);ascend.length=0;rain=null;storm=null;pinAim=false;aimRing.visible=false;bq=[];pend=[];stopKills=[];founts=[];stopFounts=[];for(const p of pools)scene.remove(p.d);pools=[];preDeb=null;replay=null;rec=[];recTr=[];for(const q of ghosts){scene.remove(q.g)}ghosts.length=0;ttam=0;ttamT=0;streak=0;streakT=0;Object.assign(P,{hp:100,vy:0,yaw:0,pitch:0,ground:true});P.pos.set(0,0,0);
+  applySword();$('#mval').textContent=myeok;$('#money').innerHTML=coinHTML(money);bigCD=0;skill=0;skillOn=false;wire=null;wireCD=0;for(const w of waves)scene.remove(w.g);waves.length=0;dash=null;for(const p of pins)scene.remove(p.g);pins.length=0;stuck.length=0;for(const g of groundPins)scene.remove(g);groundPins.length=0;for(const a of ascend)scene.remove(a.g);ascend.length=0;rain=null;storm=null;feastT=0;pinAim=false;aimRing.visible=false;bq=[];pend=[];stopKills=[];founts=[];stopFounts=[];for(const p of pools)scene.remove(p.d);pools=[];preDeb=null;replay=null;rec=[];recTr=[];for(const q of ghosts){scene.remove(q.g)}ghosts.length=0;ttam=0;ttamT=0;streak=0;streakT=0;Object.assign(P,{hp:100,vy:0,yaw:0,pitch:0,ground:true});P.pos.set(0,0,0);
   kills=0;surv=0;spawnT=.5;over=false;hud()}
 function spawn(){for(let t=0;t<10;t++){const a=rand(0,6.28),r=rand(20,30),x=clamp(P.pos.x+Math.cos(a)*r,-BOUND+2,BOUND-2),z=clamp(P.pos.z+Math.sin(a)*r,-BOUND+2,BOUND-2);
   if(obstacles.every(o=>Math.hypot(o.x-x,o.z-z)>o.r+1)){makeEnemy(x,z);return}}}
@@ -891,6 +906,9 @@ function enemyHit(e){
 function updateEnemies(dt){
   for(const e of enemies){
     if(e.flash>0){e.flash-=dt;for(const m of e.mats)m.emissive.setHex(e.flash>0?0x770000:0)}
+    if(e.alive){if(e.burnT>0){e.burnT-=dt;e.burnTick=(e.burnTick||0)-dt;if(e.burnTick<=0){e.burnTick=.5;e.hp-=5;fireP(e.g.position.clone().add(V(rand(-.3,.3),rand(.5,1.9),rand(-.3,.3))),4);if(e.hp<=0){kill(e,{type:'blade',dir:V(0,1,0)});continue}}}
+      if(e.slowT>0)e.slowT-=dt;if(e.frozenT>0)e.frozenT-=dt;
+      if(e.flash<=0)for(const m of e.mats)m.emissive.setHex(e.frozenT>0?0x2a6aa0:e.burnT>0?0x5a1a00:e.slowT>0?0x0a2a44:0)}
     updateFace(e,performance.now()/1000);
     if(!e.alive){if(skillOn)continue;e.deadT+=dt;e.fall=Math.min(1,e.fall+dt*2.6);e.g.rotation.x=-Math.PI/2*(1-(1-e.fall)**3);
       e.g.position.addScaledVector(e.kv,dt);e.kv.multiplyScalar(Math.max(0,1-dt*4));
@@ -909,8 +927,8 @@ function updateEnemies(dt){
     const stop=1.3;
     if(e.stun>0){e.stun-=dt;e.wind=0;e.g.position.addScaledVector(e.kv,dt);e.kv.multiplyScalar(Math.max(0,1-dt*6))}
     else if(e.wind>0){e.wind-=dt;if(e.wind<=0){e.cd=e.arms===1?2.6:1.2;e.atk=.25;if(e.arms>0&&d<stop+.6)enemyHit(e)}}
-    else if(d>stop){if(e.spd>0){e.g.position.x+=dx/d*e.spd*dt;e.g.position.z+=dz/d*e.spd*dt;e.walk+=dt*e.spd*5}}
-    if(d<=stop&&e.stun<=0&&e.wind<=0&&e.arms>0){e.cd-=dt;if(e.cd<=0)e.wind=e.arms===1?.7:.45}
+    else if(d>stop){const sp=e.frozenT>0?0:e.spd*(e.slowT>0?.3:1);if(sp>0){e.g.position.x+=dx/d*sp*dt;e.g.position.z+=dz/d*sp*dt;e.walk+=dt*sp*5}}
+    if(d<=stop&&e.stun<=0&&e.wind<=0&&e.arms>0&&!(e.frozenT>0)){e.cd-=dt;if(e.cd<=0)e.wind=e.arms===1?.7:.45}
     if(e.atk>0)e.atk-=dt;
     if(e.crawl){if(e.stun<=0&&e.wind<=0&&d>stop)e.hopT=(e.hopT||0)+dt*(e.legs===1?5.5:4.5);const h=Math.abs(Math.sin(e.hopT||0))*(e.legs===1?.42:.32);e.g.position.y=(e.legs===0?-.8:0)+h}
     const sw2=e.crawl?0:Math.sin(e.walk)*.7;setRot(e.lL,e.crawl?-.15:sw2);setRot(e.lR,e.crawl?-.15:-sw2);
@@ -1014,10 +1032,10 @@ function loop(now){requestAnimationFrame(loop);
     shake=Math.max(0,shake-dt*.8);surv+=dt;if(Math.floor(surv)!==Math.floor(surv-dt))hud();
     if(streak>0){streakT-=dt;if(streakT<=0){streak=0;streakT=0;msg('참수 콤보 끊김','#aab4c8')}}
     if(ttam>0){ttamT-=dt;if(ttamT<=0){ttam=0;ttamT=0}}$('#tarc').setAttribute('stroke-dasharray',(2*Math.PI*33*ttamT/3).toFixed(1)+' 999');if(SW().wire||SW().dash){$('#skn').textContent=SW().dash?'돌진 참격':'참격';const r=1-wireCD/(SW().dash?4:WIRE_CD);$('#skb').style.width=(r*100)+'%';$('#skp').textContent=wireCD>0?wireCD.toFixed(1)+'초':'준비';$('#skill').classList.toggle('full',wireCD<=0&&!wire&&!dash)}
-    else{$('#skn').textContent=SW().pins?'바늘비':SW().storm?'뇌신강림':'스킬';$('#skb').style.width=skill+'%';$('#skp').textContent=Math.floor(skill)+'%';$('#skill').classList.toggle('full',skill>=100&&!skillOn)}$('#skill').classList.toggle('on',skillOn);$('#skillfx').style.opacity=skillOn?1:0;$('#tnum').textContent=ttam;$('#gauge2').classList.toggle('on',ttam>0);$('#tlab').textContent=ttam?'땀수 · 피해 +'+Math.round((dmgP()-1)*100)+'%':'땀수';
+    else{$('#skn').textContent=SW().skn||(SW().pins?'바늘비':SW().storm?'뇌신강림':'스킬');$('#skb').style.width=skill+'%';$('#skp').textContent=Math.floor(skill)+'%';$('#skill').classList.toggle('full',skill>=100&&!skillOn)}$('#skill').classList.toggle('on',skillOn);$('#skillfx').style.opacity=skillOn?1:0;$('#tnum').textContent=ttam;$('#gauge2').classList.toggle('on',ttam>0);$('#tlab').textContent=ttam?'땀수 · 피해 +'+Math.round((dmgP()-1)*100)+'%':'땀수';
     {const C=2*Math.PI*33;$('#garc').setAttribute('stroke-dasharray',(C*streakT/5).toFixed(1)+' '+C);$('#gnum').textContent=streak;$('#gauge').classList.toggle('on',streak>0);$('#glab').textContent=streak?'참수 · 공속 +'+Math.round((spdMul()-1)*100)+'%':'참수'}bigCD=Math.max(0,bigCD-dt);
     if(skillOn){skill-=dt*5;if(skill<=0){skill=0;endSkill()}}
-    const wdt=dt*(skillOn?.03:1);updateGhosts(dt);updatePend(dt);updatePools(dt);updateWire(dt);updateWaves(dt);updateDash(dt);updatePins(dt);updatePinAim(dt);updateBolts(dt);updateStorm(dt);updateCoins(dt);updateRain(dt);updateSparkles(dt);updatePlayer(dt);updateEnemies(wdt);updateLock(dt);updateBlood(wdt);updateSword(dt);recordFrame(dt);
+    const wdt=dt*(skillOn?.03:1);updateGhosts(dt);updatePend(dt);updatePools(dt);updateWire(dt);updateWaves(dt);updateDash(dt);updatePins(dt);updatePinAim(dt);updateBolts(dt);updateStorm(dt);updateCoins(dt);updateFx2(dt);updateRain(dt);updateSparkles(dt);updatePlayer(dt);updateEnemies(wdt);updateLock(dt);updateBlood(wdt);updateSword(dt);recordFrame(dt);
     if(skew){skew.t+=dt;if(skew.t>8)releaseSkew(false)}
     const h=$('#hurt');h.style.opacity=Math.max(0,parseFloat(h.style.opacity||0)-dt*2.5);
     if(msgT>0){msgT-=dt;if(msgT<=0)msgEl.style.opacity=0}
