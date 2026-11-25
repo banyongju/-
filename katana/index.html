@@ -196,6 +196,21 @@ const qFwd=qDir(0,-.04,-1),qStab=qDir(0,.02,-1);
 function slashPose(c,ang,off,qb){const ax=V(-c.y,c.x,0).normalize();return{q:Q().setFromAxisAngle(ax,ang).multiply(qb||qFwd),p:V(.1+c.x*off,-.26+c.y*off,-.42)}}
 
 /* ---------- enemies ---------- */
+const FACES=(()=>{const mk=f=>tex(128,128,(g)=>{g.fillStyle='#f3f3f3';g.fillRect(0,0,128,128);g.lineCap='round';g.lineJoin='round';g.strokeStyle='#111';g.fillStyle='#111';f(g)});
+  const eyes=(g)=>{g.beginPath();g.ellipse(44,52,8,14,0,0,7);g.ellipse(84,52,8,14,0,0,7);g.fill()};
+  const tears=(g,o)=>{g.fillStyle='#6ec8ff';for(const x of [40,88]){g.beginPath();g.moveTo(x-5,66);g.lineTo(x+5,66);g.lineTo(x+4,96);g.lineTo(x-4,96);g.fill();g.beginPath();g.arc(x,100+o,6,0,7);g.fill();g.beginPath();g.moveTo(x-5,100+o);g.lineTo(x,88+o);g.lineTo(x+5,100+o);g.fill()}};
+  return {
+   smile:mk(g=>{eyes(g);g.lineWidth=6;g.beginPath();g.arc(64,72,22,.25,Math.PI-.25);g.stroke()}),
+   worried:mk(g=>{eyes(g);g.lineWidth=5;g.beginPath();g.moveTo(30,30);g.lineTo(54,38);g.moveTo(98,30);g.lineTo(74,38);g.stroke();g.lineWidth=6;g.beginPath();g.arc(64,104,18,Math.PI+.5,-.5);g.stroke()}),
+   pain:mk(g=>{g.lineWidth=7;g.beginPath();g.moveTo(32,42);g.lineTo(52,52);g.lineTo(32,62);g.moveTo(96,42);g.lineTo(76,52);g.lineTo(96,62);g.stroke();g.lineWidth=5;g.beginPath();g.moveTo(28,28);g.lineTo(54,36);g.moveTo(100,28);g.lineTo(74,36);g.stroke();
+     g.beginPath();g.ellipse(64,92,16,14,0,0,7);g.fill();g.fillStyle='#c0353f';g.beginPath();g.ellipse(64,98,9,6,0,0,7);g.fill()}),
+   cry1:mk(g=>{g.lineWidth=7;g.beginPath();g.moveTo(32,54);g.quadraticCurveTo(44,44,56,54);g.moveTo(72,54);g.quadraticCurveTo(84,44,96,54);g.stroke();g.lineWidth=5;g.beginPath();g.moveTo(28,32);g.lineTo(52,40);g.moveTo(100,32);g.lineTo(76,40);g.stroke();
+     g.beginPath();g.moveTo(42,104);g.quadraticCurveTo(64,80,86,104);g.quadraticCurveTo(64,96,42,104);g.fill();tears(g,0)}),
+   cry2:mk(g=>{g.lineWidth=7;g.beginPath();g.moveTo(32,54);g.quadraticCurveTo(44,44,56,54);g.moveTo(72,54);g.quadraticCurveTo(84,44,96,54);g.stroke();g.lineWidth=5;g.beginPath();g.moveTo(28,32);g.lineTo(52,40);g.moveTo(100,32);g.lineTo(76,40);g.stroke();
+     g.beginPath();g.moveTo(42,106);g.quadraticCurveTo(64,84,86,106);g.quadraticCurveTo(64,98,42,106);g.fill();tears(g,10)}),
+   dead:mk(g=>{g.lineWidth=7;for(const x of [44,84]){g.beginPath();g.moveTo(x-10,42);g.lineTo(x+10,62);g.moveTo(x+10,42);g.lineTo(x-10,62);g.stroke()}g.lineWidth=6;g.beginPath();g.moveTo(46,96);g.lineTo(82,96);g.stroke()})}})();
+function faceLevel(e){if(!e.alive)return 'dead';const lost=(2-e.arms)+(2-e.legs)+(e.hp<45?1:0);return lost<=0?'smile':lost===1?'worried':lost===2?'pain':'cry'}
+function updateFace(e,t){if(!e.faceMat)return;let k=faceLevel(e);if(k==='cry')k=(Math.floor((t||0)*4+e.walk)%2)?'cry2':'cry1';const tx=FACES[k];if(e.faceMat.map!==tx){e.faceMat.map=tx;e.faceMat.needsUpdate=true}}
 const faceT=tex(64,64,(g)=>{g.fillStyle='#f3f3f3';g.fillRect(0,0,64,64);g.fillStyle='#111';g.beginPath();g.ellipse(22,26,4,7,0,0,7);g.ellipse(42,26,4,7,0,0,7);g.fill();g.lineWidth=3;g.strokeStyle='#111';g.beginPath();g.arc(32,36,11,.25,Math.PI-.25);g.stroke()});
 const shirts=[0x58d6bb,0xf27aa8,0xf2c94c,0x6aa6ff,0xb48cf2,0xff9f43,0x7bd36a];
 const pantsC=[0x2c3e66,0x3b3b44,0x5a4632,0x22556b];
@@ -203,7 +218,7 @@ const fleshM=new THREE.MeshLambertMaterial({color:0xb3141b});
 let enemies=[];
 function makeEnemy(x,z){
   const g=new THREE.Group();g.rotation.order='YXZ';
-  const shirt=new THREE.MeshLambertMaterial({color:pick(shirts)}),pants=new THREE.MeshLambertMaterial({color:pick(pantsC)}),skin=new THREE.MeshLambertMaterial({color:0xf0f0f0}),face=new THREE.MeshLambertMaterial({map:faceT});
+  const shirt=new THREE.MeshLambertMaterial({color:pick(shirts)}),pants=new THREE.MeshLambertMaterial({color:pick(pantsC)}),skin=new THREE.MeshLambertMaterial({color:0xf0f0f0}),face=new THREE.MeshLambertMaterial({map:FACES.smile});
   const lower=new THREE.Group(),upper=new THREE.Group();upper.position.y=1.2;g.add(lower,upper);
   const legG=new THREE.BoxGeometry(.38,.8,.38);legG.translate(0,-.4,0);
   const lL=new THREE.Mesh(legG,pants),lR=new THREE.Mesh(legG,pants);lL.position.set(-.2,.8,0);lR.position.set(.2,.8,0);lower.add(lL,lR);
@@ -224,7 +239,7 @@ function makeEnemy(x,z){
   for(const m of [lL,lR,aL,aR])m.userData.hp=55;
   head.userData.cap=fl(head,.48,.02,.48,0,-.256);head.userData.stump=fl(upper,.48,.02,.48,0,.406);head.userData.hp=9999;
   shade(g);g.position.set(x,0,z);scene.add(g);
-  const e={body,wounds:[],bleed:0,dmgMul:1,arms:2,legs:2,crawl:false,detached:[],wind:0,g,upper,lower,lL,lR,aL,aR,capU,capL,mats:[shirt,pants,skin],hp:100,alive:true,stun:0,kv:V(),cd:rand(.5,1.2),walk:rand(0,6),spd:rand(2,2.9),flash:0,deadT:0,fall:0,atk:0};
+  const e={faceMat:face,body,wounds:[],bleed:0,dmgMul:1,arms:2,legs:2,crawl:false,detached:[],wind:0,g,upper,lower,lL,lR,aL,aR,capU,capL,mats:[shirt,pants,skin],hp:100,alive:true,stun:0,kv:V(),cd:rand(.5,1.2),walk:rand(0,6),spd:rand(2,2.9),flash:0,deadT:0,fall:0,atk:0};
   enemies.push(e);return e}
 
 /* ---------- blood ---------- */
@@ -846,6 +861,7 @@ function enemyHit(e){
 function updateEnemies(dt){
   for(const e of enemies){
     if(e.flash>0){e.flash-=dt;for(const m of e.mats)m.emissive.setHex(e.flash>0?0x770000:0)}
+    updateFace(e,performance.now()/1000);
     if(!e.alive){if(skillOn)continue;e.deadT+=dt;e.fall=Math.min(1,e.fall+dt*2.6);e.g.rotation.x=-Math.PI/2*(1-(1-e.fall)**3);
       e.g.position.addScaledVector(e.kv,dt);e.kv.multiplyScalar(Math.max(0,1-dt*4));
       if(e.deadT>18&&!e.pinsFreed){e.pinsFreed=true;freePins(e)}
