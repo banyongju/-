@@ -925,7 +925,7 @@ function updatePlayer(dt){
   sun.position.set(P.pos.x+30,50,P.pos.z+20);sun.target.position.copy(P.pos)}
 function enemyHit(e){
   const toE=V(e.g.position.x-P.pos.x,0,e.g.position.z-P.pos.z).normalize(),f=V(-Math.sin(P.yaw),0,-Math.cos(P.yaw));
-  const dmg=15*e.dmgMul*(1+Math.min(1,surv/120)*.6);
+  const dmg=18*e.dmgMul*(1+Math.min(1,surv/120)*.6);
   if(blocking&&f.dot(toE)>.3){spark(cam.localToWorld(V(-.05,-.1,-.6)),12);sfx('clang');e.stun=.45;e.kv.copy(toE).multiplyScalar(3);P.hp-=dmg*.15;shake=.03}
   else{P.hp-=dmg*(SW().hurtMul||1);$('#hurt').style.opacity=1;shake=.06}
   hud();if(P.hp<=0)gameOver()}
@@ -952,9 +952,9 @@ function updateEnemies(dt){
     e.g.rotation.y=Math.atan2(dx,dz);e.g.rotation.x=0;e.g.rotation.z=e.crawl?Math.sin(e.walk*.5)*.08:0;
     const stop=1.3;
     if(e.stun>0){e.stun-=dt;e.wind=0;e.g.position.addScaledVector(e.kv,dt);e.kv.multiplyScalar(Math.max(0,1-dt*6))}
-    else if(e.wind>0){e.wind-=dt;if(e.wind<=0){e.cd=e.arms===1?2.6:1.2;e.atk=.25;if(e.arms>0&&d<stop+.6)enemyHit(e)}}
+    else if(e.wind>0){e.wind-=dt;if(e.wind<=0){e.cd=e.arms===1?1.6:.75;e.atk=.25;if(e.arms>0&&d<stop+.6)enemyHit(e)}}
     else if(d>stop){const sp=e.frozenT>0?0:e.spd*(e.slowT>0?.3:1);if(sp>0){e.g.position.x+=dx/d*sp*dt;e.g.position.z+=dz/d*sp*dt;e.walk+=dt*sp*5}}
-    if(d<=stop&&e.stun<=0&&e.wind<=0&&e.arms>0&&!(e.frozenT>0)){e.cd-=dt;if(e.cd<=0)e.wind=e.arms===1?.7:.45}
+    if(d<=stop&&e.stun<=0&&e.wind<=0&&e.arms>0&&!(e.frozenT>0)){e.cd-=dt;if(e.cd<=0)e.wind=e.arms===1?.45:.3}
     if(e.atk>0)e.atk-=dt;
     if(e.crawl){if(e.stun<=0&&e.wind<=0&&d>stop)e.hopT=(e.hopT||0)+dt*(e.legs===1?5.5:4.5);const h=Math.abs(Math.sin(e.hopT||0))*(e.legs===1?.42:.32);e.g.position.y=(e.legs===0?-.8:0)+h}
     const sw2=e.crawl?0:Math.sin(e.walk)*.7;setRot(e.lL,e.crawl?-.15:sw2);setRot(e.lR,e.crawl?-.15:-sw2);
