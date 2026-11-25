@@ -393,7 +393,7 @@ function twinkle(n){if(!SW().model||SW().model!=='wand')return;wand.updateMatrix
   for(let i=0;i<n;i++){const q=spks[spi++%spks.length];q.m.visible=true;q.t=0;q.m.position.copy(tip).add(V(rand(-.08,.08),rand(-.08,.08),rand(-.08,.08)));q.v.set(rand(-1.2,1.2),rand(-.4,1.6),rand(-1.2,1.2));q.m.scale.setScalar(rand(.6,1.6))}}
 function updateSparkles(dt){wandLight.intensity=Math.max(0,wandLight.intensity-dt*8);for(const q of spks){if(q.t>=.6){if(q.m.visible)q.m.visible=false;continue}q.t+=dt;q.m.position.addScaledVector(q.v,dt);q.v.multiplyScalar(1-dt*2);q.m.material.opacity=1-q.t/.6;q.m.rotation.y+=dt*8}
   if(wand.children[1])wand.children[1].material.emissive.setRGB(.54*wandLight.intensity/3,.42*wandLight.intensity/3,0)}
-function throwPins(){if(pinCD>0)return;twinkle(14);pinCD=.28;cam.updateMatrixWorld(true);const f=V(0,0,-1).applyQuaternion(cam.quaternion),r=V(1,0,0).applyQuaternion(cam.quaternion),u=V(0,1,0).applyQuaternion(cam.quaternion);
+function throwPins(){if(pinCD>0)return;twinkle(14);pinCD=.3;cam.updateMatrixWorld(true);const f=V(0,0,-1).applyQuaternion(cam.quaternion),r=V(1,0,0).applyQuaternion(cam.quaternion),u=V(0,1,0).applyQuaternion(cam.quaternion);
   for(const a of [-.035,0,.035]){const d=f.clone().addScaledVector(r,a).addScaledVector(u,rand(-.01,.01)).normalize(),g=makePin();g.position.copy(cam.position).addScaledVector(f,.4).addScaledVector(u,-.08);
     g.lookAt(g.position.clone().sub(d));scene.add(g);pins.push({g,v:d.multiplyScalar(42),t:0})}
   ui('tab');sfx('swing',.3)}
@@ -403,7 +403,7 @@ function updatePins(dt){if(pinCD>0)pinCD-=dt;if(!pins.length)return;const meshes
     rc.set(from,step.clone().normalize());rc.far=len+.05;const h=meshes.length?rc.intersectObjects(meshes,false)[0]:null;rc.far=Infinity;
     if(h){if(p.bm){p.g.remove(p.bm);spark(h.point,4)}const m=h.object,e=enemies.find(x=>x.body.includes(m));p.g.position.copy(h.point);p.g.lookAt(h.point.clone().sub(p.v));m.attach(p.g);stuck.push(p.g);if(stuck.length>600)stuck.shift();pins.splice(i,1);
       if(e){const lp=m.worldToLocal(h.point.clone()),zone=zoneOf(m,lp);addWound(e,surfHit(m,lp),p.v.clone().normalize(),0,'stab');blood(h.point,6,p.v.clone().normalize().negate());sfx('hit');addSkill(2);
-        if(e.alive){if(zone==='neck'&&p.rain){kill(e,{type:'stab',dir:p.v.clone().normalize()});addTtam()}else damage(e,p.rain?20:1,p.v.clone().setY(0).normalize(),{type:'blade'})}
+        if(e.alive){if(zone==='neck'&&p.rain){kill(e,{type:'stab',dir:p.v.clone().normalize()});addTtam()}else damage(e,p.rain?20:5,p.v.clone().setY(0).normalize(),{type:'blade'})}
         else if(zone==='neck'&&p.rain&&!e.ttamDone){e.ttamDone=true;addTtam()}}
       continue}
     p.g.position.add(step);p.g.lookAt(p.g.position.clone().sub(p.v));if(p.g.position.y<=.02){p.g.position.y=rand(.02,.06);if(p.bm){p.g.remove(p.bm);spark(p.g.position.clone(),3)}stuck.push(p.g);groundPins.push(p.g);if(groundPins.length>500){const o=groundPins.shift();if(o.parent===scene)scene.remove(o)}pins.splice(i,1)}else if(p.t>6){scene.remove(p.g);pins.splice(i,1)}}}
