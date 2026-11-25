@@ -382,7 +382,7 @@ function updateRain(dt){for(let i=ascend.length-1;i>=0;i--){const a=ascend[i];a.
   while(rain.k<want){rain.k++;const a=rand(0,6.28),r=Math.sqrt(Math.random())*rain.R,x=rain.ctr.x+Math.cos(a)*r,z=rain.ctr.z+Math.sin(a)*r;
     const g=makePin(),v=V(rand(-.6,.6),-rand(95,125),rand(-.6,.6));const bm=new THREE.Mesh(beamG,beamM);g.add(bm);g.position.set(x,rand(16,22),z);g.lookAt(g.position.clone().sub(v));scene.add(g);pins.push({g,v,t:0,rain:true,bm})}
   if(rain.k>=rain.n)rain=null}
-function makePin(){const g=new THREE.Group();g.add(new THREE.Mesh(pinBodyG,pinM));const h=new THREE.Mesh(pinHeadG,pinHM);h.position.z=.16;g.add(h);g.scale.setScalar(1.6);return g}
+function makePin(){const g=new THREE.Group();g.add(new THREE.Mesh(pinBodyG,pinM));const h=new THREE.Mesh(pinHeadG,pinHM);h.position.z=.16;g.add(h);g.scale.setScalar(1.6);g.userData.pin=true;return g}
 const beamG=new THREE.CylinderGeometry(.025,.006,4,6);beamG.rotateX(Math.PI/2);beamG.translate(0,0,2.1);
 const beamM=new THREE.MeshBasicMaterial({color:0xfff1a0,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false});
 /* wand sparkles */
@@ -397,6 +397,9 @@ function throwPins(){if(pinCD>0)return;twinkle(14);pinCD=.3;cam.updateMatrixWorl
   for(const a of [-.035,0,.035]){const d=f.clone().addScaledVector(r,a).addScaledVector(u,rand(-.01,.01)).normalize(),g=makePin();g.position.copy(cam.position).addScaledVector(f,.4).addScaledVector(u,-.08);
     g.lookAt(g.position.clone().sub(d));scene.add(g);pins.push({g,v:d.multiplyScalar(42),t:0})}
   ui('tab');sfx('swing',.3)}
+function freePins(e){const found=[];for(const root of [e.g,e.upper,...e.detached])root.traverse(o=>{if(o.userData&&o.userData.pin)found.push(o)});
+  for(const g of found){g.updateMatrixWorld(true);scene.attach(g);g.position.y=rand(.02,.06);g.rotation.x+=rand(-.3,.3);if(!stuck.includes(g))stuck.push(g);groundPins.push(g)}
+  while(groundPins.length>500){const o=groundPins.shift();if(o.parent===scene)scene.remove(o)}}
 function updatePins(dt){if(pinCD>0)pinCD-=dt;if(!pins.length)return;const meshes=[];
   for(const e of enemies){if(e.skewered||(!e.alive&&e.deadT>17))continue;e.g.updateMatrixWorld(true);if(e.upper.parent===scene)e.upper.updateMatrixWorld(true);for(const m of e.body)meshes.push(m)}
   for(let i=pins.length-1;i>=0;i--){const p=pins[i];p.t+=dt;p.v.y-=3*dt;const from=p.g.position.clone(),step=p.v.clone().multiplyScalar(dt),len=step.length();
@@ -845,6 +848,7 @@ function updateEnemies(dt){
     if(e.flash>0){e.flash-=dt;for(const m of e.mats)m.emissive.setHex(e.flash>0?0x770000:0)}
     if(!e.alive){if(skillOn)continue;e.deadT+=dt;e.fall=Math.min(1,e.fall+dt*2.6);e.g.rotation.x=-Math.PI/2*(1-(1-e.fall)**3);
       e.g.position.addScaledVector(e.kv,dt);e.kv.multiplyScalar(Math.max(0,1-dt*4));
+      if(e.deadT>18&&!e.pinsFreed){e.pinsFreed=true;freePins(e)}
       if(e.deadT>18){e.g.position.y-=dt*.6;if(e.upper.parent===scene)e.upper.position.y-=dt*.6;for(const m of e.detached)m.position.y-=dt*.6}
       continue}
     if(e.bleed>0){if(!noBlood&&e.wounds.length&&Math.random()<dt*(1.5+e.bleed*2)){const w=pick(e.wounds).getWorldPosition(V());blood(w,1);parts[(pi+parts.length-1)%parts.length].v.set(rand(-.3,.3),rand(-.5,0),rand(-.3,.3))}
@@ -870,11 +874,11 @@ function updateEnemies(dt){
     for(const o of enemies){if(o===e||!o.alive)continue;const ox=e.g.position.x-o.g.position.x,oz=e.g.position.z-o.g.position.z,od=Math.hypot(ox,oz);if(od<.9&&od>1e-4){e.g.position.x+=ox/od*(.9-od)*.5;e.g.position.z+=oz/od*(.9-od)*.5}}
     if(d<.8&&d>1e-4){e.g.position.x-=dx/d*(.8-d);e.g.position.z-=dz/d*(.8-d)}
     collide(e.g.position,.45)}
-  for(let i=enemies.length-1;i>=0;i--){const e=enemies[i];if(!e.alive&&e.deadT>20){scene.remove(e.g);if(e.upper.parent===scene)scene.remove(e.upper);for(const m of e.detached)scene.remove(m);enemies.splice(i,1)}}
+  for(let i=enemies.length-1;i>=0;i--){const e=enemies[i];if(!e.alive&&e.deadT>20){if(!e.pinsFreed){e.pinsFreed=true;freePins(e)}scene.remove(e.g);if(e.upper.parent===scene)scene.remove(e.upper);for(const m of e.detached)scene.remove(m);enemies.splice(i,1)}}
   for(const b of debris){if(skillOn||b.e.deadT>18)continue;if(b.hold>0){b.hold-=dt;continue}b.v.y-=18*dt;b.o.position.addScaledVector(b.v,dt);b.o.rotation.x+=b.av.x*dt;b.o.rotation.y+=b.av.y*dt;b.o.rotation.z+=b.av.z*dt;
     const fl0=b.floor||.3;if(b.o.position.y<fl0){b.o.position.y=fl0;b.v.y*=-.25;b.v.x*=.55;b.v.z*=.55;b.av.multiplyScalar(.55)}}
   debris=debris.filter(b=>b.e.deadT<=20);
-  spawnT-=dt;if(spawnT<=0){const lv=Math.floor(surv/30);if(enemies.filter(e=>e.alive).length<Math.min(60,16+lv*3)){spawn();if(Math.random()<Math.min(.95,.6+lv*.08))spawn();if(Math.random()<Math.min(.9,.25+lv*.08))spawn()}spawnT=rand(.15,.35)/(1+lv*.15)}}
+  spawnT-=dt;if(spawnT<=0){const u=Math.min(1,surv/60);if(enemies.filter(e=>e.alive).length<Math.round(16+44*u)){spawn();if(Math.random()<.6+.35*u)spawn();if(Math.random()<.25+.6*u)spawn()}spawnT=rand(.15,.35)*(1-.6*u)}}
 function updateBlood(dt){for(const q of sparks){if(!q.on)continue;q.v.y-=12*dt;q.m.position.addScaledVector(q.v,dt);if(q.m.position.y<.02||q.v.y<-6){q.on=false;q.m.visible=false}}for(const d of drips){d.t=Math.min(1,d.t+dt/1.8);d.m.scale.x=d.full*(1-(1-d.t)**2)}drips=drips.filter(d=>d.t<1);for(const q of parts){if(!q.on)continue;q.v.y-=14*dt;q.m.position.addScaledVector(q.v,dt);
   if(q.m.position.y<.03){q.on=false;q.m.visible=false;if(Math.random()<.2)decal(q.m.position.x,q.m.position.z,rand(.08,.25))}}}
 function updateSword(dt){
