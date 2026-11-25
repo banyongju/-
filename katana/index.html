@@ -813,7 +813,8 @@ function releaseSkew(finish){if(!skew)return;const e=skew.e;e.skewered=false;ske
     sfx('hit');hitStop=.08;shake=.12;damage(e,75,dir,{type:'slash',c:{x:-1,y:.15},p:.8})}}
 
 /* ---------- input ---------- */
-addEventListener('keydown',e=>{if(e.code==='KeyR'&&!e.repeat&&playing&&!paused&&!over&&!replay){if(locked&&document.exitPointerLock)document.exitPointerLock();else{paused=true;charge=null;blocking=false;lookHold=false;showOv('pause')}return}if(e.code==='KeyF'&&!e.repeat&&playing&&!paused&&!over&&!replay){if(SW().dash)fireDash();else if(SW().wire)fireWave();else if(SW().pins){if(pinAim)confirmPinAim();else startPinAim()}else if(SW().storm)thunderStorm();else toggleSkill()}keys[e.code]=true;if(e.code==='Space')e.preventDefault()});
+addEventListener('keydown',e=>{if(e.code==='KeyR'&&!e.repeat&&playing&&paused&&!over){if(!$('#swsel').classList.contains('hide'))$('#swsel').classList.add('hide');if(fallback)resume();else grabMouse();return}
+  if(e.code==='KeyR'&&!e.repeat&&playing&&!paused&&!over&&!replay){if(locked&&document.exitPointerLock)document.exitPointerLock();else{paused=true;charge=null;blocking=false;lookHold=false;showOv('pause')}return}if(e.code==='KeyF'&&!e.repeat&&playing&&!paused&&!over&&!replay){if(SW().dash)fireDash();else if(SW().wire)fireWave();else if(SW().pins){if(pinAim)confirmPinAim();else startPinAim()}else if(SW().storm)thunderStorm();else toggleSkill()}keys[e.code]=true;if(e.code==='Space')e.preventDefault()});
 addEventListener('keyup',e=>{keys[e.code]=false});
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 cv.addEventListener('mousedown',e=>{if(!playing||paused||over||replay)return;if(!locked&&!fallback){grabMouse();return}
