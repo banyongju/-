@@ -597,7 +597,7 @@ function updateStorm(dt){if(!storm)return;storm.t+=dt;storm.next-=dt;
     if(e){damage(e,45,V(rand(-1,1),0,rand(-1,1)).normalize(),{type:'blade'});e.stun=Math.max(e.stun,.6)}
     if(Math.random()<.35){$('#flash').style.opacity=.25;thunderSfx()}shake=Math.max(shake,.06)}
   if(storm.t>=3.2)storm=null}
-function addSkill(n){if(skillOn)return;skill=Math.min(100,skill+n)}
+function addSkill(n){if(skillOn)return;skill=Math.min(100,skill+n*.5)}
 let bq=[],preDeb=null,lastGhost=null;
 let wire=null,wireCD=0;const WIRE_CD=3;
 const wireLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(),V()]),new THREE.LineBasicMaterial({color:0xe8f0ff,transparent:true}));wireLine.frustumCulled=false;wireLine.visible=false;scene.add(wireLine);
