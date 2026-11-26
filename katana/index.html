@@ -1051,7 +1051,7 @@ function updatePlayer(dt){
   const sx=shake>0?rand(-shake,shake)*.15:0,sy=shake>0?rand(-shake,shake)*.15:0;
   cam.position.set(P.pos.x,P.pos.y+1.6,P.pos.z);cam.rotation.set(P.pitch+sy,P.yaw+sx,0);
   sun.position.set(P.pos.x+30,50,P.pos.z+20);sun.target.position.copy(P.pos)}
-function enemyHit(e){
+function enemyHit(e){if(P.pos.y>1||aer||(bigS&&!bigS.done)||iaido)return;
   const toE=V(e.g.position.x-P.pos.x,0,e.g.position.z-P.pos.z).normalize(),f=V(-Math.sin(P.yaw),0,-Math.cos(P.yaw));
   const dmg=18*e.dmgMul*(e.atkMul||1)*(1+Math.min(1,surv/120)*.6);
   if(blocking&&f.dot(toE)>.3){spark(cam.localToWorld(V(-.05,-.1,-.6)),12);sfx('clang');e.stun=.45;e.kv.copy(toE).multiplyScalar(3);P.hp-=dmg*.15;shake=.03}
