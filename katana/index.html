@@ -353,7 +353,7 @@ const SWORDS=[
   {id:'dual',name:'이도류',price:2000,col:0xeef2f6,em:0x222831,desc:'칼 2개 · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 크게 베기(차징 50% 이상): 십자 베기 · 스킬(F): X자 참격 날리기, 쿨 3초',dual:true,spd:2,wire:true},
   {id:'triple',name:'삼도류',price:3000,col:0xeef2f6,em:0x222831,desc:'칼 3개(하나는 입에) · 공격 속도 2배 · 클릭: 두 칼로 나란히 베기 · 크게 베기(차징 50% 이상): 십자 베기 · 스킬(F): 빠르게 돌진한 뒤 지나간 길에 참격을 퍼부음, 쿨 4초',dual:true,triple:true,spd:2,dash:true},
   {id:'thunder',name:'번개칼',price:4000,col:0xbfeaff,em:0x2a7fff,desc:'벨 때마다 주변 무작위 적 4마리도 같은 피해 · 필살기(F, 게이지 100%): 뇌신강림 — 3초간 하늘에서 번개가 주변 적에게 내리꽂힘',chain:22,chainN:4,chainR:8,storm:true,skillRate:.7},
-  {id:'fire',name:'화염검',price:1500,col:0xff7a2a,em:0x8a2000,desc:'벤 적에게 불이 붙어 3초간 타오름 · 필살기(F): 염제 — 작은 화염탄 16발을 조준한 쪽으로 연사, 퍼퍼펑 터진 자리에 작은 불길이 남음',burn:true,skillRate:.9,nova:'meteor',skn:'염제'},
+  {id:'fire',name:'화염검',price:1500,col:0xff7a2a,em:0x8a2000,desc:'벤 적에게 불이 붙어 3초간 타오름 · 필살기(F): 염제 — 작은 화염탄이 산탄처럼 사방으로 뿜어져 나와 근처 적에게 살짝 휘어 날아감, 퍼퍼펑 터진 자리에 작은 불길이 남음',burn:true,skillRate:.9,nova:'meteor',skn:'염제'},
   {id:'frost',name:'빙결검',price:2500,col:0x9fe8ff,em:0x1a5a8a,desc:'벤 적은 느려지고 3번 맞으면 얼어붙음 · 찌르면 바로 얼리고, 땀수를 얻으면 주변 6m 적도 얼림 · 필살기(F): 빙하 필드 — 주변 13m에 얼음 필드를 깔아 필드 안 적을 전부 얼림 · 동시에 얼음 가시가 무작위로 솟아 운 나쁘게 걸린 적은 꿰뚫려 죽음',frost:true,frostStab:true,skillRate:.9,nova:'ice',skn:'빙하 필드'},
   {id:'vamp',name:'흡혈검',price:3500,col:0x9a0f2a,em:0x4a0010,desc:'준 피해의 10%만큼 체력 회복 · 필살기(F): 피의 부메랑 — 거대한 핏빛 칼날을 부메랑처럼 날려, 맞은 적들의 체력을 크게 빨아들임',leech:.1,skillRate:.8,nova:'bloodBoom',skn:'피의 부메랑'},
   {id:'giant',name:'거인의 대검',price:5000,col:0xb8b8c0,em:0x222228,desc:'칼이 1.5배 크고 판정 +1.5m · 피해 1.6배 · 공속 0.5배 · 넉백 강함 · 필살기(F): 거인 낙하 — 높이 뛰어올라 앞으로 내리찍어 충격파로 날려버림',reach:1.5,dmg:1.6,spd:.5,knock:2.2,big:1.5,nova:'slam',skn:'거인 낙하'},
@@ -632,7 +632,7 @@ function novaSkill2(kind){const c=P.pos.clone(),f=V(-Math.sin(P.yaw),0,-Math.cos
   else if(kind==='acid'){acidT=6}
   else if(kind==='force'){ringFx(c,0x6ff0ff,4,.3);for(const e of enemies){if(!e.alive)continue;const to=e.g.position.clone().sub(c).setY(0),L=to.length();if(L<12&&to.normalize().dot(f)>.55){damage(e,25,to,{type:'blade'});if(e.alive){e.kv.copy(to).multiplyScalar(20);e.stun=1.2}}}$('#flash').style.opacity=.2}
   else if(kind==='fear'){fearT=5;ringFx(c,0x9adf6a,10,.6)}
-  else if(kind==='meteor'){volley={t:0,next:0,k:0,n:16}}
+  else if(kind==='meteor'){volley={t:0,next:0,k:0,n:20}}
   else if(kind==='bloodBoom'){const m=kat.clone();m.traverse(o=>{if(o.isMesh){o.material=new THREE.MeshStandardMaterial({color:0xc0102a,emissive:0x6a0010,metalness:.6,roughness:.3})}});m.scale.set(4,4,4);m.position.copy(cam.position).addScaledVector(fd,1).add(V(0,-.3,0));scene.add(m);
     m.rotation.set(0,P.yaw,0);projs.push({m,kind,d:V(fd.x,0,fd.z).normalize(),t:0,hit:new Set(),back:false,spin:true});ringFx(c,0xff2244,3,.3)}
   else if(kind==='iaido'){iaido={from:c.clone(),f,t:0,dur:.16,dist:9};lastGhost=null}
@@ -643,12 +643,12 @@ function fireTornado(){const f=V(-Math.sin(P.yaw),0,-Math.cos(P.yaw)),g=new THRE
   for(let i=0;i<7;i++){const r=new THREE.Mesh(new THREE.TorusGeometry(.35+i*.22,.05,6,20),mat);r.rotation.x=Math.PI/2;r.position.y=.3+i*.5;g.add(r)}g.position.copy(P.pos).addScaledVector(f,1.5);scene.add(g);tornados.push({g,f,t:0,mat});sfx('swing',1);sfx('swing',1)}
 function aerial(){const tg=enemies.filter(e=>e.alive&&e.airT>0);if(!tg.length)return;P.vy=11;P.ground=false;aer={tg,i:0,t:0};$('#flash').style.opacity=.25;sfx('swing',1)}
 const meteors=[];let portal=null;const fballs=[],fzones=[];let volley=null;
-function shootFire(){cam.updateMatrixWorld(true);const fd=V(0,0,-1).applyQuaternion(cam.quaternion);const d=fd.clone().add(V(rand(-.04,.04),rand(-.02,.04),rand(-.04,.04))).normalize();const g=new THREE.Group();
+function shootFire(){cam.updateMatrixWorld(true);const fd=V(0,0,-1).applyQuaternion(cam.quaternion);const d=fd.clone().add(V(rand(-.38,.38),rand(-.12,.3),rand(-.38,.38))).normalize();const g=new THREE.Group();
   g.add(new THREE.Mesh(new THREE.SphereGeometry(.2,10,8),new THREE.MeshBasicMaterial({color:0xffd27a})));g.add(new THREE.Mesh(new THREE.SphereGeometry(.38,10,8),new THREE.MeshBasicMaterial({color:0xff4a0a,transparent:true,opacity:.55,blending:THREE.AdditiveBlending,depthWrite:false})));
-  g.position.copy(cam.position).addScaledVector(fd,.9).add(V(rand(-.15,.15),-.2,0));scene.add(g);fballs.push({g,v:d.multiplyScalar(36),t:0});sfx('swing',.3)}
+  g.position.copy(cam.position).addScaledVector(fd,.9).add(V(rand(-.15,.15),-.2,0));scene.add(g);fballs.push({g,v:d.multiplyScalar(rand(24,32)),t:0,home:true});}
 function updateSkills3(dt){
-  if(volley){volley.t+=dt;volley.next-=dt;while(volley.k<volley.n&&volley.next<=0){volley.next+=.09;volley.k++;shootFire();twinkle&&0}if(volley.k>=volley.n)volley=null}
-  for(let i=fballs.length-1;i>=0;i--){const F=fballs[i];F.t+=dt;F.v.y-=3*dt;F.g.position.addScaledVector(F.v,dt);fireP(F.g.position.clone(),1);let hit=F.g.position.y<=.25||F.t>1.6;
+  if(volley){volley.t+=dt;volley.next-=dt;while(volley.k<volley.n&&volley.next<=0){volley.next+=.28;for(let j=0;j<5;j++){volley.k++;shootFire()}sfx('swing',.6);popSfx()}if(volley.k>=volley.n)volley=null}
+  for(let i=fballs.length-1;i>=0;i--){const F=fballs[i];F.t+=dt;F.v.y-=3*dt;if(F.home&&F.t>.08){let tg=null,bd=18;for(const e of enemies){if(!e.alive)continue;const dd=e.g.position.distanceTo(F.g.position);if(dd<bd){bd=dd;tg=e}}if(tg){const want=tg.g.position.clone().add(V(0,1,0)).sub(F.g.position).normalize().multiplyScalar(F.v.length());F.v.lerp(want,Math.min(1,dt*2.2))}}F.g.position.addScaledVector(F.v,dt);fireP(F.g.position.clone(),1);let hit=F.g.position.y<=.25||F.t>1.6;
     if(!hit)for(const e of enemies){if(e.alive&&e.g.position.clone().add(V(0,1,0)).distanceTo(F.g.position)<1.1){hit=true;break}}
     if(hit){const c=V(F.g.position.x,0,F.g.position.z);scene.remove(F.g);fballs.splice(i,1);ringFx(c,0xff6a1a,2.2,.25);shake=Math.max(shake,.06);popSfx();
       for(let k=0;k<12;k++){const m=new THREE.Mesh(fpG,fpM.clone());m.scale.setScalar(rand(1.5,3));m.position.copy(c).add(V(0,.5,0));scene.add(m);fps.push({m,v:V(rand(-4,4),rand(1.5,5),rand(-4,4)),t:0})}
