@@ -48,6 +48,18 @@ html,body{margin:0;height:100%;overflow:hidden;background:#0b1220;color:#fff;fon
 .ss-tabs button.on{background:#e8eef7;color:#0b1220;border-color:#e8eef7}
 #sscur{font-size:14px;color:#c9d6ee;margin-bottom:10px}#sscur b{color:#ffd36a}
 .ss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;overflow-y:auto;padding-bottom:20px;min-height:0}
+.ss-grid.cr{display:flex;flex-direction:column;gap:12px}
+.crw{display:grid;grid-template-columns:minmax(200px,1.1fr) 2fr auto;gap:18px;align-items:center;background:#121a2b;border:1.5px solid #2c3a58;border-radius:16px;padding:16px 18px}
+.crw.ok{border-color:#ffd36a;box-shadow:0 0 0 1px rgba(255,211,106,.25)}.crw.done{opacity:.75}
+.crw .cl h4{margin:6px 0 4px;font:22px 'Black Han Sans',sans-serif;font-weight:400;color:#fff}.crw .cl .bl{height:8px;border-radius:4px}.crw .cl p{margin:0;font-size:13px;line-height:1.45;color:#aab4c8}
+.crw .from{font-size:12px;color:#8a97ae;margin-top:2px}.crw .from b{font-weight:700}
+.slots{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.slot{width:86px;height:86px;border-radius:14px;background:#0b1220;border:1.5px solid #2c3a58;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center}
+.slot .ic{font-size:30px;line-height:1}.slot .nm{font-size:11px;color:#c9d6ee;padding:0 4px;line-height:1.2}.slot .ct{font:700 14px 'Noto Sans KR',sans-serif;color:#ff8b8b}.slot.have{border-color:#5fbf7a}.slot.have .ct{color:#9fe8a0}
+.slot.sw{width:auto;min-width:86px;padding:0 10px}.slots .plus{font-size:22px;color:#5a6a88}
+.crb{min-width:110px;min-height:56px;border-radius:14px;border:none;font:20px 'Black Han Sans',sans-serif;background:#2a3348;color:#6a7690}
+.crb.go{background:linear-gradient(180deg,#ffe08a,#f2b43a);color:#2a1a00;cursor:pointer}.crb.eq{background:#e8eef7;color:#0b1220;cursor:pointer}
+@media(max-width:760px){.crw{grid-template-columns:1fr}.crb{width:100%}}
 .swc{background:#121a2b;color:#fff;border:1.5px solid #2c3a58;border-radius:14px;padding:14px;text-align:left;font-size:13px;line-height:1.4;display:flex;flex-direction:column;gap:8px;min-height:150px}
 .swc:hover{background:#18233a}.swc.sel{border-color:#ffd36a;box-shadow:0 0 0 2px rgba(255,211,106,.25)}.swc:disabled{opacity:.5;cursor:not-allowed}
 .swc .bl{height:12px;border-radius:2px 12px 12px 2px;box-shadow:0 0 10px var(--g)}.swc h4{margin:0;font-size:17px;display:flex;align-items:center;gap:8px}
@@ -498,10 +510,19 @@ let ssFilter='all',lastGot=null;
 const hex=c=>'#'+c.toString(16).padStart(6,'0');
 function renderSel(){$('#ssm').innerHTML=coinHTML(money);{const e=Object.entries(mats).filter(([k,v])=>v>0);$('#ssmat').innerHTML=ssFilter==='craft'?'<div class="matbox"><b>보유 재료</b>'+MATERIALS.map(m=>'<span>'+m.ic+' '+m.name+' <i>'+(mats[m.id]||0)+'</i></span>').join('')+'<em>재료는 2분마다 나타나는 보스를 쓰러뜨리면 떨어져요</em></div>':(e.length?'재료: '+e.map(([k,v])=>matIcon(k)+matName(k)+' '+v).join(' · '):'')}const cur=SW();$('#sscur').innerHTML='지금 든 칼: <b>'+cur.name+'</b> · '+cur.desc;
   const list=SWORDS.filter(w=>ssFilter==='all'||(ssFilter==='own'&&isOwn(w))||(ssFilter==='lock'&&!isOwn(w))||(ssFilter==='special'&&w.special&&w.how!=='craft')||(ssFilter==='craft'&&w.how==='craft'));
+  $('#ssg').classList.toggle('cr',ssFilter==='craft');if(ssFilter==='craft'){renderCraft(list);return}
   $('#ssg').innerHTML=list.length?list.map(w=>{const ok=isOwn(w),c=hex(w.col),g=hex(w.em);
     const buy=!ok&&((!w.special&&money>=w.price)||canCraft(w));return '<button class="swc'+(w.id===swordId?' sel':'')+(w.id===lastGot?' got':'')+'" data-id="'+w.id+'"'+(ok||buy?'':' disabled')+'><div class="bl" style="background:linear-gradient(90deg,#222 0 14%,'+c+' 14%);--g:'+g+'"></div><h4>'+w.name+(w.special?'<span class="tag sp">'+({event:'이벤트',craft:'제작'}[w.how]||'특수')+'</span>':'')+(w.id===swordId?'<span class="tag eq">장착</span>':'')+'</h4><p>'+w.desc+'</p>'+(ok?(w.id===swordId?'':'<div class="req" style="color:#9fd0ff">눌러서 장착</div>'):'<div class="req"'+(buy?' style="color:#ffd36a"':'')+'>'+(w.special?specialReq(w):(buy?'눌러서 구매 · '+coinTxt(w.price):coinTxt(w.price)+' 필요 (보유 '+coinTxt(money)+')'))+'</div>')+'</button>'}).join(''):'<p>해당하는 칼이 없어요.</p>';
   lastGot=null;
   for(const b of $('#ssg').querySelectorAll('.swc'))b.onclick=()=>{const w=SWORDS.find(x=>x.id===b.dataset.id);if(!isOwn(w)){if(w.special)craft(w);else buySword(w);if(!isOwn(w)){ui('fail');return}lastGot=w.id}else if(w.id!==swordId)ui('equip');else ui('click');swordId=b.dataset.id;try{localStorage.setItem('katana-sword',swordId)}catch(e){}applySword();renderSel()}}
+function renderCraft(list){
+  $('#ssg').innerHTML=list.map(w=>{const rw=SWORDS.find(x=>x.id===w.req),own=isOwn(w),ok=canCraft(w)&&!own,rq=reqOk(w);
+    const slots='<div class="slot sw'+(rq?' have':'')+'"><div class="ic">🗡️</div><div class="nm">'+(rw?rw.name:'')+'</div><div class="ct">'+(rq?'보유':'없음')+'</div></div><span class="plus">+</span>'+
+      Object.entries(w.recipe).map(([k,v])=>{const h=(mats[k]||0)>=v;return '<div class="slot'+(h?' have':'')+'"><div class="ic">'+matIcon(k)+'</div><div class="nm">'+matName(k)+'</div><div class="ct">'+(mats[k]||0)+' / '+v+'</div></div>'}).join('');
+    const btn=own?(w.id===swordId?'<button class="crb" disabled>장착 중</button>':'<button class="crb eq" data-eq="'+w.id+'">장착</button>'):'<button class="crb'+(ok?' go':'')+'" data-cr="'+w.id+'"'+(ok?'':' disabled')+'>제작</button>';
+    return '<div class="crw'+(ok?' ok':'')+(own?' done':'')+'"><div class="cl"><div class="bl" style="background:linear-gradient(90deg,#222 0 14%,'+hex(w.col)+' 14%);box-shadow:0 0 10px '+hex(w.em)+'"></div><h4>'+w.name+'</h4><div class="from">재료 칼: <b>'+(rw?rw.name:'')+'</b></div><p>'+w.desc+'</p></div><div class="slots">'+slots+'</div>'+btn+'</div>'}).join('');
+  for(const b of $('#ssg').querySelectorAll('[data-cr]'))b.onclick=()=>{const w=SWORDS.find(x=>x.id===b.dataset.cr);craft(w);if(!isOwn(w)){ui('fail');return}swordId=w.id;try{localStorage.setItem('katana-sword',swordId)}catch(e){}applySword();renderSel()};
+  for(const b of $('#ssg').querySelectorAll('[data-eq]'))b.onclick=()=>{ui('equip');swordId=b.dataset.eq;try{localStorage.setItem('katana-sword',swordId)}catch(e){}applySword();renderSel()}}
 function openSel(){ui('open');lastGot=null;renderSel();$('#swsel').classList.remove('hide')}
 function closeSel(){ui('close');$('#swsel').classList.add('hide')}
 $('#ssx').onclick=closeSel;
