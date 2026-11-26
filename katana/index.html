@@ -395,10 +395,10 @@ const SWORDS=[
   {id:'saber',name:'광선검',price:12000,model:'saber',col:0x6ff0ff,em:0x00aacc,desc:'사이버 · 공속 1.4배 · 피해 1.2배 · 벤 자리가 네온빛으로 지져지고 피 대신 전기 불꽃이 튐 · 필살기(F): 파괴 광선 — F를 꾹 눌러 충전하고 떼면 광선을 콰아아 발사, 오래 충전할수록 굵고 길고 셈, 조준한 방향의 적을 전부 지져버림',spd:1.4,dmg:1.2,reach:-.4,cyber:true,skillRate:.9,nova:'beam',skn:'파괴 광선'},
   {id:'needleking',name:'바느질의 왕의 칫솔',special:true,how:'cond',cond:'땀수 100 유지',col:0xffd84a,em:0x6a5000,desc:'패시브: 땀수가 오를 때마다 참수도 같이 오름 · 클릭: 찌르기 · 0.5초 이상 꾹 눌러야 베기 · 우클릭: 시침핀 날리기 · 필살기(F, 게이지 100%): 바닥에 원이 생기고, 원하는 곳에 찍으면(클릭 또는 F) 시침핀이 그 원 안에 쏟아짐 · 우클릭으로 취소',model:'wand',ttamStreak:true,stabClick:true,pins:true}];
 for(const u of [
-  {id:'abszero',req:'frost',name:'절대영도',recipe:{fish:5,ice:8,pearl:1},col:0xf2fdff,em:0x3a9cff,frostN:2,dmg:1.3,iceR:18,iceN:80,skillRate:1,desc:'빙결검 강화판 · 2번만 베어도 얼어붙음 · 피해 1.3배 · 찌르기/땀수 얼리기 그대로 · 필살기(F): 빙하 필드가 18m로 넓어지고 얼음 가시가 80개 솟음'},
-  {id:'hellfire',req:'fire',name:'업화검',recipe:{ember:8,steel:3,pearl:1},col:0xff3a12,em:0xb01000,dmg:1.3,fireN:36,skillRate:1,desc:'화염검 강화판 · 피해 1.3배 · 불붙이기 그대로 · 필살기(F): 염제의 화염탄이 20발 → 36발'},
-  {id:'raijin',req:'thunder',name:'뇌신검',recipe:{ice:3,steel:6,pearl:1},col:0xe6f6ff,em:0x5a7fff,dmg:1.25,chainN:7,chainR:11,skillRate:.85,desc:'번개칼 강화판 · 벨 때마다 주변 11m 안 무작위 적 7마리에게 같은 피해 · 피해 1.25배 · 필살기(F): 뇌신강림'},
-  {id:'moonblade',req:'base',name:'명검 · 월하',recipe:{steel:8,fish:3,pearl:2},col:0xdfe8ff,em:0x5a6aff,dmg:1.5,spd:1.2,crit:.2,skillRate:1.2,desc:'기본 카타나를 벼려 만든 명검 · 피해 1.5배 · 공격 속도 1.2배 · 20% 확률 치명타 · 필살기(F): 시간 정지가 더 빨리 참'}]){
+  {id:'abszero',req:'frost',name:'절대영도',recipe:{fish:5,ice:8,pearl:1},cost:30000,col:0xf2fdff,em:0x3a9cff,frostN:2,dmg:1.3,iceR:18,iceN:80,skillRate:1,desc:'빙결검 강화판 · 2번만 베어도 얼어붙음 · 피해 1.3배 · 찌르기/땀수 얼리기 그대로 · 필살기(F): 빙하 필드가 18m로 넓어지고 얼음 가시가 80개 솟음'},
+  {id:'hellfire',req:'fire',name:'업화검',recipe:{ember:8,steel:3,pearl:1},cost:20000,col:0xff3a12,em:0xb01000,dmg:1.3,fireN:36,skillRate:1,desc:'화염검 강화판 · 피해 1.3배 · 불붙이기 그대로 · 필살기(F): 염제의 화염탄이 20발 → 36발'},
+  {id:'raijin',req:'thunder',name:'뇌신검',recipe:{ice:3,steel:6,pearl:1},cost:40000,col:0xe6f6ff,em:0x5a7fff,dmg:1.25,chainN:7,chainR:11,skillRate:.85,desc:'번개칼 강화판 · 벨 때마다 주변 11m 안 무작위 적 7마리에게 같은 피해 · 피해 1.25배 · 필살기(F): 뇌신강림'},
+  {id:'moonblade',req:'base',name:'명검 · 월하',recipe:{steel:8,fish:3,pearl:2},cost:25000,col:0xdfe8ff,em:0x5a6aff,dmg:1.5,spd:1.2,crit:.2,skillRate:1.2,desc:'기본 카타나를 벼려 만든 명검 · 피해 1.5배 · 공격 속도 1.2배 · 20% 확률 치명타 · 필살기(F): 시간 정지가 더 빨리 참'}]){
   const b=SWORDS.find(x=>x.id===u.req);SWORDS.push(Object.assign({},b,{price:0,special:true,how:'craft'},u))}
 let myeok=0,swordId='base',unlocked=new Set();try{myeok=parseInt(localStorage.getItem('katana-myeok'))||0;swordId=localStorage.getItem('katana-sword')||'base';unlocked=new Set(JSON.parse(localStorage.getItem('katana-unlocked')||'[]'))}catch(e){}
 let money=0,owned=new Set(['base']);try{money=parseInt(localStorage.getItem('katana-money'))||0;if(!localStorage.getItem('katana-merged')){money+=myeok*10;localStorage.setItem('katana-money',money);localStorage.setItem('katana-merged','1')}owned=new Set(JSON.parse(localStorage.getItem('katana-owned')||'["base"]'))}catch(e){}
@@ -427,8 +427,8 @@ function onKillRewards(how){let ch=false;
   for(const w of SWORDS)if(w.how==='event'&&!unlocked.has(w.id)&&evActive(w)){evProg[w.id]=(evProg[w.id]||0)+1;ch=true;if(evProg[w.id]>=w.event.goal)unlockSpecial(w.id)}
   if(ch)saveMats()}
 const reqOk=w=>!w.req||isOwn(SWORDS.find(x=>x.id===w.req));
-const canCraft=w=>w.how==='craft'&&reqOk(w)&&Object.entries(w.recipe||{}).every(([k,v])=>(mats[k]||0)>=v);
-function craft(w){if(!canCraft(w)||unlocked.has(w.id))return;for(const [k,v] of Object.entries(w.recipe))mats[k]-=v;saveMats();unlockSpecial(w.id);sfx('clang')}
+const canCraft=w=>w.how==='craft'&&reqOk(w)&&money>=(w.cost||0)&&Object.entries(w.recipe||{}).every(([k,v])=>(mats[k]||0)>=v);
+function craft(w){if(!canCraft(w)||unlocked.has(w.id))return;for(const [k,v] of Object.entries(w.recipe))mats[k]-=v;saveMats();if(w.cost){money-=w.cost;try{localStorage.setItem('katana-money',money)}catch(e){}$('#money').innerHTML=coinHTML(money)}unlockSpecial(w.id);sfx('clang')}
 const matName=id=>(MATERIALS.find(m=>m.id===id)||{name:id}).name;
 function specialReq(w){if(w.how==='event'){const a=evActive(w);return '이벤트 「'+w.event.name+'」 '+w.event.from+' ~ '+w.event.to+' · 기간 중 처치 '+(evProg[w.id]||0)+'/'+w.event.goal+(a?'':' (진행 중 아님)')}
   if(w.how==='craft'){const rn=w.req&&SWORDS.find(x=>x.id===w.req);return (canCraft(w)?'눌러서 제작 · ':'제작 재료: ')+(rn?'<span style="color:'+(reqOk(w)?'#9fe8a0':'#ff8b8b')+'">'+rn.name+' 보유</span> + ':'')+Object.entries(w.recipe||{}).map(([k,v])=>'<span style="color:'+((mats[k]||0)>=v?'#9fe8a0':'#ff8b8b')+'">'+matIcon(k)+matName(k)+' '+(mats[k]||0)+'/'+v+'</span>').join(' · ')}
@@ -518,7 +518,7 @@ function renderSel(){$('#ssm').innerHTML=coinHTML(money);{const e=Object.entries
 function renderCraft(list){
   $('#ssg').innerHTML=list.map(w=>{const rw=SWORDS.find(x=>x.id===w.req),own=isOwn(w),ok=canCraft(w)&&!own,rq=reqOk(w);
     const slots='<div class="slot sw'+(rq?' have':'')+'"><div class="ic">🗡️</div><div class="nm">'+(rw?rw.name:'')+'</div><div class="ct">'+(rq?'보유':'없음')+'</div></div><span class="plus">+</span>'+
-      Object.entries(w.recipe).map(([k,v])=>{const h=(mats[k]||0)>=v;return '<div class="slot'+(h?' have':'')+'"><div class="ic">'+matIcon(k)+'</div><div class="nm">'+matName(k)+'</div><div class="ct">'+(mats[k]||0)+' / '+v+'</div></div>'}).join('');
+      Object.entries(w.recipe).map(([k,v])=>{const h=(mats[k]||0)>=v;return '<div class="slot'+(h?' have':'')+'"><div class="ic">'+matIcon(k)+'</div><div class="nm">'+matName(k)+'</div><div class="ct">'+(mats[k]||0)+' / '+v+'</div></div>'}).join('')+(w.cost?'<span class="plus">+</span><div class="slot sw'+(money>=w.cost?' have':'')+'"><div class="ic">💰</div><div class="nm">제작비</div><div class="ct">'+coinTxt(w.cost)+'</div></div>':'');
     const btn=own?(w.id===swordId?'<button class="crb" disabled>장착 중</button>':'<button class="crb eq" data-eq="'+w.id+'">장착</button>'):'<button class="crb'+(ok?' go':'')+'" data-cr="'+w.id+'"'+(ok?'':' disabled')+'>제작</button>';
     return '<div class="crw'+(ok?' ok':'')+(own?' done':'')+'"><div class="cl"><div class="bl" style="background:linear-gradient(90deg,#222 0 14%,'+hex(w.col)+' 14%);box-shadow:0 0 10px '+hex(w.em)+'"></div><h4>'+w.name+'</h4><div class="from">재료 칼: <b>'+(rw?rw.name:'')+'</b></div><p>'+w.desc+'</p></div><div class="slots">'+slots+'</div>'+btn+'</div>'}).join('');
   for(const b of $('#ssg').querySelectorAll('[data-cr]'))b.onclick=()=>{const w=SWORDS.find(x=>x.id===b.dataset.cr);craft(w);if(!isOwn(w)){ui('fail');return}swordId=w.id;try{localStorage.setItem('katana-sword',swordId)}catch(e){}applySword();renderSel()};
