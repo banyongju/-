@@ -956,11 +956,12 @@ function damage(e,dmg,dir,how){if(e.ally)return;dmg*=dmgP();const W=SW();if(feas
 function reviveAlly(e){if(e.upper.parent===scene){e.g.attach(e.upper);e.upper.position.set(0,1.2,0);e.upper.rotation.set(0,0,0)}debris=debris.filter(b=>b.o!==e.upper);
   e.alive=true;e.ally=true;e.allyT=15;e.hp=100;e.deadT=0;e.fall=0;e.stun=0;e.kv.set(0,0,0);e.g.rotation.set(0,e.g.rotation.y,0);e.g.position.y=0;e.pinsFreed=false;e.burnT=e.frozenT=e.slowT=e.poisonT=0;e.cd=.5;
   for(const m of e.mats)m.emissive.setHex(0x3a1a6a);ringFx(e.g.position,0x7a3cff,3,.5);for(let i=0;i<30;i++){const q=sparks[si++%sparks.length];q.on=true;q.m.visible=true;q.m.position.copy(e.g.position).add(V(rand(-.5,.5),rand(0,2),rand(-.5,.5)));q.v.set(rand(-1,1),rand(1,4),rand(-1,1))}$('#flash').style.opacity=.2;sfx('swing',1)}
-function summonShadows(){const r=V(Math.cos(P.yaw),0,-Math.sin(P.yaw));for(const sd of [-1,1]){const p=P.pos.clone().addScaledVector(r,sd*1.6);const e=makeEnemy(p.x,p.z,'normal');e.servant=true;e.ally=true;e.allyT=15;e.hp=100;e.spd=4;
+function summonShadows(){const r=V(Math.cos(P.yaw),0,-Math.sin(P.yaw));for(const sd of [-1,1]){const p=P.pos.clone().addScaledVector(r,sd*1.6);const e=makeEnemy(p.x,p.z,'normal');e.servant=true;e.ally=true;e.allyT=15;e.hp=200;e.spd=4;
     const dark=new THREE.MeshStandardMaterial({color:0x0e0a18,emissive:0x2a1050,roughness:.8});e.g.traverse(o=>{if(o.isMesh&&!(o.material&&o.material.map)&&o.material!==fleshM)o.material=dark});e.faceMat.color.setHex(0x120a20);e.faceMat.emissive=new THREE.Color(0x6a2cff);e.mats=[dark];
     const sword=kat.clone();sword.traverse(o=>{o.visible=true});sword.position.set(0,-.7,.05);sword.rotation.set(-.3,Math.PI,0);sword.scale.setScalar(1.1);e.aR.add(sword);e.g.rotation.y=P.yaw+Math.PI;
     ringFx(p,0x7a3cff,2,.4);for(let i=0;i<20;i++){const m=new THREE.Mesh(fpG,new THREE.MeshBasicMaterial({color:0x5a2a9a,transparent:true,depthWrite:false}));m.scale.setScalar(rand(3,6));m.position.copy(p).add(V(rand(-.6,.6),rand(0,2),rand(-.6,.6)));scene.add(m);fps.push({m,v:V(rand(-1,1),rand(.5,2),rand(-1,1)),t:0})}}
   $('#flash').style.opacity=.15;sfx('swing',1)}
+function allyHurt(a,n){if(!a.alive)return;a.hp-=n;blood(a.g.position.clone().add(V(0,1.2,0)),6);spark(a.g.position.clone().add(V(0,1.2,0)),3);sfx('hit');if(a.hp<=0)a.allyT=0}
 function allyUpdate(e,dt){e.allyT-=dt;if(!e.servant)for(const m of e.mats)m.emissive.setHex(0x3a1a6a);if(e.allyT<=0){e.ally=false;e.alive=false;e.deadT=0;e.fall=0;if(e.servant){for(let i=0;i<16;i++){const m=new THREE.Mesh(fpG,new THREE.MeshBasicMaterial({color:0x3a1a6a,transparent:true,depthWrite:false}));m.scale.setScalar(rand(3,6));m.position.copy(e.g.position).add(V(rand(-.5,.5),rand(0,2),rand(-.5,.5)));scene.add(m);fps.push({m,v:V(rand(-1,1),rand(.5,2),rand(-1,1)),t:0})}e.deadT=19.9;e.g.visible=false}else for(const m of e.mats)m.emissive.setHex(0);return}
   let tg=(e.allyTg&&e.allyTg.alive&&e.allyTg.g.position.distanceTo(e.g.position)<40)?e.allyTg:null;
   if(!tg){const taken=new Set(enemies.filter(o=>o.ally&&o!==e&&o.allyTg&&o.allyTg.alive).map(o=>o.allyTg));let bd=40,bd2=40,alt=null;for(const o of enemies){if(!o.alive||o.ally)continue;const d=o.g.position.distanceTo(e.g.position);if(taken.has(o)){if(d<bd2){bd2=d;alt=o}continue}if(d<bd){bd=d;tg=o}}if(!tg)tg=alt;e.allyTg=tg}
@@ -1082,11 +1083,12 @@ function updateEnemies(dt){
       e.walk+=dt*14;setRot(e.lL,Math.sin(e.walk)*.6);setRot(e.lR,-Math.sin(e.walk)*.6);setRot(e.aL,-1.2+Math.sin(e.walk*1.3)*.4);setRot(e.aR,-1.2-Math.sin(e.walk*1.3)*.4);
       e.hp-=dt*7;if(Math.random()<dt*10)blood(pt,1);if(e.hp<=0){skew=null;kill(e,{type:'stab',dir:B.f})}
       continue}
-    const dx=P.pos.x-e.g.position.x,dz=P.pos.z-e.g.position.z,d=Math.hypot(dx,dz);
+    let tgtA=null;{const dp=P.pos.distanceTo(e.g.position);let ba=Math.min(dp,15);for(const a of enemies){if(!a.ally||!a.alive)continue;const da=a.g.position.distanceTo(e.g.position);if(da<ba){ba=da;tgtA=a}}}
+    const TP=tgtA?tgtA.g.position:P.pos,dx=TP.x-e.g.position.x,dz=TP.z-e.g.position.z,d=Math.hypot(dx,dz);
     e.g.rotation.y=Math.atan2(dx,dz);e.g.rotation.x=0;e.g.rotation.z=e.crawl?Math.sin(e.walk*.5)*.08:0;
     const stop=1.3;
     if(e.stun>0){e.stun-=dt;e.wind=0;e.g.position.addScaledVector(e.kv,dt);e.kv.multiplyScalar(Math.max(0,1-dt*6))}
-    else if(e.wind>0){e.wind-=dt;if(e.wind<=0){e.cd=e.arms===1?1.6:.75;e.atk=.25;if(e.arms>0&&d<stop+.6)enemyHit(e)}}
+    else if(e.wind>0){e.wind-=dt;if(e.wind<=0){e.cd=e.arms===1?1.6:.75;e.atk=.25;if(e.arms>0&&d<stop+.6){if(tgtA)allyHurt(tgtA,18*e.dmgMul*(e.atkMul||1));else enemyHit(e)}}}
     else if(fearT>0&&d<14){const sp=e.frozenT>0?0:e.spd*1.2;e.g.position.x-=dx/d*sp*dt;e.g.position.z-=dz/d*sp*dt;e.walk+=dt*sp*5;e.g.rotation.y+=Math.PI}
     else if(stealthT>0){e.walk+=dt}
     else if(d>stop){const sp=e.frozenT>0?0:e.spd*(e.slowT>0?.3:1);if(sp>0){e.g.position.x+=dx/d*sp*dt;e.g.position.z+=dz/d*sp*dt;e.walk+=dt*sp*5}}
@@ -1098,7 +1100,7 @@ function updateEnemies(dt){
     else if(e.wind>0){setRot(e.aL,-2.9);setRot(e.aR,-3)}
     else{setRot(e.aL,e.atk>0?-.6:-sw2);setRot(e.aR,e.atk>0?-.9:sw2)}
     for(const o of enemies){if(o===e||!o.alive)continue;const ox=e.g.position.x-o.g.position.x,oz=e.g.position.z-o.g.position.z,od=Math.hypot(ox,oz);if(od<.9&&od>1e-4){e.g.position.x+=ox/od*(.9-od)*.5;e.g.position.z+=oz/od*(.9-od)*.5}}
-    if(d<.8&&d>1e-4){e.g.position.x-=dx/d*(.8-d);e.g.position.z-=dz/d*(.8-d)}
+    if(!tgtA&&d<.8&&d>1e-4){e.g.position.x-=dx/d*(.8-d);e.g.position.z-=dz/d*(.8-d)}
     collide(e.g.position,.45)}
   for(let i=enemies.length-1;i>=0;i--){const e=enemies[i];if(!e.alive&&e.deadT>20){if(!e.pinsFreed){e.pinsFreed=true;freePins(e)}scene.remove(e.g);if(e.upper.parent===scene)scene.remove(e.upper);for(const m of e.detached)scene.remove(m);enemies.splice(i,1)}}
   for(const b of debris){if(skillOn||b.e.deadT>18)continue;if(b.hold>0){b.hold-=dt;continue}b.v.y-=18*dt;b.o.position.addScaledVector(b.v,dt);b.o.rotation.x+=b.av.x*dt;b.o.rotation.y+=b.av.y*dt;b.o.rotation.z+=b.av.z*dt;
