@@ -633,7 +633,7 @@ function novaSkill2(kind){const c=P.pos.clone(),f=V(-Math.sin(P.yaw),0,-Math.cos
   else if(kind==='force'){ringFx(c,0x6ff0ff,4,.3);for(const e of enemies){if(!e.alive)continue;const to=e.g.position.clone().sub(c).setY(0),L=to.length();if(L<12&&to.normalize().dot(f)>.55){damage(e,25,to,{type:'blade'});if(e.alive){e.kv.copy(to).multiplyScalar(20);e.stun=1.2}}}$('#flash').style.opacity=.2}
   else if(kind==='fear'){fearT=5;ringFx(c,0x9adf6a,10,.6)}
   else if(kind==='meteor'){volley={t:0,next:0,k:0,n:20}}
-  else if(kind==='bigslam'){const m=kat.clone();m.traverse(o=>{if(o.isMesh)o.material=o.material.clone()});m.scale.set(26,26,40);const piv=new THREE.Group();piv.add(m);piv.position.copy(P.pos).add(V(0,1.2,0)).addScaledVector(f,.8);piv.rotation.order='YXZ';piv.rotation.y=P.yaw;piv.rotation.x=Math.PI/2*.98;scene.add(piv);
+  else if(kind==='bigslam'){const m=new THREE.Mesh(bg,new THREE.MeshStandardMaterial({color:0xdfe6ee,metalness:.5,roughness:.25,emissive:0x333a44,transparent:true,opacity:.5,depthWrite:false,side:THREE.DoubleSide}));m.scale.set(18,18,38);m.position.z=-.04*38;const piv=new THREE.Group();piv.add(m);piv.position.copy(P.pos).add(V(0,.2,0)).addScaledVector(f,3.5);piv.rotation.order='YXZ';piv.rotation.y=P.yaw;piv.rotation.x=Math.PI/2*.98;scene.add(piv);
     bigS={piv,t:0,f:f.clone(),o:P.pos.clone(),done:false};sfx('swing',1)}
   else if(kind==='bloodBoom'){const m=kat.clone();m.traverse(o=>{if(o.isMesh){o.material=new THREE.MeshStandardMaterial({color:0xc0102a,emissive:0x6a0010,metalness:.6,roughness:.3})}});m.scale.set(4,4,4);m.position.copy(cam.position).addScaledVector(fd,1).add(V(0,-.3,0));scene.add(m);
     m.rotation.set(0,P.yaw,0);projs.push({m,kind,d:V(fd.x,0,fd.z).normalize(),t:0,hit:new Set(),back:false,spin:true});ringFx(c,0xff2244,3,.3)}
@@ -653,8 +653,8 @@ function updateSkills3(dt){
       const right=V(-B.f.z,0,B.f.x);for(let k=0;k<14;k++)ringFx(B.o.clone().addScaledVector(B.f,3*k+2),0xd9c8a8,2.4,.5);
       for(const e of enemies){if(e.skewered||(!e.alive&&e.deadT>17))continue;const rel=e.g.position.clone().sub(B.o).setY(0),along=rel.dot(B.f),side=rel.dot(right);if(along<0||along>40||Math.abs(side)>2.2)continue;
         const pt=B.o.clone().addScaledVector(B.f,along).add(V(0,1,0));planeCut(e,pt,right,B.f);if(e.alive)damage(e,120,right.clone().multiplyScalar(Math.sign(side)||1),{type:'blade'});sfx('hit')}}}
-    if(B.t>1.4){B.piv.traverse(o=>{if(o.material&&o.material.transparent!==undefined){o.material.transparent=true;o.material.opacity=Math.max(0,1-(B.t-1.4)/.4)}})}
-    if(B.t>1.8){scene.remove(B.piv);bigS=null}}
+    if(B.t>.6){B.piv.children[0].material.opacity=Math.max(0,.5*(1-(B.t-.6)/.35))}
+    if(B.t>.95){scene.remove(B.piv);bigS=null}}
   if(volley){volley.t+=dt;volley.next-=dt;while(volley.k<volley.n&&volley.next<=0){volley.next+=.28;for(let j=0;j<5;j++){volley.k++;shootFire()}sfx('swing',.6);popSfx()}if(volley.k>=volley.n)volley=null}
   for(let i=fballs.length-1;i>=0;i--){const F=fballs[i];F.t+=dt;F.v.y-=3*dt;if(F.home&&F.t>.08){let tg=null,bd=18;for(const e of enemies){if(!e.alive)continue;const dd=e.g.position.distanceTo(F.g.position);if(dd<bd){bd=dd;tg=e}}if(tg){const want=tg.g.position.clone().add(V(0,1,0)).sub(F.g.position).normalize().multiplyScalar(F.v.length());F.v.lerp(want,Math.min(1,dt*2.2))}}F.g.position.addScaledVector(F.v,dt);fireP(F.g.position.clone(),1);let hit=F.g.position.y<=.25||F.t>1.6;
     if(!hit)for(const e of enemies){if(e.alive&&e.g.position.clone().add(V(0,1,0)).distanceTo(F.g.position)<1.1){hit=true;break}}
