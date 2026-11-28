@@ -2844,8 +2844,11 @@ function jamesStep(b,dt){
           const T=jamesGetTarget(b);
           if(T)b.jmTargetId=T.id;
           const lead=0.12; // 적이 자주 벽에 튕겨서 방향이 바뀌므로, 과하게 멀리 예측하면 오히려 빗나감 - 살짝만 예측
-          const ax=T?T.x+(T.vx||0)*lead:b.x,ay=T?T.y+(T.vy||0)*lead:b.y,radius=34; // 세 점이 좀 더 넓게 퍼져서 땅을 더 넓게 덮도록
-          const ang=(b.jmAngleOffset||0)+(b.jmSeqIdx/3)*6.283;
+          const ax=T?T.x+(T.vx||0)*lead:b.x,ay=T?T.y+(T.vy||0)*lead:b.y,radius=34;
+          const spd=T?Math.hypot(T.vx||0,T.vy||0):0;
+          // 적이 움직이는 방향을 기준으로, 눈 2개는 양옆에서 포위하고 입은 가는 길 앞을 막아서 도망갈 곳을 좁히는 포위망
+          const moveAng=spd>15?Math.atan2(T.vy,T.vx):(b.jmAngleOffset||0);
+          const ang=b.jmSeqIdx===2?moveAng:moveAng+(b.jmSeqIdx===0?2.0:-2.0);
           const tx=Math.min(W-40,Math.max(40,ax+Math.cos(ang)*radius));
           const ty=Math.min(H-40,Math.max(40,ay+Math.sin(ang)*radius));
           jamesThrows.push({x0:b.x,y0:b.y,x1:tx,y1:ty,t:0,dur:JM_THROW_DUR,part:JM_SEQ[b.jmSeqIdx],ownerId:b.id,team:b.team});
