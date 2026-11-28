@@ -2808,7 +2808,7 @@ function jamesStep(b,dt){
         if(b.jmSeqIdx<JM_SEQ.length){
           const T=jamesGetTarget(b);
           if(T)b.jmTargetId=T.id;
-          const ax=T?T.x:b.x,ay=T?T.y:b.y,radius=70;
+          const ax=T?T.x:b.x,ay=T?T.y:b.y,radius=18; // 적 바로 위에 떨어지도록 삼각형 반경을 아주 작게
           const ang=(b.jmAngleOffset||0)+(b.jmSeqIdx/3)*6.283;
           const tx=Math.min(W-40,Math.max(40,ax+Math.cos(ang)*radius));
           const ty=Math.min(H-40,Math.max(40,ay+Math.sin(ang)*radius));
