@@ -2854,9 +2854,6 @@ function drawJamesEyeShape(sc){
 function drawJamesMouthShape(sc){
   if(jamesLipsImg.complete&&jamesLipsImg.naturalWidth){
     const w=20*sc,h=20*sc*(jamesLipsImg.naturalHeight/jamesLipsImg.naturalWidth);
-    ctx.fillStyle='#fff';ctx.strokeStyle='#161616';ctx.lineWidth=1.6*sc;
-    ctx.fillRect(-w/2-2*sc,-h/2-2*sc,w+4*sc,h+4*sc);
-    ctx.strokeRect(-w/2-2*sc,-h/2-2*sc,w+4*sc,h+4*sc);
     ctx.drawImage(jamesLipsImg,-w/2,-h/2,w,h);
   }else{
     ctx.fillStyle='#fff';
@@ -2872,7 +2869,7 @@ function drawJamesMouthShape(sc){
 function drawJamesShape(part,sc,team){
   if(team!==undefined){
     ctx.save();ctx.globalAlpha=.55;ctx.fillStyle=team===1?'#3a7dff':'#ff4d4d';
-    ctx.beginPath();ctx.arc(0,0,13*sc,0,6.283);ctx.fill();ctx.restore();
+    ctx.beginPath();ctx.arc(0,0,9*sc,0,6.283);ctx.fill();ctx.restore();
   }
   if(part==='eye')drawJamesEyeShape(sc);else drawJamesMouthShape(sc);
 }
@@ -2907,18 +2904,12 @@ function drawJamesForming(){
     ctx.stroke();
     ctx.restore();
     const nose=jamesNoseState(b);
-    if(nose&&nose.k>0){
-      const noseH=34*nose.k,noseW=11+7*nose.k;
+    if(nose&&nose.k>0&&jamesLipsImg.complete&&jamesLipsImg.naturalWidth){
+      const baseW=34,baseH=baseW*(jamesLipsImg.naturalHeight/jamesLipsImg.naturalWidth);
+      const w=baseW*nose.k,h=baseH*nose.k; // 솟아오르며 점점 커지는 검은 코(보내준 사진)
       ctx.save();
-      ctx.translate(nose.cx,nose.cy);
       ctx.globalAlpha=holdK;
-      ctx.fillStyle='#ff5050';ctx.strokeStyle='#8f1515';ctx.lineWidth=2;
-      ctx.beginPath();
-      ctx.moveTo(-noseW,0);
-      ctx.lineTo(0,-noseH);
-      ctx.lineTo(noseW,0);
-      ctx.closePath();
-      ctx.fill();ctx.stroke();
+      ctx.drawImage(jamesLipsImg,nose.cx-w/2,nose.cy-h,w,h);
       ctx.restore();
     }
   }
