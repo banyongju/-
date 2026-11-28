@@ -334,7 +334,7 @@ function mk(i){
     r:i===19?46:i===0?32:i===2?36:i===3?38:26,hp:i===19?1000:i===10?200:i===14?75:i===20?300:i===21?240:300,maxHp:i===19?1000:i===10?200:i===14?75:i===20?300:i===21?240:300,c:COLORS[i],t,len:c.len,dmg:c.dmg,cap:c.cap,spin:c.spin*(Math.random()<.5?-1:1),
     ang:Math.random()*6.283,flash:0,alive:true,name:NAMES[i],skill:SKILLS[i],g:0,boost:0,img:i===0?faceImg:i===2?faceImg2:i===3?faceImg3:i===4?moingImg:i===5?cukuImg:i===6?wonkaImg:i===7?camImg:i===8?biaImg:i===9?fireImg:i===10?neraImg:i===11?mintImg:i===12?daeseokImg:i===13?barrelImg:i===14?ppeunImg:i===15?boseungImg:i===16?bakeImg:i===17?flowerImg:i===18?sethImg:i===19?songImg:i===20?ppeunImg:i===21?banyongImg:i===22?kingcarImg:i===23?rageImg:i===24?jamesImg:null,shadowImg:i===3?bullImg:null,treasure:i===0,freeform:i===17,animFrames:i===17?flowerFrames:null,show:null,seq:i===2?['lor','jam','sky','buff','shield']:null,si:0,ult:i===0?15:i===4?3:i===5?5:i===3?4:i===6?9:i===7?3:i===2?10:i===8?5:i===9?5:i===10?8:i===11?8:i===12?15:i===13?BARREL_ULT_USES:i===15?BOSEUNG_ULT_USES:i===17?3:10,dmgMul:i===9?.5:i===14?.5:i===20?.5:i===21?.7:i===19?1.4:1};
 }
-const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이',dash:'돌진',heal:'회복',shiny:'빛나',lor:'Load and Shoot',jam:'Fire! J-a-a-am!',sky:'To the sky!',buff:'Hold position!',shield:'Ready, routine Echo:',moing:'허기진 성욕',wonka:'초콜릿 무기',dk:'강화 손바닥 (적 벽 연속 넉백)',cuku:'패시브 벽 중첩 / 잔상 돌진',seq:'스킬 2종',fire:'화염방사기 입김+화상 / 불덩이 8방 / 필살기',nera:'대검 패시브 / 회전베기+강습 / 윤회',mint:'도끼 패시브 / 올라타기(확률) / 필살기: 야수화',daeseok:'전따봉 찌르기/휘두르기/돌리기 / 필살기: 전원 공중 내리꽂기',barrel:'평화의 수호자',ppeun:'고기: 공격력 / 야채: 체력재생 / 버섯: 이동속도 / 생선: 주변 광역피해 / 두부: 최대체력 / 이쁜이(희귀): 전체 효과 2배↑',boseung:'카타나 평타(3초 미공격시 납도, 이후 첫 타는 발도 베기) / 스킬: 순간이동 베기 + 참격 연쇄 폭발 / 필살기: 각성(공격력↑ 쿨감↓) → 재사용시 글리치 베기',bake:'베이크 매그넘 평타: 열선 레이져+쿠키 난사(즉발/차징 랜덤) / 패시브: 미공격 시간↑→베이크 스택↑(무기 빨개짐, 스택 높을수록 스킬 데미지 강화, 평타는 영향 없음) / 스킬: 랜덤 주기로 입구 2회 여닫기 후 50% 즉시 풀 블래스트(관통 화상 레이져), 50% 1회 더 여닫고 풀 익스플로전(대폭발) / 필살기 없음',flower:'자로나!',seth:'사방에 책 투척 → 펼쳐지며 단어 난사',song:'쓰레받이(원형 휩쓸기/내려찍기)·빗자루(찌르기/휑베기) 중 2패턴 랜덤 연계',banyong:'주기적으로 반용주 공을 필드에 포물선으로 투척(적 지정X) → 착지 시 랜덤 공격방식의 반용주 소환 (돌진/원거리/폭탄 중 1) / 5% 확률로 개씹반용주로 강화 소환',kingcar:'평소엔 자유롭게 이동 / 2초마다 잠깐 멈춰서 머리를 빗어 충전을 쌓거나(1 이상이어야 던지기 가능) 꼬리빗을 부메랑처럼 멀리 던짐(나갈 때·돌아올 때 각 4번씩 점점 빠르게 레이저 발사, 충전 2부터 가중치↑ but 적 숫자만큼 분산 / 적 본체만 타게팅)',rage:'평소엔 그냥 떠다니는 공 / 적에게 피해를 입거나 일정 시간이 지나면 폭주 상태 돌입(몸이 빨개지며 비트 클로저를 휘둘러 주변을 벰) / 폭주 중엔 체력이 0 밑으로 안 내려가지만, 즉사급 피해를 맞으면 폭주가 끝나며 그대로 폭발해 죽음',james:'평소엔 자유롭게 이동 / 1.5초 간격으로 눈-눈-입 순서로 맵 아무 곳에나 포물선으로 하나씩 던져 설치 / 셋 다 설치되면 세 점을 잇는 삼각형에 제임스 얼굴이 떠오르며 완성되는 순간 그 자리에서 폭발'};
+const ui=document.getElementById('ui'),SK={bia:'피의 저주진',cam:'불덩이',dash:'돌진',heal:'회복',shiny:'빛나',lor:'Load and Shoot',jam:'Fire! J-a-a-am!',sky:'To the sky!',buff:'Hold position!',shield:'Ready, routine Echo:',moing:'허기진 성욕',wonka:'초콜릿 무기',dk:'강화 손바닥 (적 벽 연속 넉백)',cuku:'패시브 벽 중첩 / 잔상 돌진',seq:'스킬 2종',fire:'화염방사기 입김+화상 / 불덩이 8방 / 필살기',nera:'대검 패시브 / 회전베기+강습 / 윤회',mint:'도끼 패시브 / 올라타기(확률) / 필살기: 야수화',daeseok:'전따봉 찌르기/휘두르기/돌리기 / 필살기: 전원 공중 내리꽂기',barrel:'평화의 수호자',ppeun:'고기: 공격력 / 야채: 체력재생 / 버섯: 이동속도 / 생선: 주변 광역피해 / 두부: 최대체력 / 이쁜이(희귀): 전체 효과 2배↑',boseung:'카타나 평타(3초 미공격시 납도, 이후 첫 타는 발도 베기) / 스킬: 순간이동 베기 + 참격 연쇄 폭발 / 필살기: 각성(공격력↑ 쿨감↓) → 재사용시 글리치 베기',bake:'베이크 매그넘 평타: 열선 레이져+쿠키 난사(즉발/차징 랜덤) / 패시브: 미공격 시간↑→베이크 스택↑(무기 빨개짐, 스택 높을수록 스킬 데미지 강화, 평타는 영향 없음) / 스킬: 랜덤 주기로 입구 2회 여닫기 후 50% 즉시 풀 블래스트(관통 화상 레이져), 50% 1회 더 여닫고 풀 익스플로전(대폭발) / 필살기 없음',flower:'자로나!',seth:'사방에 책 투척 → 펼쳐지며 단어 난사',song:'쓰레받이(원형 휩쓸기/내려찍기)·빗자루(찌르기/휑베기) 중 2패턴 랜덤 연계',banyong:'주기적으로 반용주 공을 필드에 포물선으로 투척(적 지정X) → 착지 시 랜덤 공격방식의 반용주 소환 (돌진/원거리/폭탄 중 1) / 5% 확률로 개씹반용주로 강화 소환',kingcar:'평소엔 자유롭게 이동 / 2초마다 잠깐 멈춰서 머리를 빗어 충전을 쌓거나(1 이상이어야 던지기 가능) 꼬리빗을 부메랑처럼 멀리 던짐(나갈 때·돌아올 때 각 4번씩 점점 빠르게 레이저 발사, 충전 2부터 가중치↑ but 적 숫자만큼 분산 / 적 본체만 타게팅)',rage:'평소엔 그냥 떠다니는 공 / 적에게 피해를 입거나 일정 시간이 지나면 폭주 상태 돌입(몸이 빨개지며 비트 클로저를 휘둘러 주변을 벰) / 폭주 중엔 체력이 0 밑으로 안 내려가지만, 즉사급 피해를 맞으면 폭주가 끝나며 그대로 폭발해 죽음',james:'평소엔 자유롭게 이동 / 0.5초 간격으로 눈-눈-입 순서로 맵 아무 곳에나 포물선으로 하나씩 던져 설치 / 셋 다 설치되면 세 점을 잇는 삼각형에 제임스 얼굴이 떠오르며 완성되는 순간 그 자리에서 터짐'};
 const FLOWER_CD=1.5;
 const SETH_CD=4.5;
 const SETH_WORDS=['나타마토아완전화려해졌어한때는칙칙했지만','오때론난망가져갈지모르지','우리아버지성도지방도태돼셨어','크큭선이보인다'];
@@ -1069,7 +1069,7 @@ function step(dt){
   proj=proj.filter(q=>q.life>0&&q.x>-20&&q.x<W+20&&q.y>-20&&q.y<H+20);
   for(const gf of gfields){gf.life-=dt;for(const o of balls){if(!o.alive||o.team===gf.team||air(o))continue;if(Math.hypot(o.x-gf.x,o.y-gf.y)<gf.r+o.r)o.slowT=Math.max(o.slowT||0,.25);}}
   gfields=gfields.filter(gf=>gf.life>0);
-  wpStep(dt);camFxStep(dt);biaFxStep(dt);fireFbStep(dt);bpelStep(dt);ppeunProjStep(dt);itemsStep(dt);banyongThrowsStep(dt);banyongPetsStep(dt);banyongBulletsStep(dt);kingcarCombsStep(dt);jamesThrowsStep(dt);jamesBurstsStep(dt);
+  wpStep(dt);camFxStep(dt);biaFxStep(dt);fireFbStep(dt);bpelStep(dt);ppeunProjStep(dt);itemsStep(dt);banyongThrowsStep(dt);banyongPetsStep(dt);banyongBulletsStep(dt);kingcarCombsStep(dt);jamesThrowsStep(dt);
   for(const k in cd){cd[k]-=dt;if(cd[k]<=0)delete cd[k];}
   for(const b of balls){
     if(!b.alive)continue;
@@ -2717,7 +2717,7 @@ function kingcarCombsStep(dt){
 }
 // 제임스: 평소엔 자유롭게 이동 / 쿨타임마다 눈-눈-입 순서로 바닥 아무 곳에나 포물선으로 하나씩 던져 설치
 // / 셋 다 설치되면 세 점을 잇는 삼각형(제임스 얼굴)이 그려지며 완성되는 순간 그 자리에서 폭발
-const JM_CD=3,JM_SEQ=['eye','eye','mouth'],JM_THROW_GAP=1.5,JM_THROW_DUR=0.6,JM_FORM_T=0.5;
+const JM_CD=3,JM_SEQ=['eye','eye','mouth'],JM_THROW_GAP=0.5,JM_THROW_DUR=0.6,JM_FORM_T=0.5;
 let jamesThrows=[],jamesLanded=[];
 function jamesSign(px,py,ax,ay,bx,by){return (px-bx)*(ay-by)-(ax-bx)*(py-by);}
 function jamesPointInTri(px,py,a,b,c){
@@ -2725,26 +2725,18 @@ function jamesPointInTri(px,py,a,b,c){
   const hasNeg=(d1<0)||(d2<0)||(d3<0),hasPos=(d1>0)||(d2>0)||(d3>0);
   return !(hasNeg&&hasPos);
 }
-let jamesBursts=[];
 function jamesExplodeTriangle(b){
   const pts=jamesLanded.filter(p=>p.ownerId===b.id);
   jamesLanded=jamesLanded.filter(p=>p.ownerId!==b.id);
   if(pts.length<3)return;
   const [p0,p1,p2]=pts,cx=(p0.x+p1.x+p2.x)/3,cy=(p0.y+p1.y+p2.y)/3;
-  const spread=Math.max(Math.hypot(p0.x-cx,p0.y-cy),Math.hypot(p1.x-cx,p1.y-cy),Math.hypot(p2.x-cx,p2.y-cy));
   for(const o of balls){
     if(!o.alive||o.team===b.team||air(o))continue;
     if(jamesPointInTri(o.x,o.y,p0,p1,p2)||Math.hypot(o.x-cx,o.y-cy)<44){
       hurt(o,30);
-      const a=Math.atan2(o.y-cy,o.x-cx)||0;o.vx+=Math.cos(a)*300;o.vy+=Math.sin(a)*300;
     }
   }
-  burst(cx,cy,'#ffd84a',30,320);
-  jamesBursts.push({x:cx,y:cy,size:Math.max(70,spread*2.4),t:0,dur:0.4});
-}
-function jamesBurstsStep(dt){
-  for(const fx of jamesBursts)fx.t+=dt;
-  jamesBursts=jamesBursts.filter(fx=>fx.t<fx.dur);
+  burst(cx,cy,'#ffd84a',24,220);
 }
 function jamesStep(b,dt){
   if(b.jmCd===undefined){b.jmCd=JM_CD;b.jmBusy=false;b.jmSeqIdx=0;b.jmSeqT=0;b.jmFormT=0;b.g=0;}
@@ -2812,14 +2804,14 @@ function drawJamesThrows(){
   for(const th of jamesThrows){
     const t=Math.min(1,th.t/th.dur),x=th.x0+(th.x1-th.x0)*t,y0=th.y0+(th.y1-th.y0)*t,arc=Math.sin(Math.PI*t)*110,yy=y0-arc;
     ctx.save();ctx.globalAlpha=.25*(1-arc/110);ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x,y0,11,4,0,0,6.283);ctx.fill();ctx.restore();
-    ctx.save();ctx.translate(x,yy);ctx.rotate(t*8);drawJamesShape(th.part,1);ctx.restore();
+    ctx.save();ctx.translate(x,yy);ctx.rotate(t*8);drawJamesShape(th.part,1.7);ctx.restore();
   }
 }
 function drawJamesLanded(){
   for(const p of jamesLanded){
     ctx.save();ctx.translate(p.x,p.y);
     ctx.globalAlpha=.6+.4*Math.sin(performance.now()/160);
-    drawJamesShape(p.part,1);
+    drawJamesShape(p.part,1.7);
     ctx.restore();
   }
 }
@@ -2840,15 +2832,6 @@ function drawJamesForming(){
     ctx.save();
     ctx.globalAlpha=.4+.5*k;ctx.strokeStyle='#ff6a6a';ctx.lineWidth=2+3*k;ctx.shadowColor='#ff6a6a';ctx.shadowBlur=8*k;
     ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.closePath();ctx.stroke();
-    ctx.restore();
-  }
-}
-function drawJamesBursts(){
-  for(const fx of jamesBursts){
-    const k=fx.t/fx.dur,sz=fx.size*(0.75+0.5*k),alpha=1-k;
-    ctx.save();
-    ctx.globalAlpha=alpha*0.95;ctx.shadowColor='#ffd84a';ctx.shadowBlur=30*(1-k);
-    if(jamesImg.complete)ctx.drawImage(jamesImg,fx.x-sz/2,fx.y-sz/2,sz,sz);
     ctx.restore();
   }
 }
@@ -5698,7 +5681,7 @@ function draw(){
     ctx.fillStyle='#fff';ctx.fillText(Math.ceil(b.hp),b.x,ny);
     if(z>0)ctx.restore();
   }
-  drawShows();drawClaws();drawCukuFx();drawClap();drawWonka();drawCam();drawBia();drawBiaApo();drawFireFx();drawFireTrail();drawFireballs();drawNeraFx();drawNeraReinc();drawMintFx();drawDaeseokFx();drawBarrelFx();drawBarrelUltFx();drawBpel();drawPpeunBuffFx();drawPpeunProj();drawPpeunFx();drawBoseungFx();drawBoseungUltFx();drawBakeFx();drawBakeUlt2();drawSong();drawItems();drawBanyongThrows();drawBanyongPets();drawBanyongBullets();drawKingcarIdle();drawKingcarCombs();drawKingcarCharge();drawRage();drawJamesThrows();drawJamesLanded();drawJamesForming();drawJamesBursts();drawFinalText();drawShatterFx();drawYellowMarks();drawGreenThrows();drawBlueFlowersAndChain();drawOrangeAttack();
+  drawShows();drawClaws();drawCukuFx();drawClap();drawWonka();drawCam();drawBia();drawBiaApo();drawFireFx();drawFireTrail();drawFireballs();drawNeraFx();drawNeraReinc();drawMintFx();drawDaeseokFx();drawBarrelFx();drawBarrelUltFx();drawBpel();drawPpeunBuffFx();drawPpeunProj();drawPpeunFx();drawBoseungFx();drawBoseungUltFx();drawBakeFx();drawBakeUlt2();drawSong();drawItems();drawBanyongThrows();drawBanyongPets();drawBanyongBullets();drawKingcarIdle();drawKingcarCombs();drawKingcarCharge();drawRage();drawJamesThrows();drawJamesLanded();drawJamesForming();drawFinalText();drawShatterFx();drawYellowMarks();drawGreenThrows();drawBlueFlowersAndChain();drawOrangeAttack();
   for(const q of proj){ctx.save();ctx.translate(q.x,q.y);ctx.rotate(q.rot);if(q.cookie){ctx.fillStyle='#d9a356';ctx.beginPath();ctx.arc(0,0,8,0,6.283);ctx.fill();ctx.strokeStyle='#8a5a28';ctx.lineWidth=1.2;ctx.stroke();ctx.fillStyle='#5a3418';for(const[cx,cy]of[[-3,-2],[3,-1],[0,3],[-2,2.5],[3,2]]){ctx.beginPath();ctx.arc(cx,cy,1.1,0,6.283);ctx.fill();}ctx.restore();continue;}if(q.spark){ctx.shadowColor=q.col;ctx.shadowBlur=12;ctx.fillStyle=q.col;star(0,0,8);ctx.fillStyle='#fff';star(0,0,3.5);ctx.restore();continue;}if(q.fire){const fk=.85+.15*Math.sin(performance.now()/40+q.x);ctx.shadowColor='#ff6a00';ctx.shadowBlur=22;ctx.globalAlpha=.6;ctx.fillStyle='#ff6a00';ctx.beginPath();ctx.arc(0,0,13*fk,0,6.283);ctx.fill();ctx.globalAlpha=1;ctx.fillStyle='#ffcf4d';ctx.beginPath();ctx.arc(0,0,8*fk,0,6.283);ctx.fill();ctx.restore();continue;}if(q.glove){ctx.shadowColor='#ff8a3a';ctx.shadowBlur=10;ctx.fillStyle='#ff8a3a';ctx.beginPath();ctx.arc(0,0,9,0,6.283);ctx.fill();ctx.fillStyle='#ffd0a8';ctx.beginPath();ctx.arc(3,0,4,0,6.283);ctx.fill();ctx.restore();continue;}if(q.knife){if(aquaKnifeImg&&aquaKnifeImg.complete){const s=1.3,iw=aquaKnifeImg.naturalWidth*s,ih=aquaKnifeImg.naturalHeight*s;ctx.drawImage(aquaKnifeImg,-iw/2,-ih/2,iw,ih);}else{ctx.fillStyle='#e0f4ff';ctx.fillRect(-9,-2,18,4);}ctx.restore();continue;}if(q.word){ctx.rotate(-q.rot);ctx.font='700 14px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.6)';ctx.fillStyle='#c9a8ff';const chs=[...q.txt],lh=17,oy=-((chs.length-1)*lh)/2;for(let ci=0;ci<chs.length;ci++){if(q.vertical){const cy=oy+ci*lh;ctx.strokeText(chs[ci],0,cy);ctx.fillText(chs[ci],0,cy);}else{const cx=oy+ci*lh;ctx.strokeText(chs[ci],cx,0);ctx.fillText(chs[ci],cx,0);}}ctx.restore();continue;}ctx.scale(1.7,1.7);ctx.fillStyle='#fff';ctx.strokeStyle='#222';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(0,-9);ctx.lineTo(9,7);ctx.lineTo(-9,7);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#1d3b2a';ctx.fillRect(-9,3,18,4);ctx.restore();}
   for(const p of parts){ctx.globalAlpha=Math.max(0,p.life*2);ctx.fillStyle=p.col;ctx.fillRect(p.x-2,p.y-2,4,4)}
   for(const f of fl){
