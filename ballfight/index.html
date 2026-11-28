@@ -1027,6 +1027,22 @@ function hurt(b,d){
   fl.push({x:b.x,y:b.y-b.r,life:.8,t:'-'+(+d.toFixed(1)),col:'#ff5a4a'});
   burst(b.x,b.y,b.c,8,170);
   sfx('hit');
+  if(!b.dummy&&b.cries&&b.alive&&b.hp>0){
+    // 이름을도무지뭔지모르겠는년: 맞을수록 점점 피폐해지는 대사, 체력(300 기준)이 많이 깎이면 결국 자폭
+    const mhp=b.maxHp||300,t1=mhp*0.6,t2=mhp*0.3,t3=mhp*0.15;
+    if(b.hp<=t3){
+      fl.push({x:b.x,y:b.y-b.r-16,o:b,life:1.2,t:'...더는 못참아!!',col:'#ff5a4a'});
+      burst(b.x,b.y,'#ff5a4a',40,340);burst(b.x,b.y,'#ffe08a',30,300);shk=Math.max(shk,.6);sfx('ko');
+      for(const o of balls){if(o===b||o.dummy||!o.alive)continue;if(Math.hypot(o.x-b.x,o.y-b.y)<b.r+70)hurt(o,60);}
+      b.hp=0;b.alive=false;burst(b.x,b.y,b.c,36,300);
+      return;
+    }
+    let msg;
+    if(b.hp<=t2)msg='그래...차라리 죽여...';
+    else if(b.hp<=t1)msg='시발시발시발시발!!!!';
+    else msg=Math.random()<.5?'아파...왜이러는거야...?':'흑...괴로워 그만해..!';
+    fl.push({x:b.x,y:b.y-b.r-16,o:b,life:1.1,t:msg,col:'#aee0f5'});
+  }
   if(b.hp<=0){
     if(b.dummy){b.hp=300;burst(b.x,b.y,'#ffd84a',20,260);}
     else if(b.skill==='nera'&&(b.reinc||0)>0){
