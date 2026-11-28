@@ -2717,7 +2717,7 @@ function kingcarCombsStep(dt){
 }
 // 제임스: 평소엔 자유롭게 이동 / 쿨타임마다 눈-눈-입 순서로 바닥 아무 곳에나 포물선으로 하나씩 던져 설치
 // / 셋 다 설치되면 세 점을 잇는 삼각형(제임스 얼굴)이 그려지며 완성되는 순간 그 자리에서 폭발
-const JM_CD=3,JM_SEQ=['eye','eye','mouth'],JM_THROW_GAP=0.5,JM_THROW_DUR=0.6,JM_FORM_T=0.5;
+const JM_CD=0.5,JM_SEQ=['eye','eye','mouth'],JM_THROW_GAP=0.5,JM_THROW_DUR=0.6,JM_FORM_T=0.5;
 let jamesThrows=[],jamesLanded=[];
 function jamesSign(px,py,ax,ay,bx,by){return (px-bx)*(ay-by)-(ax-bx)*(py-by);}
 function jamesPointInTri(px,py,a,b,c){
@@ -2753,7 +2753,7 @@ function jamesStep(b,dt){
         if(b.jmSeqIdx<JM_SEQ.length){
           const tx=40+Math.random()*(W-80),ty=40+Math.random()*(H-80);
           jamesThrows.push({x0:b.x,y0:b.y,x1:tx,y1:ty,t:0,dur:JM_THROW_DUR,part:JM_SEQ[b.jmSeqIdx],ownerId:b.id,team:b.team});
-          b.jmSeqIdx++;b.jmSeqT=JM_THROW_GAP;
+          b.jmSeqIdx++;b.jmSeqT=JM_THROW_DUR+JM_THROW_GAP; // 이전 것이 다 착지한 뒤에야 다음 걸 던지도록, 비행시간까지 포함해서 대기
         }else if(jamesLanded.filter(p=>p.ownerId===b.id).length>=3){
           b.jmFormT=JM_FORM_T;
         }
