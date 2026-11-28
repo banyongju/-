@@ -2720,7 +2720,7 @@ function kingcarCombsStep(dt){
 // / 점이 2개 이상 생기면 그 사이를 잇는 빨간 선이 바로 생기며 그 선에 닿기만 해도 다단히트 피해가 들어감
 // / 셋 다 설치되면 삼각형이 완전히 이어지고(제임스 얼굴이 떠오름) 잠시 유지되다 사라짐 - 선이 있는 내내 접촉 피해 지속
 const JM_CD=0.5,JM_SEQ=['eye','eye','mouth'],JM_THROW_GAP=0.5,JM_THROW_DUR=0.6,JM_FORM_T=0.5,JM_HOLD_T=0.4;
-const JM_LINE_R=15,JM_HIT_CD=0.18,JM_HIT_DMG=5,JM_BURST_DMG=30;
+const JM_LINE_R=15,JM_HIT_CD=0.18,JM_HIT_DMG=5,JM_BURST_DMG=30,JM_NOSE_HIT_CD=0.18,JM_NOSE_HIT_DMG=10;
 let jamesThrows=[],jamesLanded=[];
 function jamesLandedOf(b){return jamesLanded.filter(p=>p.ownerId===b.id);}
 function jamesSegmentsOf(b){
@@ -2736,25 +2736,40 @@ function jamesDistToSeg(px,py,ax,ay,bx,by){
   const cx=ax+dx*t,cy=ay+dy*t;
   return Math.hypot(px-cx,py-cy);
 }
+function jamesTriScale(pts){
+  const d01=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+  const d12=Math.hypot(pts[1].x-pts[2].x,pts[1].y-pts[2].y);
+  const d20=Math.hypot(pts[2].x-pts[0].x,pts[2].y-pts[0].y);
+  return Math.max(0.6,Math.min(2.5,((d01+d12+d20)/3)/40)); // 삼각형이 클수록 코도 커지게 하는 배율
+}
 function jamesNoseState(b){
   const pts=jamesLandedOf(b);
   if(pts.length<3)return null;
   if(!(b.jmFormT>0||b.jmHoldT>0))return null;
   const k=b.jmFormT>0?1-b.jmFormT/JM_FORM_T:1; // 솟아오르는 중(0~1), 유지 단계엔 1(완전히 솟음)
   const cx=(pts[0].x+pts[1].x+pts[2].x)/3,cy=(pts[0].y+pts[1].y+pts[2].y)/3;
-  return {cx,cy,k,r:16+28*k};
+  const triSc=jamesTriScale(pts);
+  return {cx,cy,k,triSc,r:(16+28*k)*triSc};
 }
 function jamesLineDamageStep(b,dt){
   const segs=jamesSegmentsOf(b);
   if(!segs.length)return;
   const nose=jamesNoseState(b);
   if(!b.jmHitCds)b.jmHitCds={};
+  if(!b.jmNoseHitCds)b.jmNoseHitCds={};
   for(const id in b.jmHitCds)b.jmHitCds[id]=Math.max(0,b.jmHitCds[id]-dt);
+  for(const id in b.jmNoseHitCds)b.jmNoseHitCds[id]=Math.max(0,b.jmNoseHitCds[id]-dt);
   for(const o of balls){
     if(!o.alive||o.team===b.team||air(o))continue;
+    // 코 기둥 접촉 다단히트(10뎀) - 선 접촉 다단히트(5뎀)와 완전히 별개의 쿨다운/피해
+    if(nose&&!(b.jmNoseHitCds[o.id]>0)&&Math.hypot(o.x-nose.cx,o.y-nose.cy)<nose.r){
+      hurt(o,JM_NOSE_HIT_DMG);
+      b.jmNoseHitCds[o.id]=JM_NOSE_HIT_CD;
+      burst(o.x,o.y,'#ffb02e',8,150);
+    }
     if(b.jmHitCds[o.id]>0)continue;
-    let hit=nose&&Math.hypot(o.x-nose.cx,o.y-nose.cy)<nose.r; // 삼각형 중앙에서 솟아오르는 코에 닿아도 다단히트
-    if(!hit)for(const [p0,p1] of segs){
+    let hit=false;
+    for(const [p0,p1] of segs){
       if(jamesDistToSeg(o.x,o.y,p0.x,p0.y,p1.x,p1.y)<JM_LINE_R){hit=true;break;}
     }
     if(hit){
@@ -2921,7 +2936,7 @@ function drawJamesForming(){
       ctx.save();
       ctx.translate(nose.cx,nose.cy);
       ctx.globalAlpha=holdK;
-      ctx.scale(nose.k,nose.k); // 솟아오르며 점점 커지는 코
+      ctx.scale(nose.k*nose.triSc,nose.k*nose.triSc); // 솟아오르며 점점 커지고, 삼각형이 클수록 더 커지는 코
       drawJamesNoseShape();
       ctx.restore();
     }
