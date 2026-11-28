@@ -2742,9 +2742,11 @@ function tearStep(b,dt){
   const sp=Math.hypot(b.vx,b.vy);
   b.tearT=(b.tearT||0)-dt;
   if(sp>5&&b.tearT<=0){
-    b.tearT=0.12;
-    const ex=b.x-b.r*0.25,ey=b.y-b.r*0.1;
-    parts.push({x:ex,y:ey,vx:(Math.random()-.5)*8,vy:40+Math.random()*30,life:.5+Math.random()*.2,col:'#aee0f5'});
+    b.tearT=0.045; // 눈물 더 자주 흘리게
+    for(let i=0;i<3;i++){
+      const ex=b.x+(Math.random()-.5)*b.r*0.6,ey=b.y-b.r*0.1+(Math.random()-.5)*b.r*0.3;
+      parts.push({x:ex,y:ey,vx:(Math.random()-.5)*14,vy:40+Math.random()*40,life:.5+Math.random()*.3,col:'#aee0f5'});
+    }
   }
 }
 function jamesTriScale(pts){
