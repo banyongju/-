@@ -2656,7 +2656,7 @@ function kingcarStep(b,dt){
         b.combCharge=Math.min(KC_CHARGE_MAX,(b.combCharge||0)+1);
         burst(b.x,b.y-b.r-10,'#cfd3da',8,120);
       }else{
-        const T=nearest(b);
+        const T=kingcarMainTarget(b.x,b.y,b.team);
         const a=T?Math.atan2(T.y-b.y,T.x-b.x):Math.random()*6.283,sp=680;
         kingcarCombs.push({x:b.x,y:b.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,team:b.team,ownerId:b.id,ownerR:b.r,charge:b.combCharge||0,phase:'out',t:0,phaseT:0,shotIdx:0,laserFlashT:0,idx:b.combIdx,rot:0});
         b.combIdx=1-b.combIdx;
@@ -2665,10 +2665,19 @@ function kingcarStep(b,dt){
     }
   }
 }
-function kingcarFireLaser(c){
-  // 빗 근처(현재 위치 기준) 가장 가까운 적을 감지해서 레이저를 쏨
+function kingcarMainTarget(x,y,team){
+  // 소환수(클론/반용주 펫 등)는 제외하고 적 본체만 타게팅
   let T=null,bd=1e9;
-  for(const o of balls){if(!o.alive||o.team===c.team||air(o))continue;const d=Math.hypot(o.x-c.x,o.y-c.y);if(d<bd){bd=d;T=o;}}
+  for(const o of balls){
+    if(!o.alive||o.team===team||air(o)||o.clone||o.banyongPet)continue;
+    const d=Math.hypot(o.x-x,o.y-y);
+    if(d<bd){bd=d;T=o;}
+  }
+  return T;
+}
+function kingcarFireLaser(c){
+  // 빗 근처(현재 위치 기준) 가장 가까운 적 본체를 감지해서 레이저를 쏨 (소환수 제외)
+  const T=kingcarMainTarget(c.x,c.y,c.team);
   if(!T)return;
   const charge=c.charge||0; // 던지는 순간의 충전량을 그대로 사용(던지면 충전은 바로 소모되므로)
   // 충전 1: 고정 데미지 2. 충전 2부터는 가중치(레이저 총 위력)가 커지는 대신, 현재 살아있는 적 숫자만큼 나뉜다.
