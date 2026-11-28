@@ -2720,7 +2720,7 @@ function kingcarCombsStep(dt){
 // 제임스: 평소엔 자유롭게 이동 / 쿨타임마다 눈-눈-입 순서로 가까운 적 주변에 포물선으로 하나씩 던져 설치
 // / 점이 2개 이상 생기면 그 사이를 잇는 빨간 선이 바로 생기며 그 선에 닿기만 해도 다단히트 피해가 들어감
 // / 셋 다 설치되면 삼각형이 완전히 이어지고(제임스 얼굴이 떠오름) 잠시 유지되다 사라짐 - 선이 있는 내내 접촉 피해 지속
-const JM_CD=0.5,JM_SEQ=['eye','eye','mouth'],JM_THROW_GAP=0.5,JM_THROW_DUR=0.6,JM_FORM_T=0.5,JM_HOLD_T=0.4;
+const JM_CD=0.5,JM_SEQ=['eye','eye','mouth'],JM_THROW_GAP=0.5,JM_THROW_DUR=0.3,JM_FORM_T=0.5,JM_HOLD_T=0.4; // 던지는 속도 증가(비행시간 단축)
 const JM_LINE_R=15,JM_HIT_CD=0.18,JM_HIT_DMG=5,JM_BURST_DMG=30,JM_NOSE_HIT_CD=0.18,JM_NOSE_HIT_DMG=10;
 let jamesThrows=[],jamesLanded=[];
 function jamesLandedOf(b){return jamesLanded.filter(p=>p.ownerId===b.id);}
