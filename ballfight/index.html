@@ -2638,8 +2638,8 @@ let kingcarCombs=[];
 // 빗을 부메랑처럼 던진다. 빗은 2개뿐이라 던질 때마다 번갈아 사용한다(연출용).
 const KC_CHARGE_MAX=5,KC_SHOT_TIMES=[0.06,0.16,0.24,0.30]; // 각 구간(나갈때/돌아올때)당 레이저 4번, 간격이 점점 짧아짐(점점 빠르게)
 function kingcarStep(b,dt){
-  if(b.combCd===undefined){b.combCd=3;b.combIdx=0;b.combBusy=false;b.combCharge=0;b.combFreezeT=0;b.g=0;}
-  // 기본적으로는 다른 공캐릭터들처럼 자유롭게 움직이다가, 3초마다 아주 잠깐 멈춰서 충전하거나 공격한다
+  if(b.combCd===undefined){b.combCd=2;b.combIdx=0;b.combBusy=false;b.combCharge=0;b.combFreezeT=0;b.g=0;}
+  // 기본적으로는 다른 공캐릭터들처럼 자유롭게 움직이다가, 2초마다 아주 잠깐 멈춰서 충전하거나 공격한다
   if(b.combFreezeT>0){
     b.vx=0;b.vy=0;
     b.combFreezeT=Math.max(0,b.combFreezeT-dt);
@@ -2647,17 +2647,17 @@ function kingcarStep(b,dt){
   }
   if(!b.combBusy){
     b.combCd=Math.max(0,b.combCd-dt);
-    b.g=Math.min(1,1-b.combCd/3); // 충전이 쌓이는 걸 공용 게이지 바로 보여줌
+    b.g=Math.min(1,1-b.combCd/2); // 충전이 쌓이는 걸 공용 게이지 바로 보여줌
     if(b.combCd<=0){
       b.combFreezeT=0.3;b.vx=0;b.vy=0; // 결정의 순간엔 잠깐 멈춰서 빗질하거나 던진다
       // 충전이 1 미만이면 던질 수 없으므로 무조건 빗질만. 1 이상부터는 베이크처럼 50:50 랜덤
       if(b.combCharge<1||Math.random()<.5){
-        b.combCd=3;b.g=0;
+        b.combCd=2;b.g=0;
         b.combCharge=Math.min(KC_CHARGE_MAX,(b.combCharge||0)+1);
         burst(b.x,b.y-b.r-10,'#cfd3da',8,120);
       }else{
         const T=nearest(b);
-        const a=T?Math.atan2(T.y-b.y,T.x-b.x):Math.random()*6.283,sp=520;
+        const a=T?Math.atan2(T.y-b.y,T.x-b.x):Math.random()*6.283,sp=680;
         kingcarCombs.push({x:b.x,y:b.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,team:b.team,ownerId:b.id,ownerR:b.r,charge:b.combCharge||0,phase:'out',t:0,phaseT:0,shotIdx:0,laserFlashT:0,idx:b.combIdx,rot:0});
         b.combIdx=1-b.combIdx;
         b.combBusy=true;b.g=1;b.combCharge=0; // 빗을 날리면 충전을 전부 소모
@@ -2674,7 +2674,7 @@ function kingcarFireLaser(c){
   // 충전 1: 고정 데미지 2. 충전 2부터는 가중치(레이저 총 위력)가 커지는 대신, 현재 살아있는 적 숫자만큼 나뉜다.
   // -> 다수형 소환 캐릭터 상대로는 여러 적에게 나눠 맞기 쉬워 약해지고, 혼자 다이다이 까는 상대에게는 가중치가 고스란히 집중되어 사실상 데미지가 2배가 된다.
   const enemyCount=Math.max(1,balls.filter(o=>o.alive&&o.team!==c.team&&!air(o)).length);
-  const weight=charge>=2?charge*5:2;
+  const weight=charge>=2?charge*7:3;
   const dmg=weight/enemyCount;
   hurt(T,dmg);
   burst(T.x,T.y,'#8fe3ff',8,160);
@@ -2690,14 +2690,14 @@ function kingcarCombsStep(dt){
     }
     if(c.phase==='out'){
       c.x+=c.vx*dt;c.y+=c.vy*dt;
-      if(c.t>0.45){c.phase='back';c.phaseT=0;c.shotIdx=0;}
+      if(c.t>0.68){c.phase='back';c.phaseT=0;c.shotIdx=0;}
     }else{
       const owner=balls.find(o=>o.id===c.ownerId);
       if(owner&&owner.alive){
-        const dx=owner.x-c.x,dy=owner.y-c.y,d=Math.hypot(dx,dy)||1,sp=560;
+        const dx=owner.x-c.x,dy=owner.y-c.y,d=Math.hypot(dx,dy)||1,sp=700;
         c.vx=dx/d*sp;c.vy=dy/d*sp;
         c.x+=c.vx*dt;c.y+=c.vy*dt;
-        if(d<owner.r+10){c.dead=true;owner.combBusy=false;owner.combCd=3;owner.g=0;}
+        if(d<owner.r+10){c.dead=true;owner.combBusy=false;owner.combCd=2;owner.g=0;}
       }else{
         c.dead=true;
       }
