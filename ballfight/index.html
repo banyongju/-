@@ -2736,16 +2736,24 @@ function jamesDistToSeg(px,py,ax,ay,bx,by){
   const cx=ax+dx*t,cy=ay+dy*t;
   return Math.hypot(px-cx,py-cy);
 }
+function jamesNoseState(b){
+  const pts=jamesLandedOf(b);
+  if(pts.length<3)return null;
+  if(!(b.jmFormT>0||b.jmHoldT>0))return null;
+  const k=b.jmFormT>0?1-b.jmFormT/JM_FORM_T:1; // 솟아오르는 중(0~1), 유지 단계엔 1(완전히 솟음)
+  const cx=(pts[0].x+pts[1].x+pts[2].x)/3,cy=(pts[0].y+pts[1].y+pts[2].y)/3;
+  return {cx,cy,k,r:16+28*k};
+}
 function jamesLineDamageStep(b,dt){
-  const pts=jamesLandedOf(b),segs=jamesSegmentsOf(b);
+  const segs=jamesSegmentsOf(b);
   if(!segs.length)return;
-  const full=pts.length>=3;
+  const nose=jamesNoseState(b);
   if(!b.jmHitCds)b.jmHitCds={};
   for(const id in b.jmHitCds)b.jmHitCds[id]=Math.max(0,b.jmHitCds[id]-dt);
   for(const o of balls){
     if(!o.alive||o.team===b.team||air(o))continue;
     if(b.jmHitCds[o.id]>0)continue;
-    let hit=full&&jamesPointInTri(o.x,o.y,pts[0],pts[1],pts[2]); // 삼각형 안에 있어도 다단히트
+    let hit=nose&&Math.hypot(o.x-nose.cx,o.y-nose.cy)<nose.r; // 삼각형 중앙에서 솟아오르는 코에 닿아도 다단히트
     if(!hit)for(const [p0,p1] of segs){
       if(jamesDistToSeg(o.x,o.y,p0.x,p0.y,p1.x,p1.y)<JM_LINE_R){hit=true;break;}
     }
@@ -2899,13 +2907,26 @@ function drawJamesForming(){
     ctx.stroke();
     ctx.restore();
     if(full&&formK>0){
-      const [p0,p1,p2]=pts,cx=(p0.x+p1.x+p2.x)/3,cy=(p0.y+p1.y+p2.y)/3;
-      const w=Math.max(50,Math.max(p0.x,p1.x,p2.x)-Math.min(p0.x,p1.x,p2.x));
-      const h=Math.max(50,Math.max(p0.y,p1.y,p2.y)-Math.min(p0.y,p1.y,p2.y));
+      const [p0,p1,p2]=pts;
       ctx.save();
-      ctx.globalAlpha=(.3+.65*formK)*holdK;
-      ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.closePath();ctx.clip();
-      if(jamesImg.complete)ctx.drawImage(jamesImg,cx-w*.9,cy-h*.9,w*1.8,h*1.8);
+      ctx.globalAlpha=(.3+.4*formK)*holdK;
+      ctx.fillStyle='#ff8a8a'; // 연한 빨간색으로 삼각형 내부 채움(제임스 얼굴 대신)
+      ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.closePath();ctx.fill();
+      ctx.restore();
+    }
+    const nose=jamesNoseState(b);
+    if(nose&&nose.k>0){
+      const noseH=34*nose.k,noseW=11+7*nose.k;
+      ctx.save();
+      ctx.translate(nose.cx,nose.cy);
+      ctx.globalAlpha=holdK;
+      ctx.fillStyle='#ff5050';ctx.strokeStyle='#8f1515';ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.moveTo(-noseW,0);
+      ctx.lineTo(0,-noseH);
+      ctx.lineTo(noseW,0);
+      ctx.closePath();
+      ctx.fill();ctx.stroke();
       ctx.restore();
     }
   }
