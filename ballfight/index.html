@@ -2822,6 +2822,17 @@ function jamesGetTarget(b){
   }
   return nearest(b);
 }
+// 적이 움직이는 방향 기준으로: 눈 2개는 양옆에서 포위(flankA/flankB), 입은 가는 길 앞을 막음(seal)
+function jamesThrowAimPoint(targetId,role,angleOffset){
+  const T=targetId!=null?balls.find(o=>o.id===targetId&&o.alive):null;
+  if(!T)return null;
+  const lead=0.12,radius=34; // 적이 자주 벽에 튕겨서 방향이 바뀌므로, 과하게 멀리 예측하면 오히려 빗나감 - 살짝만 예측
+  const ax=T.x+(T.vx||0)*lead,ay=T.y+(T.vy||0)*lead;
+  const spd=Math.hypot(T.vx||0,T.vy||0);
+  const moveAng=spd>15?Math.atan2(T.vy,T.vx):(angleOffset||0);
+  const ang=role==='seal'?moveAng:moveAng+(role==='flankA'?2.0:-2.0);
+  return {x:Math.min(W-40,Math.max(40,ax+Math.cos(ang)*radius)),y:Math.min(H-40,Math.max(40,ay+Math.sin(ang)*radius))};
+}
 function jamesStep(b,dt){
   if(b.jmCd===undefined){b.jmCd=JM_CD;b.jmBusy=false;b.jmSeqIdx=0;b.jmSeqT=0;b.jmFormT=0;b.jmHoldT=0;b.g=0;}
   if(b.jmBusy){
@@ -2843,15 +2854,9 @@ function jamesStep(b,dt){
         if(b.jmSeqIdx<JM_SEQ.length){
           const T=jamesGetTarget(b);
           if(T)b.jmTargetId=T.id;
-          const lead=0.12; // 적이 자주 벽에 튕겨서 방향이 바뀌므로, 과하게 멀리 예측하면 오히려 빗나감 - 살짝만 예측
-          const ax=T?T.x+(T.vx||0)*lead:b.x,ay=T?T.y+(T.vy||0)*lead:b.y,radius=34;
-          const spd=T?Math.hypot(T.vx||0,T.vy||0):0;
-          // 적이 움직이는 방향을 기준으로, 눈 2개는 양옆에서 포위하고 입은 가는 길 앞을 막아서 도망갈 곳을 좁히는 포위망
-          const moveAng=spd>15?Math.atan2(T.vy,T.vx):(b.jmAngleOffset||0);
-          const ang=b.jmSeqIdx===2?moveAng:moveAng+(b.jmSeqIdx===0?2.0:-2.0);
-          const tx=Math.min(W-40,Math.max(40,ax+Math.cos(ang)*radius));
-          const ty=Math.min(H-40,Math.max(40,ay+Math.sin(ang)*radius));
-          jamesThrows.push({x0:b.x,y0:b.y,x1:tx,y1:ty,t:0,dur:JM_THROW_DUR,part:JM_SEQ[b.jmSeqIdx],ownerId:b.id,team:b.team});
+          const role=b.jmSeqIdx===2?'seal':(b.jmSeqIdx===0?'flankA':'flankB');
+          const aim=jamesThrowAimPoint(b.jmTargetId,role,b.jmAngleOffset)||{x:b.x,y:b.y};
+          jamesThrows.push({x0:b.x,y0:b.y,x1:aim.x,y1:aim.y,t:0,dur:JM_THROW_DUR,part:JM_SEQ[b.jmSeqIdx],ownerId:b.id,team:b.team,targetId:b.jmTargetId,role,angleOffset:b.jmAngleOffset});
           b.jmSeqIdx++;b.jmSeqT=JM_THROW_DUR+JM_THROW_GAP; // 이전 것이 다 착지한 뒤에야 다음 걸 던지도록, 비행시간까지 포함해서 대기
         }else if(jamesLandedOf(b).length>=3){
           b.jmFormT=JM_FORM_T;
@@ -2872,6 +2877,10 @@ function jamesStep(b,dt){
 function jamesThrowsStep(dt){
   for(const th of jamesThrows){
     th.t+=dt;
+    if(th.t<th.dur){
+      const aim=jamesThrowAimPoint(th.targetId,th.role,th.angleOffset); // 날아가는 중에도 계속 적을 추적(호밍)
+      if(aim){th.x1=aim.x;th.y1=aim.y;}
+    }
     if(th.t>=th.dur){
       th.dead=true;
       jamesLanded.push({x:th.x1,y:th.y1,part:th.part,ownerId:th.ownerId,team:th.team});
