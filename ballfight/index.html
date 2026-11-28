@@ -2737,20 +2737,22 @@ function jamesDistToSeg(px,py,ax,ay,bx,by){
   return Math.hypot(px-cx,py-cy);
 }
 function jamesLineDamageStep(b,dt){
-  const segs=jamesSegmentsOf(b);
+  const pts=jamesLandedOf(b),segs=jamesSegmentsOf(b);
   if(!segs.length)return;
+  const full=pts.length>=3;
   if(!b.jmHitCds)b.jmHitCds={};
   for(const id in b.jmHitCds)b.jmHitCds[id]=Math.max(0,b.jmHitCds[id]-dt);
   for(const o of balls){
     if(!o.alive||o.team===b.team||air(o))continue;
     if(b.jmHitCds[o.id]>0)continue;
-    for(const [p0,p1] of segs){
-      if(jamesDistToSeg(o.x,o.y,p0.x,p0.y,p1.x,p1.y)<JM_LINE_R){
-        hurt(o,JM_HIT_DMG);
-        b.jmHitCds[o.id]=JM_HIT_CD;
-        burst(o.x,o.y,'#ff4040',6,120);
-        break;
-      }
+    let hit=full&&jamesPointInTri(o.x,o.y,pts[0],pts[1],pts[2]); // 삼각형 안에 있어도 다단히트
+    if(!hit)for(const [p0,p1] of segs){
+      if(jamesDistToSeg(o.x,o.y,p0.x,p0.y,p1.x,p1.y)<JM_LINE_R){hit=true;break;}
+    }
+    if(hit){
+      hurt(o,JM_HIT_DMG);
+      b.jmHitCds[o.id]=JM_HIT_CD;
+      burst(o.x,o.y,'#ff4040',6,120);
     }
   }
 }
