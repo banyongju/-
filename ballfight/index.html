@@ -2866,6 +2866,19 @@ function drawJamesMouthShape(sc){
     ctx.closePath();ctx.fill();ctx.strokeStyle='#161616';ctx.lineWidth=1.4*sc;ctx.stroke();
   }
 }
+// 삼각형 중앙에서 솟아오르는 코: 세모꼴 콧날 + 콧구멍 2개
+function drawJamesNoseShape(){
+  ctx.fillStyle='#fff';ctx.strokeStyle='#161616';ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(-10,0);
+  ctx.quadraticCurveTo(-13,-20,0,-34);
+  ctx.quadraticCurveTo(13,-20,10,0);
+  ctx.quadraticCurveTo(0,6,-10,0);
+  ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle='#161616';
+  ctx.beginPath();ctx.ellipse(-4.5,-2,2.4,3.4,-0.3,0,6.283);ctx.fill();
+  ctx.beginPath();ctx.ellipse(4.5,-2,2.4,3.4,0.3,0,6.283);ctx.fill();
+}
 function drawJamesShape(part,sc,team){
   if(team!==undefined){
     ctx.save();ctx.globalAlpha=.55;ctx.fillStyle=team===1?'#3a7dff':'#ff4d4d';
@@ -2904,12 +2917,12 @@ function drawJamesForming(){
     ctx.stroke();
     ctx.restore();
     const nose=jamesNoseState(b);
-    if(nose&&nose.k>0&&jamesLipsImg.complete&&jamesLipsImg.naturalWidth){
-      const baseW=34,baseH=baseW*(jamesLipsImg.naturalHeight/jamesLipsImg.naturalWidth);
-      const w=baseW*nose.k,h=baseH*nose.k; // 솟아오르며 점점 커지는 검은 코(보내준 사진)
+    if(nose&&nose.k>0){
       ctx.save();
+      ctx.translate(nose.cx,nose.cy);
       ctx.globalAlpha=holdK;
-      ctx.drawImage(jamesLipsImg,nose.cx-w/2,nose.cy-h,w,h);
+      ctx.scale(nose.k,nose.k); // 솟아오르며 점점 커지는 코
+      drawJamesNoseShape();
       ctx.restore();
     }
   }
