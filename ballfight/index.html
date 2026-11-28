@@ -2740,21 +2740,27 @@ function jamesDistToSeg(px,py,ax,ay,bx,by){
 // 눈물소녀: 능력 없음 - 평소처럼 움직이다가 움직이는 동안 눈에서 눈물방울이 흘러나옴
 function tearStep(b,dt){
   // 방울방울 떨어지는 파티클이 아니라, 눈에서 바로 끊김없이 흘러내리는 줄기로 그림(draw는 drawTears에서)
+  // 체력이 적을수록(lowHp↑) 더 자주/굵게/빠르게 흐르도록 강도를 계산
   const sp=Math.hypot(b.vx,b.vy);
-  const target=sp>5?1:0;
+  const hpRatio=Math.max(0,Math.min(1,b.hp/(b.maxHp||300)));
+  const lowHp=1-hpRatio;
+  const moveFactor=sp>5?1:0.35; // 가만히 있어도 체력이 낮으면 조금은 흐름
+  const target=Math.min(1,0.12+lowHp*0.88)*moveFactor;
   b.tearAlpha=(b.tearAlpha||0)+(target-(b.tearAlpha||0))*Math.min(1,dt*6);
-  b.tearPhase=(b.tearPhase||0)+dt*6;
+  b.tearIntensity=lowHp;
+  b.tearPhase=(b.tearPhase||0)+dt*(6+lowHp*10);
 }
 function drawTears(){
   for(const b of balls){
     if(!b.cries||!b.alive||!(b.tearAlpha>0.02))continue;
-    const ex=b.x-b.r*0.22,ey0=b.y-b.r*0.1,len=b.r*1.5,wig=Math.sin(b.tearPhase)*2.4;
+    const it=b.tearIntensity||0;
+    const ex=b.x-b.r*0.22,ey0=b.y-b.r*0.1,len=b.r*(1.3+it*0.7),wig=Math.sin(b.tearPhase)*(2.2+it*3);
     ctx.save();
-    ctx.globalAlpha=b.tearAlpha*0.85;
+    ctx.globalAlpha=b.tearAlpha*(0.75+it*0.25);
     const grad=ctx.createLinearGradient(ex,ey0,ex+wig*0.4,ey0+len);
     grad.addColorStop(0,'rgba(174,224,245,0.95)');
     grad.addColorStop(1,'rgba(174,224,245,0)');
-    ctx.strokeStyle=grad;ctx.lineWidth=2.6;ctx.lineCap='round';
+    ctx.strokeStyle=grad;ctx.lineWidth=2.2+it*2.4;ctx.lineCap='round';
     ctx.beginPath();
     ctx.moveTo(ex,ey0);
     ctx.quadraticCurveTo(ex+wig*1.4,ey0+len*0.55,ex+wig*0.4,ey0+len);
