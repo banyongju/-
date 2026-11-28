@@ -2826,7 +2826,7 @@ function jamesGetTarget(b){
 function jamesThrowAimPoint(targetId,role,angleOffset){
   const T=targetId!=null?balls.find(o=>o.id===targetId&&o.alive):null;
   if(!T)return null;
-  const lead=0.12,radius=34; // 적이 자주 벽에 튕겨서 방향이 바뀌므로, 과하게 멀리 예측하면 오히려 빗나감 - 살짝만 예측
+  const lead=0.3,radius=34; // 0.3초 뒤 위치를 예측 - 호밍으로 매 프레임 갱신되니 방향이 바뀌어도 계속 보정됨
   const ax=T.x+(T.vx||0)*lead,ay=T.y+(T.vy||0)*lead;
   const spd=Math.hypot(T.vx||0,T.vy||0);
   const moveAng=spd>15?Math.atan2(T.vy,T.vx):(angleOffset||0);
