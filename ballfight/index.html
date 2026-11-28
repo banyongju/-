@@ -2741,17 +2741,21 @@ function jamesExplodeTriangle(b){
 function jamesStep(b,dt){
   if(b.jmCd===undefined){b.jmCd=JM_CD;b.jmBusy=false;b.jmSeqIdx=0;b.jmSeqT=0;b.jmFormT=0;b.g=0;}
   if(b.jmBusy){
+    b.vx=0;b.vy=0; // 스킬 수행 중엔 계속 빠르게 돌아다니는 느낌(돌진처럼 보임)을 없애려고 제자리에 멈춰 있는다
     if(b.jmFormT>0){
       b.jmFormT=Math.max(0,b.jmFormT-dt);
       if(b.jmFormT<=0){
         jamesExplodeTriangle(b);
         b.jmBusy=false;b.jmCd=JM_CD;b.g=0;
+        const a0=Math.random()*6.283;b.vx=Math.cos(a0)*180;b.vy=Math.sin(a0)*180;
       }
     }else{
       b.jmSeqT-=dt;
       if(b.jmSeqT<=0){
         if(b.jmSeqIdx<JM_SEQ.length){
-          const tx=40+Math.random()*(W-80),ty=40+Math.random()*(H-80);
+          const T=nearest(b),ax=T?T.x:b.x,ay=T?T.y:b.y,spread=130;
+          const tx=Math.min(W-40,Math.max(40,ax+(Math.random()-.5)*2*spread));
+          const ty=Math.min(H-40,Math.max(40,ay+(Math.random()-.5)*2*spread));
           jamesThrows.push({x0:b.x,y0:b.y,x1:tx,y1:ty,t:0,dur:JM_THROW_DUR,part:JM_SEQ[b.jmSeqIdx],ownerId:b.id,team:b.team});
           b.jmSeqIdx++;b.jmSeqT=JM_THROW_DUR+JM_THROW_GAP; // 이전 것이 다 착지한 뒤에야 다음 걸 던지도록, 비행시간까지 포함해서 대기
         }else if(jamesLanded.filter(p=>p.ownerId===b.id).length>=3){
@@ -2799,19 +2803,25 @@ function drawJamesMouthShape(sc){
   ctx.quadraticCurveTo(0,-7*sc,-9*sc,-3*sc);
   ctx.closePath();ctx.fill();ctx.strokeStyle='#161616';ctx.lineWidth=1.4*sc;ctx.stroke();
 }
-function drawJamesShape(part,sc){if(part==='eye')drawJamesEyeShape(sc);else drawJamesMouthShape(sc);}
+function drawJamesShape(part,sc,team){
+  if(team!==undefined){
+    ctx.save();ctx.globalAlpha=.55;ctx.fillStyle=team===1?'#3a7dff':'#ff4d4d';
+    ctx.beginPath();ctx.arc(0,0,13*sc,0,6.283);ctx.fill();ctx.restore();
+  }
+  if(part==='eye')drawJamesEyeShape(sc);else drawJamesMouthShape(sc);
+}
 function drawJamesThrows(){
   for(const th of jamesThrows){
     const t=Math.min(1,th.t/th.dur),x=th.x0+(th.x1-th.x0)*t,y0=th.y0+(th.y1-th.y0)*t,arc=Math.sin(Math.PI*t)*110,yy=y0-arc;
     ctx.save();ctx.globalAlpha=.25*(1-arc/110);ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(x,y0,11,4,0,0,6.283);ctx.fill();ctx.restore();
-    ctx.save();ctx.translate(x,yy);ctx.rotate(t*8);drawJamesShape(th.part,1.7);ctx.restore();
+    ctx.save();ctx.translate(x,yy);ctx.rotate(t*8);drawJamesShape(th.part,1.7,th.team);ctx.restore();
   }
 }
 function drawJamesLanded(){
   for(const p of jamesLanded){
     ctx.save();ctx.translate(p.x,p.y);
     ctx.globalAlpha=.6+.4*Math.sin(performance.now()/160);
-    drawJamesShape(p.part,1.7);
+    drawJamesShape(p.part,1.7,p.team);
     ctx.restore();
   }
 }
