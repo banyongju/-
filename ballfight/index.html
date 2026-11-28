@@ -2843,8 +2843,8 @@ function jamesStep(b,dt){
         if(b.jmSeqIdx<JM_SEQ.length){
           const T=jamesGetTarget(b);
           if(T)b.jmTargetId=T.id;
-          const lead=0.3; // 적 이동경로를 살짝 예측해서 조준
-          const ax=T?T.x+(T.vx||0)*lead:b.x,ay=T?T.y+(T.vy||0)*lead:b.y,radius=18; // 적 바로 위에 떨어지도록 삼각형 반경을 아주 작게
+          const lead=0.12; // 적이 자주 벽에 튕겨서 방향이 바뀌므로, 과하게 멀리 예측하면 오히려 빗나감 - 살짝만 예측
+          const ax=T?T.x+(T.vx||0)*lead:b.x,ay=T?T.y+(T.vy||0)*lead:b.y,radius=34; // 세 점이 좀 더 넓게 퍼져서 땅을 더 넓게 덮도록
           const ang=(b.jmAngleOffset||0)+(b.jmSeqIdx/3)*6.283;
           const tx=Math.min(W-40,Math.max(40,ax+Math.cos(ang)*radius));
           const ty=Math.min(H-40,Math.max(40,ay+Math.sin(ang)*radius));
@@ -2904,16 +2904,16 @@ function drawJamesMouthShape(sc){
 }
 // 삼각형 중앙에서 솟아오르는 코: 세모꼴 콧날 + 콧구멍 2개
 function drawJamesNoseShape(){
-  ctx.fillStyle='#fff';ctx.strokeStyle='#161616';ctx.lineWidth=2;
+  ctx.fillStyle='#fff';ctx.strokeStyle='#161616';ctx.lineWidth=1.6;
   ctx.beginPath();
-  ctx.moveTo(-10,0);
-  ctx.quadraticCurveTo(-13,-20,0,-34);
-  ctx.quadraticCurveTo(13,-20,10,0);
-  ctx.quadraticCurveTo(0,6,-10,0);
+  ctx.moveTo(-6,0);
+  ctx.quadraticCurveTo(-7.5,-22,0,-34);
+  ctx.quadraticCurveTo(7.5,-22,6,0);
+  ctx.quadraticCurveTo(0,4,-6,0);
   ctx.closePath();ctx.fill();ctx.stroke();
   ctx.fillStyle='#161616';
-  ctx.beginPath();ctx.ellipse(-4.5,-2,2.4,3.4,-0.3,0,6.283);ctx.fill();
-  ctx.beginPath();ctx.ellipse(4.5,-2,2.4,3.4,0.3,0,6.283);ctx.fill();
+  ctx.beginPath();ctx.ellipse(-2.6,-2,1.5,2.4,-0.3,0,6.283);ctx.fill();
+  ctx.beginPath();ctx.ellipse(2.6,-2,1.5,2.4,0.3,0,6.283);ctx.fill();
 }
 function drawJamesShape(part,sc,team){
   if(team!==undefined){
