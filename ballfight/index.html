@@ -2906,14 +2906,6 @@ function drawJamesForming(){
     for(const [p0,p1] of segs){ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);}
     ctx.stroke();
     ctx.restore();
-    if(full&&formK>0){
-      const [p0,p1,p2]=pts;
-      ctx.save();
-      ctx.globalAlpha=(.3+.4*formK)*holdK;
-      ctx.fillStyle='#ff8a8a'; // 연한 빨간색으로 삼각형 내부 채움(제임스 얼굴 대신)
-      ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.closePath();ctx.fill();
-      ctx.restore();
-    }
     const nose=jamesNoseState(b);
     if(nose&&nose.k>0){
       const noseH=34*nose.k,noseW=11+7*nose.k;
