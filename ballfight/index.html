@@ -2758,7 +2758,16 @@ function jamesNoseState(b){
   if(pts.length<3)return null;
   if(!(b.jmFormT>0||b.jmHoldT>0))return null;
   const k=b.jmFormT>0?1-b.jmFormT/JM_FORM_T:1; // 솟아오르는 중(0~1), 유지 단계엔 1(완전히 솟음)
-  const cx=(pts[0].x+pts[1].x+pts[2].x)/3,cy=(pts[0].y+pts[1].y+pts[2].y)/3;
+  let cx=(pts[0].x+pts[1].x+pts[2].x)/3,cy=(pts[0].y+pts[1].y+pts[2].y)/3;
+  // 삼각형 안에 적이 있으면 그 적 위치 쪽으로 코가 자라나고, 없으면 그냥 중앙에 생긴다
+  let foeM=1e9;
+  for(const o of balls){
+    if(!o.alive||o.team===b.team||air(o))continue;
+    if(jamesPointInTri(o.x,o.y,pts[0],pts[1],pts[2])){
+      const d=Math.hypot(o.x-cx,o.y-cy);
+      if(d<foeM){foeM=d;cx=o.x;cy=o.y;}
+    }
+  }
   const triSc=jamesTriScale(pts);
   return {cx,cy,k,triSc,r:(16+28*k)*triSc};
 }
@@ -2834,7 +2843,8 @@ function jamesStep(b,dt){
         if(b.jmSeqIdx<JM_SEQ.length){
           const T=jamesGetTarget(b);
           if(T)b.jmTargetId=T.id;
-          const ax=T?T.x:b.x,ay=T?T.y:b.y,radius=18; // 적 바로 위에 떨어지도록 삼각형 반경을 아주 작게
+          const lead=0.3; // 적 이동경로를 살짝 예측해서 조준
+          const ax=T?T.x+(T.vx||0)*lead:b.x,ay=T?T.y+(T.vy||0)*lead:b.y,radius=18; // 적 바로 위에 떨어지도록 삼각형 반경을 아주 작게
           const ang=(b.jmAngleOffset||0)+(b.jmSeqIdx/3)*6.283;
           const tx=Math.min(W-40,Math.max(40,ax+Math.cos(ang)*radius));
           const ty=Math.min(H-40,Math.max(40,ay+Math.sin(ang)*radius));
