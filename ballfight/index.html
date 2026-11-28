@@ -2722,7 +2722,7 @@ function drawKingcarIdle(){
       // 머리(리젠트)를 실제로 빗질하는 것처럼, 빗살이 머리 쪽을 향한 채 위아래로 왕복하며 빗질한다
       const t=performance.now()/1000,sc=b.r/15,bob=Math.sin(t*5),wobble=Math.sin(t*5)*0.12;
       const cx=b.x+Math.sin(t*2.5)*3,cy=b.y-b.r-9*sc-6*sc*bob;
-      ctx.save();ctx.translate(cx,cy);ctx.rotate(-Math.PI/2+wobble);
+      ctx.save();ctx.translate(cx,cy);ctx.rotate(wobble);
       drawTailComb(sc);
       ctx.restore();
     }
